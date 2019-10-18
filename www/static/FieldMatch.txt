@@ -1,0 +1,43 @@
+{
+ 'Nombre': ('Titular del contrato: (.+)','DATOS DEL CLIENTE\s*(.+)\s*NIF','Nombre: (.+)'), 
+ 'NIF': ('NIF: (\w+)','NIF (\w+)','NIF:.* (\w+)',),
+ 'Direccion': ('Dirección de suministro: (.+)', 'Dirección suministro: (.+)', 'Dirección: (.+)',),
+ 
+ 'CUPS': ('CUPS: (\w+)','CUPS (.+)',),
+ 'CNAE': ('CNAE: (\w+)','CNAE (\w+)',),
+ 'PotenciaContratada': ('Potencia contratada: (\S+)',),
+ 'NumeroContador': ('Número de contador: (\w+)',),
+ 'ReferenciaContrato': ('Referencia: (\S+)','Referencia del contrato: (\S+)','Referencia contrato (\S+)','Nº Referencia: (\S+)',),
+ 'PeajeAcceso': ('Peaje de acceso: (\S+)','Cuantía Peaje:.*\s*(\d+,\d\d) €', ),
+ 'FinContrato': ('Fin de contrato de suministro: (\S+)', 'Fecha Fin Contrato (\S+)','Fecha final de contrato: (.*)',),
+ 'TarifaAcceso': ('Tarifa de acceso: (.+)','Tarifa (.*) A'),
+
+ 'NumeroFactura': ('Nº factura: (\S+)','Nº de factura: (\S+)',),
+ 'ReferenciaAcceso': ('Referencia del contrato de acceso: (\S+)','Nº contrato de acceso\s*.*: (\w*)', 'Referencia del contrato de acceso (\S+)',),
+ 'FechaEmision': ('Fecha emisión factura: (\S+)','Fecha factura (.+)', 'Fecha de emisión: (.+)',),
+ 'FechaCargo': ('Fecha de cargo: (.+)',),
+ 'FechaInicio': ('Periodo de Facturación: del (\S+)','Periodo de facturación: del (\S+)','Periodo de facturación (\S+)', 'Del (.*) al .* ',),
+ 'FechaFin': ('Periodo de Facturación: del \S+ a (\S+)','Periodo de facturación: del \S+ al (\S+)','Periodo de facturación \S+ - (\S+)','Del .* al (.*)\s?'),
+ 'Comercializadora': ('Su comercializadora: (.+)', ), 
+ 'Distribuidora': ('Su distribuidora: (.+)', ), 
+  
+ 
+ 'LecturaAnteriorValle': ('Lectura anterior\s*.* kWh\s* (\S+) kWh','Valle ([\d.]+) \S+',),
+ 'LecturaAnteriorPunta': ('Lectura anterior\s*.* (\S+) kWh\s* \S+ kWh','Punta ([\d.]+) \S+',),
+ 'LecturaAnterior': ('Lectura anterior\s*.* (\S+) kWh\s*', 'Lectura anterior (\S+)',),
+ 'LecturaActualValle': ('Lectura actual\s*.* kWh\s* (\S+) kWh','Valle \S+ ([\d.]+)',),
+ 'LecturaActualPunta': ('Lectura actual\s*.* (\S+) kWh\s* \S+ kWh','Punta \S+ ([\d.]+)',),
+ 'LecturaActual': ('Lectura actual\s*.* (\S+) kWh\s*', 'Lectura actual (\S+)',),
+ 'ConsumoPunta': ('Consumo\s*.* (\S+) kWh\s* \S+ kWh','Consumo punta (\w+)',),
+ 'ConsumoValle': ('Consumo\s*.* kWh\s* (\S+) kWh','Consumo valle (\w+)',),
+ 'ConsumoTotal': ('Consumo total (\w+)','Consumo\s*.* (\S+) kWh', ),
+ 
+ 'ImporteTotal': ('TOTAL IMPORTE FACTURA (\d+,\d\d)','Total a pagar (\d+,\d\d)','Total (\d+,\d\d)',),
+ 'ImportePotenciaContratada': ('Por potencia contratada (\S+) €','Potencia (\S+) €','Consumo electricidad.* (\d+,\d\d) €',),
+ 'ImporteEnergiaConsumida': ('Por energía consumida (\S+) €','Energía (\S+) €','Energia (\S+) €', 'Término de potencia.* (\d+,\d\d) €',),
+ 'ImporteAlquilerEquipo': ('Alquiler equipos de medida y control.*((\d+,\d\d)) €','Alquiler equipos de medida.*((\d+,\d\d))','Alquiler de contador.*(\d+,\d\d) €',),
+ 'ImporteDescuento': ('Descuento.* (-\d+,\d\d) €',),
+ 'ImporteImpuestos': ('Impuesto electricidad.* (\d+,\d\d) €', 'Impuestos (\d+,\d\d) €', 'IGIC reducido .* (\d+,\d\d) €', 'IGIC normal .* (\S+) €', 'IGIC 3%.*(\d+,\d\d) €','IGIC 7%.*(\d+,\d\d) €',),
+ 'ImporteOtros': ('Otros.*(\d+,\d\d) €',),
+}
+

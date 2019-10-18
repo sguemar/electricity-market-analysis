@@ -1,0 +1,10 @@
+{
+ 'ImporteTotal': ('TOTAL IMPORTE FACTURA (\d+,\d\d)[ ]*€','Total a pagar (\d+,\d\d)[ ]*€','\sTotal (\d+,\d\d)[ ]*€','Total Factura.*\s(\d+,\d\d)[ ]*€',),
+ 'ImportePotenciaContratada': ('Por potencia contratada (\S+)[ ]*€','Potencia (\S+)[ ]*€','Término de potencia.* (\d+,\d\d)[ ]*€',),
+ 'ImporteEnergiaConsumida': ('Por energía consumida (\S+)[ ]*€','Energía (\S+)[ ]*€','Energia (\S+)[ ]*€', 'Consumo electricidad.* (\d+,\d\d)[ ]*€',),
+ 'ImporteImpuestos': ('Impuesto electricidad.* (\d+,\d\d)[ ]*€', 'Impuestos (\d+,\d\d)[ ]*€', 'IGIC reducido .* (\d+,\d\d)[ ]*€', 'IGIC normal .* (\S+)[ ]*€', 'IGIC 3%.*(\d+,\d\d)[ ]*€','IGIC 7%.*(\d+,\d\d)[ ]*€',),
+ 'ImporteAlquilerEquipo': ('Alquiler.*equipos.*((\d+,\d\d))[ ]*€','Alquiler.*contador.*(\d+,\d\d)[ ]*€',),
+ 'ImporteDescuento': ('Descuento.* (-\d+,\d\d)[ ]*€',),
+ 'ImporteOtros': ('Otros.* (\d+,\d\d)[ ]*€',),
+}
+

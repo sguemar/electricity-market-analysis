@@ -1,0 +1,11 @@
+{
+ 'NumeroFactura': ('N. factura: (\S+)','N. de factura: (\S+)','Factura n.: (\S+)',),
+ 'ReferenciaAcceso': ('Referencia del contrato de acceso: (\S+)','Nº contrato de acceso\s*.*: (\w*)',),
+ 'FechaEmision': ('Fecha emisión .* (\S+)','Fecha factura: (.+)', ),
+ 'FechaCargo': ('Fecha de cargo: (.+)',),
+ 'FechaInicio': ('Periodo de facturación (\S+)', 'Del (\S+) a[l] \S+ ',),
+ 'FechaFin': ('Periodo de facturación \S+ - (\S+)','Del \S+ a[l] (\S+) ',),
+ 'Comercializadora': ('comercializadora: (.+)', '(Gas.* S.A.)', '(Naturgy.* S.A.)',), 
+ 'Distribuidora': ('distribuidora: (.+)', '(Endesa.*S.A.)', ),
+}
+

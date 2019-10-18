@@ -1,0 +1,7 @@
+{
+ 'Nombre': ('Titular del contrato: (.+)','DATOS DEL CLIENTE\s*(.+)\s*NIF','Nombre: (.+)','Titular: (.+)'), 
+ 'NIF': ('NIF.* ([0-9]{8}[A-Za-z])',),
+ 'Direccion': ('Dirección de suministro: (.+)', 'Dirección suministro: (.+)', 'Dirección: (.+)',),
+}
+
+

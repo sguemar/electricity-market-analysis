@@ -1,0 +1,19 @@
+{
+ 'LecturaAnterior': ('Lectura.*anterior\s*.* (\S+) kWh\s*', 'Lect. factura ant.* (\S+) kWh\s*',),
+ 'ConsumoAnterior': ('Consumo anterior\s*.* (\S+) kWh\s*','Consumo anterior (\w+)',), 
+ 'LecturaActual': ('Lectura actual\s*.* (\S+) kWh\s*', 'Lectura actual (\S+)', 'Lectura REAL.* (\S+)','Lect. factura act.* (\S+) kWh\s*',),
+ 'ConsumoActual': ('Consumo\s*.* (\S+) kWh\s* \S+ kWh','Consumo XXX (\w+)',),  
+ 
+ 'ConsumoTotal': ('Consumo total (\w+)','Consumo\s.* (\S+) kWh', ),
+ 
+ 'LecturaAnteriorValle': ('Lectura anterior\s*.* kWh\s* (\S+) kWh','Valle ([\d.]+) \S+',),
+ 'ConsumoAnteriorValle': ('Consumo\s*.* kWh\s* (\S+) kWh','Consumo valle anterior (\w+)',), 
+ 'LecturaAnteriorPunta': ('Lectura anterior\s*.* (\S+) kWh\s* \S+ kWh','Punta ([\d.]+) \S+',), 
+ 'ConsumoAnteriorPunta': ('Consumo\s*.* (\S+) kWh\s* \S+ kWh','Consumo punta anterior (\w+)',),
+ 
+ 'LecturaActualValle': ('Lectura actual\s*.* kWh\s* (\S+) kWh','Valle \S+ ([\d.]+)',),
+ 'ConsumoActualValle': ('Consumo valle \s*(\S+) kWh', 'Consumo\s*.* kWh\s* (\S+) kWh','Consumo valle actual (\w+)',),
+ 'LecturaActualPunta': ('Lectura actual\s*.* (\S+) kWh\s* \S+ kWh','Punta \S+ ([\d.]+)',),
+ 'ConsumoActualPunta': ('Consumo punta \s*(\S+) kWh', 'Consumo\s*.* (\S+) kWh\s* \S+ kWh','Consumo punta actual (\w+)',), 
+}
+
