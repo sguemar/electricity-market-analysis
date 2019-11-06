@@ -1,0 +1,208 @@
+VX10C020-3-16/01/19
+N0017620ANNNN
+<Nombre> <Apellido1> <Apellido2>
+<Direccion>
+<CP> <Poblacion>
+<Provincia>
+Endesa
+Energía,
+S.A.
+Unipersonal.
+Inscrita
+en
+el
+Registro
+Mercantil
+de
+Madrid.
+Tomo
+12.797,
+Libro
+0,
+Folio
+208,
+Sección
+8ª,
+Hoja
+M-205.381,
+CIF
+A81948077.
+Domicilio
+Social:
+C/Ribera
+del
+Loira,
+nº60
+28042
+-
+Madrid.
+<Comercializadora>
+CIF A81948077.
+C/Albareda nº 38 35008 - Las Palmas de Gran Canaria
+DATOS DE LA FACTURA
+Nº factura: <NumeroFactura>
+Referencia: 012191862390/0016
+Fecha emisión factura: <FechaEmision>
+Periodo de Facturación: del <FechaInicio> a <FechaFin> (62 días)
+Fecha de cargo: <FechaCargo>
+....................................................................................................................................................................
+RESUMEN DE LA FACTURA Y DATOS DE PAGO
+Por potencia contratada <ImportePotenciaContratada> €
+Por energía consumida <ImporteEnergiaConsumida> €
+Derechos de contratación 8,01 €
+Regularización y otros conceptos <ImporteOtros> €
+Impuesto electricidad <ImporteImpuestos> €
+Alquiler equipos de medida y control <ImporteAlquilerEquipos> €
+IGIC normal ( 6,5%) 1,22 €
+IGIC reducido ( 0%) 0,00 €
+...........................................................................................................................................
+TOTAL IMPORTE FACTURA <ImporteTotal> €
+(Detalle de la factura en el reverso)
+Forma de pago: Domiciliación bancaria
+Fecha de cargo: <FechaCargo>
+IBAN: ES37018294656502014*****
+Cod.Mandato: E00020701188412700040001
+Versión: 0001
+Su pago se justifica con el correspondiente apunte bancario
+..............................................................................
+INFORMACIÓN DEL CONSUMO ELÉCTRICO
+Consumo en el Consumo en el
+periodo punta periodo valle
+De 12h a 22h De 22h a 12h
+........................................................................................................................................................
+Lectura anterior
+(real) <LecturaAnterior> kWh 0 kWh
+(31-Octubre-2018)
+........................................................................................................................................................
+Lectura actual
+(real) <LecturaActual> kWh 271 kWh
+(01-Enero-2019)
+........................................................................................................................................................
+Consumo
+en el periodo <ConsumoActual> kWh 271 kWh
+REPARTO CONSUMO
+Valle
+48%
+50%
+<ConsumoActual> 271
+....................................................................................................
+Evolución del consumo
+kWh
+770
+660
+550
+440
+330
+220
+110
+0
+ENE
+19
+ENE
+19
+Cons.Valle Real Cons.Punta Real
+Media
+2,38 €/día en esta factura.
+2,38 €/día durante los últimos 14 meses.
+Consumo acumulado (último año): 559 kWh
+DATOS DEL CONTRATO
+Titular del contrato: <Nombre> <Apellido1> <Apellido2>
+NIF: <NIF>
+Dirección de suministro: <Direccion>
+<Poblacion>, <Provincia>
+Producto contratado: Tempo Siempre Ganas
+Potencia contratada: <PotenciaContratada> kW
+CUPS: <CUPS>
+Número de contador: <NumeroContador>
+Referencia del contrato: 012191862390
+Su comercializadora: <Comercializadora>
+Su distribuidora: <Distribuidora>
+Referencia del contrato de acceso: 500002056849
+Peaje de acceso: <PeajeAcceso>
+Fin de contrato de suministro: <FinContrato>
+(renovación anual automática)
+............................................
+DESTINO DEL IMPORTE DE LA FACTURA
+El destino del importe de su
+factura, <ImporteTotal> euros, es el
+siguiente:
+.....................................................
+7,42 €
+49,56 €
+71,64 €
+Impuestos aplicados
+Coste de producción de electricidad
+Costes Regulados
+Incentivos a las energías renovables, cogeneración y residuos 19,63 €
+Coste de redes de transporte y distribución 19,81 €
+Otros costes regulados (incluida la anualidad del déficit) 10,12 €
+A los importes indicados en el diagrama debe añadirse, en su caso, el importe del
+alquiler de los equipos de medida y control así como los conceptos no energéticos.
+DETALLE DE LA FACTURA
+LUZ
+Importe por potencia contratada:
+5 kW x 0,131002 Eur/kW x 61 días <ImportePotenciaContratada> €
+5 kW x 0,133229 Eur/kW x 1 días 0,67 €
+En dicho importe, facturación por peaje de acceso:
+5 kW x 38,043426 Eur/kW y año x (61/365) días 31,79 €
+5 kW x 38,043426 Eur/kW y año x (1/365) días 0,52 €
+40,63 €
+Importe por energía consumida:
+550 kWh x 0,158877 Eur/kWh <ImporteEnergiaConsumida> €
+9 kWh x 0,161225 Eur/kWh 1,45 €
+En dicho importe, su facturación por peaje de acceso ha sido:
+Consumo P1
+283 kWh x 0,062012 Eur/kWh 17,55 €
+5 kWh x 0,062012 Eur/kWh 0,31 €
+Consumo P3
+267 kWh x 0,002215 Eur/kWh 0,59 €
+4 kWh x 0,002215 Eur/kWh 0,01 €
+88,83 €
+SUBTOTAL <ImporteSubTotal> €
+OTROS CONCEPTOS
+Intervencion en equipo de med 9,04 €
+Descuento por e-factura 88,83 Eur x -2 % DTO <ImporteDescuento> €
+Descuento -5 % x 129,46 Eur -6,48 €
+Derechos de Verificación 8,01 €
+Impuesto electricidad ( 121,20 X 5,11269632 % ) <ImporteImpuestos> €
+Alquiler equipos de medida y control (62 días x 0,026774 Eur/día) <ImporteAlquilerEquipos> €
+SUBTOTAL 16,65 €
+Importe total 146,11 €
+IGIC normal ( 6,5%) 6,5% s/ 18,71 <ImporteImpuestoNormal> €
+IGIC reducido ( 0%) 0% s/ 127,40 <ImporteImpuestoReducido> €
+TOTAL IMPORTE FACTURA <ImporteTotal> €
+Precios de los términos del peaje de acceso publicados en Orden TEC/1366/2018.
+Precio del alquiler de los equipos de medida y control en Orden TEC/1366/2018.
+INFORMACIÓN DE SU PRODUCTO
+Los precios de la energía de esta tarifa se han actualizado el 01/01/2019 trasladando las variaciones reguladas en la Orden TEC/1366/2018 de 20 de
+diciembre, en la Orden IET/2013/2013 de 31 de octubre y en la Resolución de 6 de noviembre de 2018 de la Secretaría de Estado de Energía. Con esta tarifa
+se beneficia de un descuento permanente y le recordamos que, si más de un 50% del consumo lo realiza en horas valle (22-12h en invierno y 23-13h en
+verano), tendrá un descuento adicional, además de ayudar a proteger el medio ambiente. Para más información puede llamar al servicio de atención al
+cliente o consultar nuestra web.
+ATENCIÓN AL CLIENTE: CONSULTAS, GESTIONES Y RECLAMACIONES 24 HORAS
+800760909 (tlf. gratuito)
+www.endesaclientes.com
+atencionalcliente@endesaonline.com
+Reclamaciones
+C/ Ribera del Loira 60
+28042 Madrid
+Urgencias
+900 85 58 85
+(tlf. gratuito)
+Para reclamaciones sobre el contrato de suministro o facturaciones podrá dirigirse a: Consejería de Empleo, Industria y Comercio de la Comunidad Autónoma de
+Canarias en el teléfono: 928 899 400 o a través de su página web. http://www.gobcan.es/ceic/energia
+VX10C020-3-16/01/19
+S0017621ANNNN
+INFORMACIÓN SOBRE SU ELECTRICIDAD
+Si bien la energía eléctrica que llega a nuestros hogares es indistinguible de la que consumen nuestros vecinos u otros
+consumidores conectados al mismo sistema eléctrico, ahora sí es posible garantizar el origen de la producción de energía
+eléctrica que usted consume.
+A estos efectos se proporciona el desglose de la mezcla de tecnologías de producción nacional para así comparar los
+porcentajes del promedio nacional con los correspondientes a la energía vendida por su Compañía Comercializadora.
+ORIGEN DE LA ELECTRICIDAD
+IMPACTO MEDIOAMBIENTAL
+El impacto ambiental de su electricidad depende de las fuentes energéticas utilizadas para su generación.
+En una escala de A a G donde A indica el mínimo impacto ambiental y G el máximo, y que el valor medio nacional
+corresponde al nivel D, la energía comercializada por Endesa Energía S.A.U. tiene los siguientes valores:
+Fuente: CNMC (Comisión Nacional de los Mercados y Competencia), http://gdo.cnmc.es/CNE/resumenGdo.do?
+

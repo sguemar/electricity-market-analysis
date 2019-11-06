@@ -1,0 +1,207 @@
+Facturación
+Producto: TARIFA GENERAL
+Concepto Cálculos Importes(€)
+FACT. ENER ENTRE REALES 495 KWH x 0,147879 EUR/KWH 73,20 (01)
+ABONO CONSUMO ESTIMADO 243 KWH x 0,149218 EUR/KWH -36,26
+Potencia <PotenciaContratada> KW x 32 x 0,059817 EUR/KW Y DIA 10,53
+Ajuste precios 4º T 2011 1,58
+Ajuste precios 1º T 2012 11,70
+Impto. Electricidad 60,75 EUR x 1,05113 x 4,864 % <ImporteImpuestos>
+ALQUILER DE EQUIPOS ELECTR. <ImpuestoAquilerEquipos>
+___________
+Subtotal 64,43
+IGIC REDUC 3 % de 49,90 <ImporteImpuestoReducido>
+IGIC REDUC 2 % de 13,96 <ImporteImpuestoReducido> (*)
+IGIC NORMA 7 % de 0,57 <ImporteImpuestoNormal>
+Total Factura: <ImporteTotal> €
+Consumo eléctrico
+Desglose de consumos detallados en hoja anexa.
+CONSUMOS ANTERIORES EN kWh.
+Coste medio diario de la energía 1,23 €/día
+Información de su producto
+Las condiciones económicas de este contrato en tarifa de último
+recurso (TUR) se fijan reglamentariamente por la Dirección General
+de Política Energética y Minas. Los precios para el periodo del 23 al
+31 de diciembre de 2011, así como para el primer trimestre de 2012,
+se han publicado en el BOE 315 de 31/12/2011 y 32 de 7/2/2012.
+Recuerde puede contratar con otras condiciones en mercado libre.
+Para más información puede llamar al servicio de atención al cliente
+o consultar www.endesaonline.com.
+Datos de Pago
+Caja o Banco:
+0227UNOE BANK, SA )
+Sucursal: 0001 81
+D.C.:
+Cuenta Corriente: 02026*****
+Importe: <ImporteTotal>€
+El importe de esta factura le será cargado en su cuenta a partir del
+<FechaCargo>.
+Su pago se justifica con el correspondiente apunte bancario.
+Datos del Cliente
+Titular: <Nombre> <Apellido1> <Apellido2>
+DNI/NIF: <NIF>
+Dirección: <Dirección> <Poblacion>
+Actividad económica (CNAE): <CNAE>
+CUPS: <CUPS>
+Potencia contratada: <PotenciaContratada> kW
+Tarifa de acceso: <PeajeAcceso> 000515944152
+Contrato de acceso:
+Número de Contador: <NumeroContador>
+<Nombre> <Apellido1> <Apellido2>
+<Direccion>
+<CP> - <Poblacion> <Provincia> - ESPAÑA
+RESUMEN DE LA FACTURA
+Fecha factura: <FechaEmision>
+Periodo de facturación: del <FechaInicio> al <FechaFin>
+Factura nº: <NumeroFactura>
+Ref.Factura: 60003671517 0073
+Total Factura: <ImporteTotal> €
+La Tarifa de Acceso se calcula de acuerdo con el RD 1164/2001 y con los precios que reglamentariamente se establezcan
+(actualmente en vigor ORDEN IET/3586/2011 BOE 31-12-11). Factura emitida en Madrid por <Comercializadora>.
+Inscrita en el Registro Mercantil de Madrid Tomo 12797, Libro 0, Folio 208, Sección 8ª, Hoja M-205.381. CIF B82846825
+Domicilio Social: C/ Ribera del Loira, 60 - 28042 - Madrid
+Contrato nº: 60003671517
+Servicio atención al Cliente
+800 760 333
+Averías:902 519 519
+www.endesaonline.com
+Página de
+1 4
+Noticias de su interés
+(01) APLICADO 38 DIAS A 0,149198 Eur Y 22 DIAS
+A 0,145578 Eur
+(*) Tipo impositivo aplicado a:
+conceptos de ajuste + IE correspondiente
+ESTA FACTURA REGULARIZA SU LECTURA
+ANTERIOR ESTIMADA.
+Esta factura incluye refacturaciones de periodos
+anteriores debido a cambios de precios publicados
+en la Orden IET/843/2012 de 25 de abril y en
+concreto:
+Refacturación último trimestre 2011 con consumo
+770 kWh e importe total 7,89 €, aplicados en esta
+factura 1,58 €
+Refacturación primer trimestre 2012 con consumo
+1.926 kWh e importe total 58,51 €, aplicados en
+esta factura 11,70 €
+Periodo Término de potencia Término de energía
+Potencia
+kW/mes.
+Precio
+según RD
+Importe Consumo Precio
+según RD
+Importe
+P1 5,500 0,049022 8,63 252 0,068998 17,39
+Total 8,63 17,39
+Orden IET/843/2012 (BOE 26-04-2012)
+Titular: <Nombre> <Apellido1> <Apellido2>
+DNI/NIF: <NIF>
+Dirección: <Direccion>
+<Poblacion>
+Periodo de facturación: del <FechaInicio> al <FechaFin>
+Factura nº: <NumeroFactura>
+HOJA ANEXA
+Lecturas y consumos en el periodo de facturación del <FechaInicio> AL <FechaFin>
+Lectura REAL 22/10/2012 <LecturaActual>
+Lectura ESTIMADA 20/09/2012 - 62330
+__________
+252
+Factor Multiplicador x 1
+__________
+Consumo Medido <ConsumoActual>
+__________
+Consumo Total <ConsumoActual> kWh
+Lecturas y consumos en el periodo entre lecturas reales
+LLANO
+LECTURA REAL ANTERIOR 23/08/2012 <LecturaAnterior>
+__________
+CONSUMO ENTRE LECTURAS REALES <ConsumoTotal> kWh
+CONSUMO ACTIVA ENTRE LECTURAS REALES <ConsumoTotal> kWh
+INFORMACION SOBRE CUADRO DE LECTURAS:
+El cuadro de lecturas y consumos en el periodo entre lecturas reales le informa de la anterior lectura real facturada y de los consumos calculados desde ella
+hasta la lectura real actual.
+Información sobre la Facturación del ATR
+Página de
+2 4
+24 de octubre de 2012
+<Nombre> <Apellido1> <Apellido2>
+<Direccion>
+<CP> - <Poblacion> <Provincia> - ESPAÑA
+Estimado Cliente:
+Nos ponemos en contacto con usted para explicarle la situación producida a raíz de los Autos
+del Tribunal Supremo¹, publicados en febrero y marzo de 2012.
+Estos Autos obligaron a revisar los componentes regulados de los precios de la luz del
+periodo comprendido entre los meses de octubre de 2011 y marzo de 2012. El Ministerio de
+Industria publicó la normativa que fija los nuevos precios de la energía el 26 de abril de 2012.
+En la práctica, esta situación supone una subida de los componentes regulados de los
+precios de la luz entre octubre de 2011 y marzo de 2012, y nos obliga a todas las
+comercializadoras de electricidad a revisar los importes facturados para el citado periodo.
+Con el objetivo de causarle el menor impacto posible, y facilitar el pago, hemos fraccionado
+en partes iguales las cantidades resultantes hasta el final de 2012, tal y como establece la
+Orden IET 843/2012. Además, para ayudarle a identificar estos importes, hemos incorporado
+en su factura líneas adicionales² con el concepto correspondiente ("Ajuste precios 4º T 2011"
+y/o "Ajuste precios 1º T 2012").
+Esperamos que acepte nuestras más sinceras disculpas por cualquier molestia que esta
+medida pueda ocasionarle. Queremos recordarle que el 31 de diciembre, cuando finalice este
+ajuste puntual, volveremos a reflejar en su factura únicamente los conceptos habituales a
+precios vigentes.
+Si tiene cualquier duda, le invitamos a visitar nuestra página web en
+www.endesaonline.com
+la que encontrará más información, igualmente ponemos a su disposición nuestro nuevo
+teléfono gratuito de Atención al Cliente 800 760 333, donde estaremos a su disposición.
+A continuación, le adjuntamos el modelo de carta establecido por la orden ministerial³.
+Atentamente,
+Mª Teresa González García
+Directora de Atención al Cliente
+——————
+NOTA: Queremos aclararle que, en el caso de que usted no fuera nuestro Cliente durante el periodo mencionado (octubre 2011-marzo
+2012), va a recibir estos ajustes en su factura porque la normativa del Ministerio indica que su Empresa Distribuidora de electricidad debe
+remitirnos los importes revisados para que los incorpore su actual Comercializadora en las facturas que emitimos.
+¹ Autos del Tribunal Supremo de fechas; 28 de febrero, 2, 8, 12 y 15 de marzo, todos ellos de 2012.
+² Según lo dispuesto en el marco de la .
+Orden IET 843/2012
+³ La última revisión se recoge en la de 2012, que son de aplicación desde del 1 de abril de 2012.
+Orden IET 843/2012 y la Resolución de 25 de abril
+Página de
+3 4
+ANEXO IV
+Carta a remitir a los consumidores con derecho a tarifa de último recurso
+Estimado Cliente:
+Al objeto de facilitar la comprensión de la factura se le comunica que ésta contempla, además
+de la facturación correspondiente al período 20/09/2012 al 22/10/2012, determinadas refacturaciones
+correspondientes a su consumo de electricidad desde el 1 de octubre de 2011 y hasta el 31 de
+marzo de 2012, como consecuencia de una serie de resoluciones judiciales acaecidas en los últimos
+meses, que se explican a continuación:
+1. Mediante Auto de fecha 28 de febrero de 2012¹ el Tribunal Supremo ha impuesto la
+obligación de que los precios de los peajes de acceso a las redes, de aplicación para el periodo
+comprendido entre el 1 de octubre y el 22 de diciembre de 2011, ambos inclusive, sean los mismos
+precios que fueron aprobados mediante Orden ITC/688/2011, por la que se establecen los peajes de
+acceso a partir de 1 de abril de 2011.
+La aplicación de dicho Auto obliga a refacturar el cuarto trimestre de 2011.
+2. Por otra parte, los Autos de 2, 8, 12 y 15 de marzo de 2012 del Tribunal Supremo²,
+imponen la obligación de proceder a la revisión de los precios de los peajes de acceso desde el 1 de
+enero de 2012, para que éstos sufraguen en su integridad los costes regulados del sistema previstos
+para el año 2012.
+Asimismo, la aplicación de estos Autos supone refacturar el primer trimestre de 2012.
+Las cantidades totales de las refacturaciones complementarias que resulten en aplicación de
+los Autos señalados con anterioridad, siempre que el saldo a efectos de pago sea a abonar por el
+consumidor, se fraccionarán en las facturas que se emitan hasta el 31 de diciembre de 2012, según
+se dispone en el artículo 4 de la Orden IET/843/2012, por la que se aprueban los peajes de acceso a
+partir de 1 de abril de 2012.
+Como consecuencia de ello, en la presente factura se detallan separadamente las citadas
+cuantías.
+3. Por último, se recogen también en factura las cantidades correspondientes al
+consumo del periodo 20/09/2012 al 22/10/2012, que tiene en cuenta la facturación por peajes de
+acceso definidos en el artículo 3 de la Orden IET/843/2012, por la que se aprueban los peajes de
+acceso a partir de 1 de abril de 2012.
+——————
+¹ Auto de ejecución de medidas cautelares de fecha 28 de febrero de 2012 en el recurso contencioso-administrativo interpuesto por Iberdrola, SA contra la
+Orden ITC/2585/2011, de 29 de septiembre, por la que se revisan los peajes de acceso, se establecen los precios de los peajes de acceso supervalle y se actualizan
+determinadas tarifas y primas de las instalaciones del régimen especial, a partir de 1 de octubre de 2011.
+² Autos de ejecución de medidas cautelares de fechas 2, 8, 12 y 15 de marzo de 2012 en los recursos contencioso-administrativos interpuestos por Iberdrola,
+SA, Endesa, SA, Gas Natural SDG, SA y Asociación de la Industria Eléctrica (UNESA), respectivamente contra la Orden IET/3586/2011, de 30 de diciembre, por la que se
+establecen los peajes de acceso a partir de 1 de enero de 2012 y las tarifas y primas de régimen especial.
+Página de
+4 4
+
