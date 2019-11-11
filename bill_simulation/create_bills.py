@@ -2,8 +2,17 @@
 Program for simulating electricity bills
 '''
 
-import pprint, random, string, datetime, time, sys
+import pprint, random, string, datetime, time, sys, mysql.connector
 from decimal import Decimal, ROUND_UP
+
+mydb = mysql.connector.connect(
+  host = "localhost",
+  user = "root",
+  passwd = "",
+  database = "electricity_market_analysis"
+)
+
+mycursor = mydb.cursor()
 
 format = '%d/%m/%Y'
 
@@ -28,7 +37,162 @@ def fill_template(template, directory, result, c, f):
       
 
    file_name = directory + "/factura_" + str(c) + "_" + str(f) + ".txt"
-   open(file_name,"w").write(bill)         
+   open(file_name,"w").write(bill)
+
+
+def insert_customer(customer):
+   sql = """
+            INSERT INTO clientes
+            (
+               nombre,
+               apellido1,
+               apellido2,
+               nif,
+               direccion,
+               codigo_postal,
+               poblacion,
+               provincia
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+         """
+   val = (
+            customer['Nombre'],
+            customer['Apellido1'],
+            customer['Apellido2'],
+            customer['NIF'],
+            customer['Direccion'],
+            customer['CP'],
+            customer['Poblacion'],
+            customer['Provincia'],
+          )
+   mycursor.execute(sql, val)
+   mydb.commit()
+
+
+def insert_contract(contract, customer_id):  
+   sql = """
+            INSERT INTO contratos
+            (
+               id_cliente,
+               cups,
+               fin_contrato,
+               numero_contador,
+               peaje_acceso,
+               potencia_contratada
+            )
+            VALUES (%s, %s, %s, %s, %s, %s);
+         """
+   val = (
+            customer_id,
+            contract['CUPS'],
+            datetime.datetime.strptime(contract['FinContrato'], '%d/%m/%Y').strftime('%Y-%m-%d'),
+            contract['NumeroContador'],
+            contract['PeajeAcceso'],
+            contract['PotenciaContratada'],
+          )
+   mycursor.execute(sql, val)
+   mydb.commit()
+
+
+def insert_bill(bill, customer_id):  
+   sql = """
+            INSERT INTO facturas
+            (
+               id_cliente,
+               comercializadora,
+               distribuidora,
+               fecha_cargo,
+               fecha_emision,
+               fecha_fin,
+               fecha_inicio,
+               numero_factura
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+         """
+   val = (
+            customer_id,
+            bill['Comercializadora'],
+            bill['Distribuidora'],
+            datetime.datetime.strptime(bill['FechaCargo'], '%d/%m/%Y').strftime('%Y-%m-%d'),
+            datetime.datetime.strptime(bill['FechaEmision'], '%d/%m/%Y').strftime('%Y-%m-%d'),
+            datetime.datetime.strptime(bill['FechaFin'], '%d/%m/%Y').strftime('%Y-%m-%d'),
+            datetime.datetime.strptime(bill['FechaInicio'], '%d/%m/%Y').strftime('%Y-%m-%d'),
+            bill['NumeroFactura'],
+          )
+   mycursor.execute(sql, val)
+   mydb.commit()
+
+   sql = """
+            SELECT id
+            FROM facturas
+            WHERE id_cliente = %s
+            AND comercializadora = %s
+            AND distribuidora = %s
+            AND fecha_cargo = %s
+            AND fecha_emision = %s
+            AND fecha_fin = %s
+            AND fecha_inicio = %s
+            AND numero_factura = %s
+         """
+   mycursor.execute(sql, val)
+
+   myresult = mycursor.fetchone()
+
+   return myresult[0]
+
+
+def insert_amount(amount, bill_id):  
+   sql = """
+            INSERT INTO importes
+            (
+               id_factura,
+               importe_alquiler_equipos,
+               importe_descuento,
+               importe_energia_consumida,
+               importe_impuestos,
+               importe_otros,
+               importe_potencia_contratada,
+               importe_subtotal,
+               importe_total
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+         """
+   val = (
+            bill_id,
+            amount["ImporteAlquilerEquipos"],
+            amount["ImporteDescuento"],
+            amount["ImporteEnergiaConsumida"],
+            amount["ImporteImpuestos"],
+            amount["ImporteOtros"],
+            amount["ImportePotenciaContratada"],
+            amount["ImporteSubTotal"],
+            amount["ImporteTotal"],
+          )
+   mycursor.execute(sql, val)
+   mydb.commit()
+
+
+def insert_consumption(consumption, bill_id):  
+   sql = """
+            INSERT INTO consumos
+            (
+               id_factura,
+               consumo_actual,
+               consumo_anterior,
+               lectura_actual,
+               lectura_anterior
+            )
+            VALUES (%s, %s, %s, %s, %s);
+         """
+   val = (
+            bill_id,
+            consumption["ConsumoActual"],
+            consumption["ConsumoAnterior"],
+            consumption["LecturaActual"],
+            consumption["LecturaAnterior"],
+          )
+   mycursor.execute(sql, val)
+   mydb.commit()
 
 
 if __name__ == '__main__':   
@@ -37,10 +201,8 @@ if __name__ == '__main__':
       template = sys.argv[1]
       directory = sys.argv[2]
       
-      print(template, directory)
-      
-      Nclientes = 2
-      Nfacturas = 1
+      Nclientes = 5
+      Nfacturas = 10
 
       nombres = open("nombres.txt").readlines()
       apellidos = open("apellidos.txt").readlines()
@@ -77,6 +239,8 @@ if __name__ == '__main__':
          
          lectura_anterior = random.randint(0,100000)
          consumo_anterior = random.randint(0,7000)
+
+         insert_customer(result)
          
          for f in range(Nfacturas):
 
@@ -135,13 +299,17 @@ if __name__ == '__main__':
             consumo_anterior = result['ConsumoActual']
             
             #create the 
-            fill_template(template, directory, result, c, f)
+            # fill_template(template, directory, result, c, f)
             
 
-            out_str = pprint.pformat(result)
-            file_name = directory + "/labels_" + str(c) + "_" + str(f) + ".txt"
-            open(file_name,"w").write(out_str)
-         
+            # out_str = pprint.pformat(result)
+            # file_name = directory + "/labels_" + str(c) + "_" + str(f) + ".txt"
+            # open(file_name,"w").write(out_str)
+
+            insert_contract(result, c + 1)
+            bill_id = insert_bill(result, c + 1)
+            insert_amount(result, bill_id)
+            insert_consumption(result, bill_id)
    else:
       print ("\nSimulación facturas: Numero insuficiente de parametros.\n")
       
