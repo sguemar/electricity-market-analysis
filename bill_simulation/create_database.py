@@ -11,9 +11,9 @@ def get_database_connector(host, user, passwd, database):
 
 conector = get_database_connector("localhost", "root", "", "")
 cursor = conector.cursor()
-cursor.execute("CREATE DATABASE IF NOT EXISTS electricity_market_analisys")
+cursor.execute("CREATE DATABASE IF NOT EXISTS electricity_market_analysis")
 
-conector = get_database_connector("localhost", "root", "", "electricity_market_analisys")
+conector = get_database_connector("localhost", "root", "", "electricity_market_analysis")
 cursor = conector.cursor()
 
 cursor.execute(
@@ -82,8 +82,8 @@ cursor.execute(
     CREATE TABLE IF NOT EXISTS invoices
       (
         invoice_number INT AUTO_INCREMENT PRIMARY KEY,
-        power_amount INT NOT NULL,
-        energy_amount INT NOT NULL,
+        contracted_power_amount FLOAT NOT NULL,
+        consumed_energy_amount FLOAT NOT NULL,
         issue_date DATE NOT NULL,
         charge_date DATE NOT NULL,
         init_date DATE NOT NULL,
@@ -121,7 +121,7 @@ cursor.execute(
         cif VARCHAR(9),
         cups VARCHAR(22),
         init_date DATE,
-        end_date DATE NOT NULL,
+        end_date DATE,
         CONSTRAINT PK_distributor_dwelling PRIMARY KEY (cif, cups, init_date),
         FOREIGN KEY (cif) REFERENCES companies(cif),
         FOREIGN KEY (cups) REFERENCES dwellings(cups)
