@@ -2,8 +2,7 @@
 Program for simulating electricity bills
 '''
 
-import pprint, random, string, datetime, time, sys, mysql.connector
-from decimal import Decimal, ROUND_UP
+import random, string, datetime, mysql.connector
 
 mydb = mysql.connector.connect(
   host = "localhost",
@@ -11,309 +10,408 @@ mydb = mysql.connector.connect(
   passwd = "",
   database = "electricity_market_analysis"
 )
-
-mycursor = mydb.cursor()
-
-format = '%d/%m/%Y'
-
-def random_date(start, end):
-   """
-   This function will return a random datetime between two datetime 
-   objects.
-   """
-   stime = time.mktime(time.strptime(start, format))
-   etime = time.mktime(time.strptime(end, format))
-
-   ptime = stime + random.random() * (etime - stime)
-
-   return ptime
+cursor = mydb.cursor()
 
 
-def fill_template(template, directory, result, c, f):
-   bill = open(template,"r").read()
-   
-   for label in result:
-      bill = bill.replace("<" + label + ">", str(result[label]))
-      
+CUSTOMERS_NUMBER = 1
+INVOICES_NUMBER = 12
+CONTRACT_CYCLE = datetime.timedelta(days=365)
+INVOICE_CYCLE = datetime.timedelta(days=30)
 
-   file_name = directory + "/factura_" + str(c) + "_" + str(f) + ".txt"
-   open(file_name,"w").write(bill)
+trading_companies = []
+distributors = []
+kwh_base_price = 0.0398
+kwh_annual_increase = 0.01078
 
+def get_random_date(year):
+   try:
+      return datetime.datetime.strptime('{} {}'.format(random.randint(1, 366), year), '%j %Y')
+   except ValueError:
+      return get_random_date(year)
+
+def get_kwh_base_price(year):
+   year_difference = year - 1990
+   return kwh_base_price + kwh_annual_increase * year_difference
+
+
+def create_customer():
+   customer = {}
+   customer['name'] = (random.choice(names)).replace('\n','')
+   customer['surname'] = ((random.choice(surnames)).replace('\n','') + " " +
+                         (random.choice(surnames)).replace('\n',''))
+   customer['nif'] = (str(random.randint(10**7, 10**8-1)) + 
+                     random.choice(string.ascii_uppercase))
+   return customer
 
 def insert_customer(customer):
    sql = """
-            INSERT INTO clientes
+            INSERT INTO customers
             (
-               nombre,
-               apellido1,
-               apellido2,
-               nif,
-               direccion,
-               codigo_postal,
-               poblacion,
-               provincia
+               name,
+               surname,
+               nif
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+            VALUES (%s, %s, %s);
          """
    val = (
-            customer['Nombre'],
-            customer['Apellido1'],
-            customer['Apellido2'],
-            customer['NIF'],
-            customer['Direccion'],
-            customer['CP'],
-            customer['Poblacion'],
-            customer['Provincia'],
-          )
-   mycursor.execute(sql, val)
+         customer['name'],
+         customer['surname'],
+         customer['nif'],
+      )
+   cursor.execute(sql, val)
    mydb.commit()
 
 
-def insert_contract(contract, customer_id):  
+def create_dwelling():
+   dwelling = {}
+   population = random.choice(populations).split(";")
+   
+   dwelling['cups'] = 'ES' + str(random.randint(10**15, 10**16-1))
+   dwelling['cups'] += ''.join(random.choice(string.ascii_uppercase) for _ in range(4))
+   dwelling['address'] = (random.choice(streets)).replace('\n','')
+   dwelling['meter_box_number'] = str(random.randint(10**12, 10**13-1))
+   dwelling['postal_code'] = population[2].replace('"','').replace('\n','')
+   dwelling['population'] = population[1].replace('"','')
+   dwelling['province'] = population[0].replace('"','')
+   return dwelling
+
+def insert_dwelling(dwelling):
    sql = """
-            INSERT INTO contratos
+            INSERT INTO dwellings
             (
-               id_cliente,
                cups,
-               fin_contrato,
-               numero_contador,
-               peaje_acceso,
-               potencia_contratada
+               address,
+               postal_code,
+               meter_box_number,
+               population,
+               province
             )
             VALUES (%s, %s, %s, %s, %s, %s);
          """
    val = (
-            customer_id,
-            contract['CUPS'],
-            datetime.datetime.strptime(contract['FinContrato'], '%d/%m/%Y').strftime('%Y-%m-%d'),
-            contract['NumeroContador'],
-            contract['PeajeAcceso'],
-            contract['PotenciaContratada'],
-          )
-   mycursor.execute(sql, val)
+         dwelling['cups'],
+         dwelling['address'],
+         dwelling['postal_code'],
+         dwelling['meter_box_number'],
+         dwelling['population'],
+         dwelling['province'],
+      )
+   cursor.execute(sql, val)
    mydb.commit()
 
 
-def insert_bill(bill, customer_id):  
+def create_trading_company(trading_company_info):
+   trading_company = {}
+   trading_company['cif'] = random.choice(string.ascii_uppercase) + str(random.randint(10**7, 10**8-1))
+   trading_company['name'] = trading_company_info[1]
+   trading_company['address'] = trading_company_info[4]
+   domain = trading_company['name'].split(',')[0].replace(' ', '').replace('.', '').lower()
+   trading_company['url'] = "www." + domain + ".es"
+   trading_company['email'] = domain + "@gmail.com"
+   trading_company['type'] = 0
+   trading_company['phone'] = str(random.randint(10**8, 10**9-1))
+   trading_companies.append(trading_company)
+   return trading_company
+
+def create_distributor(distributor_info):
+   distributor = {}
+   distributor['cif'] = random.choice(string.ascii_uppercase) + str(random.randint(10**7, 10**8-1))
+   distributor['name'] = distributor_info[2]
+   distributor['address'] = (random.choice(streets)).replace('\n','')
+   domain = distributor['name'].split(',')[0].replace(' ', '').replace('.', '').lower()
+   distributor['url'] = "www." + domain + ".es"
+   distributor['email'] = domain + "@gmail.com"
+   distributor['type'] = 1
+   distributor['phone'] = str(random.randint(10**8, 10**9-1))
+   distributors.append(distributor)
+   return distributor
+
+def insert_company(company):
    sql = """
-            INSERT INTO facturas
+            INSERT INTO companies
             (
-               id_cliente,
-               comercializadora,
-               distribuidora,
-               fecha_cargo,
-               fecha_emision,
-               fecha_fin,
-               fecha_inicio,
-               numero_factura
+               cif,
+               name,
+               address,
+               url,
+               email,
+               type,
+               phone
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+            VALUES (%s, %s, %s, %s, %s, %s, %s);
          """
    val = (
-            customer_id,
-            bill['Comercializadora'],
-            bill['Distribuidora'],
-            datetime.datetime.strptime(bill['FechaCargo'], '%d/%m/%Y').strftime('%Y-%m-%d'),
-            datetime.datetime.strptime(bill['FechaEmision'], '%d/%m/%Y').strftime('%Y-%m-%d'),
-            datetime.datetime.strptime(bill['FechaFin'], '%d/%m/%Y').strftime('%Y-%m-%d'),
-            datetime.datetime.strptime(bill['FechaInicio'], '%d/%m/%Y').strftime('%Y-%m-%d'),
-            bill['NumeroFactura'],
-          )
-   mycursor.execute(sql, val)
+         company['cif'],
+         company['name'],
+         company['address'],
+         company['url'],
+         company['email'],
+         company['type'],
+         company['phone'],
+      )
+   cursor.execute(sql, val)
    mydb.commit()
 
+
+def create_contract(trading_company, init_date, end_date):
+   contract = {}
+   contract["contracted_power"] = random.choice([2.00, 2.50, 3.00, 3.50, 4.00, 4.50, 5.00, 5.50])
+   contract["toll_access"] = random.choice(['2.0A', '20DHA'])
+   contract["init_date"] = init_date
+   contract["end_date"] = end_date
+   contract["CNAE"] = "D35351351" + str(random.randint(2, 9))
+   contract["contract_reference"] = str(random.randint(10**8, 10**9-1))
+   contract["cif"] = trading_company['cif']
+   return contract
+
+def insert_contract(contract):
    sql = """
-            SELECT id
-            FROM facturas
-            WHERE id_cliente = %s
-            AND comercializadora = %s
-            AND distribuidora = %s
-            AND fecha_cargo = %s
-            AND fecha_emision = %s
-            AND fecha_fin = %s
-            AND fecha_inicio = %s
-            AND numero_factura = %s
-         """
-   mycursor.execute(sql, val)
-
-   myresult = mycursor.fetchone()
-
-   return myresult[0]
-
-
-def insert_amount(amount, bill_id):  
-   sql = """
-            INSERT INTO importes
+            INSERT INTO contracts
             (
-               id_factura,
-               importe_alquiler_equipos,
-               importe_descuento,
-               importe_energia_consumida,
-               importe_impuestos,
-               importe_otros,
-               importe_potencia_contratada,
-               importe_subtotal,
-               importe_total
+               contracted_power,
+               toll_access,
+               init_date,
+               end_date,
+               CNAE,
+               contract_reference,
+               cif
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+            VALUES (%s, %s, %s, %s, %s, %s, %s);
          """
    val = (
-            bill_id,
-            amount["ImporteAlquilerEquipos"],
-            amount["ImporteDescuento"],
-            amount["ImporteEnergiaConsumida"],
-            amount["ImporteImpuestos"],
-            amount["ImporteOtros"],
-            amount["ImportePotenciaContratada"],
-            amount["ImporteSubTotal"],
-            amount["ImporteTotal"],
-          )
-   mycursor.execute(sql, val)
+         contract["contracted_power"],
+         contract["toll_access"],
+         contract["init_date"],
+         contract["end_date"],
+         contract["CNAE"],
+         contract["contract_reference"],
+         contract["cif"],
+      )
+   cursor.execute(sql, val)
    mydb.commit()
 
-
-def insert_consumption(consumption, bill_id):  
    sql = """
-            INSERT INTO consumos
+            SELECT contract_number
+            FROM contracts
+            WHERE contracted_power = %s
+            AND toll_access = %s
+            AND init_date = %s
+            AND end_date = %s
+            AND CNAE = %s
+            AND contract_reference = %s
+            AND cif = %s
+         """
+   cursor.execute(sql, val)
+
+   contract = cursor.fetchone()
+
+   return contract[0]
+
+
+def insert_customer_dwelling_contract(customer, dwelling, contract, contract_number_id):
+   sql = """
+            INSERT INTO customer_dwelling_contract
             (
-               id_factura,
-               consumo_actual,
-               consumo_anterior,
-               lectura_actual,
-               lectura_anterior
+               nif,
+               cups,
+               contract_number,
+               init_date,
+               end_date
             )
             VALUES (%s, %s, %s, %s, %s);
          """
    val = (
-            bill_id,
-            consumption["ConsumoActual"],
-            consumption["ConsumoAnterior"],
-            consumption["LecturaActual"],
-            consumption["LecturaAnterior"],
+            customer["nif"],
+            dwelling["cups"],
+            contract_number_id,
+            contract["init_date"],
+            contract["end_date"],
           )
-   mycursor.execute(sql, val)
+   cursor.execute(sql, val)
+   mydb.commit()
+
+def insert_distributor_dwelling(distributor, dwelling, init_date):
+   sql = """
+            INSERT INTO distributor_dwelling
+            (
+               cif,
+               cups,
+               init_date
+            )
+            VALUES (%s, %s, %s);
+         """
+   val = (
+         distributor["cif"],
+         dwelling["cups"],
+         init_date,
+      )
+   cursor.execute(sql, val)
+   mydb.commit()
+
+def set_end_date_last_relation_distributor_dwelling(distributors, dwelling, relation_init_date, relation_end_date):
+   sql = """
+            UPDATE distributor_dwelling
+            SET end_date = %s
+            WHERE cif = %s
+            AND cups = %s
+            AND init_date = %s
+         """
+   val = (
+         relation_end_date,
+         distributors["cif"],
+         dwelling["cups"],
+         relation_init_date,
+      )
+   cursor.execute(sql, val)
    mydb.commit()
 
 
-if __name__ == '__main__':   
-   if len(sys.argv) > 2:        # 0: script name, 1: bill file, 2: directory
-  
-      template = sys.argv[1]
-      directory = sys.argv[2]
+def create_invoice(contract_number, contracted_power, init_date, kwh_price):
+   invoice = {}
+   end_date = init_date + INVOICE_CYCLE
+   issue_date = end_date + datetime.timedelta(days=1)
+   charge_date = end_date + datetime.timedelta(days=random.randint(2, 5))
+   invoice["contracted_power_amount"] = contracted_power * INVOICE_CYCLE.days * kwh_price
+   invoice["consumed_energy_amount"] = random.randint(100, 400) * kwh_price
+   invoice["init_date"] = init_date.strftime("%Y-%m-%d")
+   invoice["end_date"] = end_date.strftime("%Y-%m-%d")
+   invoice["issue_date"] = issue_date.strftime("%Y-%m-%d")
+   invoice["charge_date"] = charge_date.strftime("%Y-%m-%d")
+   invoice["tax"] = 7
+   invoice["total_amount"] = (invoice["contracted_power_amount"] + invoice["consumed_energy_amount"]) * (1 + invoice["tax"] / 100) 
+   invoice["contract_number"] = contract_number
+   return invoice
+
+def insert_invoice(invoice):
+   sql = """
+            INSERT INTO invoices
+            (
+               contracted_power_amount,
+               consumed_energy_amount,
+               init_date,
+               end_date,
+               issue_date,
+               charge_date,
+               tax,
+               total_amount,
+               contract_number
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+         """
+   val = (
+         invoice["contracted_power_amount"],
+         invoice["consumed_energy_amount"],
+         invoice["init_date"],
+         invoice["end_date"],
+         invoice["issue_date"],
+         invoice["charge_date"],
+         invoice["tax"],
+         invoice["total_amount"],
+         invoice["contract_number"],
+      )
+   cursor.execute(sql, val)
+   mydb.commit()
+
+if __name__ == '__main__':
+
+   names = open("bill_simulation/names.txt").readlines()
+   surnames = open("bill_simulation/surnames.txt").readlines()
+   populations = open("bill_simulation/populations.txt").readlines()
+   streets = open("bill_simulation/streets.txt").readlines()
+
+   # Create trading companies
+   with open('bill_simulation/trading_companies.txt') as trading_companies_file:
+      for trading_company in trading_companies_file:
+         company = create_trading_company(trading_company.split(";"))
+         insert_company(company)
+
+   # Create distributors
+   with open('bill_simulation/distributors.txt') as distributors_file:
+      for distributor in distributors_file:
+         company = create_distributor(distributor.split(";"))
+         insert_company(company)
+
+   # Create customers
+   for _ in range(CUSTOMERS_NUMBER):
+      customer = create_customer()
+      insert_customer(customer)
+
+      dwelling = create_dwelling()
+      insert_dwelling(dwelling)
+
+      contract_cycle_init_date = get_random_date(random.randint(2015, 2018))
+      contract_init_date = contract_cycle_init_date
+      contract_end_date = contract_cycle_init_date + CONTRACT_CYCLE
+      contract_year = contract_cycle_init_date.year
+      distributor_dwelling_init_date = contract_cycle_init_date.strftime("%Y-%m-%d")
       
-      Nclientes = 5
-      Nfacturas = 10
+      distributor = random.choice(distributors)
+      insert_distributor_dwelling(
+         distributor,
+         dwelling,
+         distributor_dwelling_init_date
+      )
 
-      nombres = open("nombres.txt").readlines()
-      apellidos = open("apellidos.txt").readlines()
-      comercializadoras = [line.replace('\n', '') for line in open("comercializadora.txt").readlines()] 
-      distribuidoras = open("distribuidora.txt").readlines()
-      poblaciones = open("poblaciones.txt").readlines()
-      calles = open("calles.txt").readlines()
-                                  
-      result={}
+      trading_company = random.choice(trading_companies)
+      contract_number = 2
 
-      for c in range(Nclientes):
-         result['Nombre'] = (random.choice(nombres)).replace('\n','')
-         result['Apellido1'] = (random.choice(apellidos)).replace('\n','')
-         result['Apellido2'] = (random.choice(apellidos)).replace('\n','')
-         result['NIF'] = str(random.randint(10**7, 10**8-1)) + \
-                         random.choice(string.ascii_uppercase)
-         result['Direccion'] = (random.choice(calles)).replace('\n','')
-         result['Comercializadora'] = random.choice(comercializadoras).split(";")[1]
-         result['Distribuidora'] = (random.choice(distribuidoras).split(";")[2]).replace('\n','')
-         poblacion = random.choice(poblaciones).split(";")
-         result['CP'] = poblacion[2].replace('"','').replace('\n','')
-         result['Poblacion'] = poblacion[1].replace('"','')
-         result['Provincia'] = poblacion[0].replace('"','') 
-         result['CUPS'] = 'ES' + str(random.randint(10**15, 10**16-1))
-         letters = string.ascii_uppercase
-         result['CUPS'] += ''.join(random.choice(letters) for i in range(4))
-         result['NumeroContador'] = str(random.randint(10**12, 10**13-1))
-         result['PotenciaContratada'] = random.choice([2.00, 2.50, 3.00, 3.50, 4.00, 4.50, 5.00, 5.50])
-         result['PeajeAcceso'] = random.choice(['2.0A', '20DHA'])
+      kwh_price = get_kwh_base_price(contract_year)
+
+      # Create contracts
+      while contract_year < 2019:
+         contract = create_contract(
+            trading_company,
+            contract_init_date.strftime("%Y-%m-%d"),
+            contract_end_date.strftime("%Y-%m-%d")
+         )
+         contract_number_id = insert_contract(contract)
+         insert_customer_dwelling_contract(customer, dwelling, contract, contract_number_id)
+
+         invoice_init_date = contract_init_date
          
-         fechainicio = random_date("01/01/1990", "31/12/2019")
-         month_time = 2592000
-         day_time = 86400
+         contract_init_date = contract_end_date
+         contract_end_date = contract_cycle_init_date + contract_number * CONTRACT_CYCLE
+         contract_year = contract_init_date.year
+
+         # The customer changes trading company
+         if random.random() < 0.2:
+            trading_company = random.choice(trading_companies)
+
+         # The customer changes dwelling
+         if random.random() < 0.1:
+            set_end_date_last_relation_distributor_dwelling(
+               distributor,
+               dwelling,
+               distributor_dwelling_init_date,
+               contract_init_date.strftime("%Y-%m-%d")
+            )
+            distributor_dwelling_init_date = contract_init_date
+
+            dwelling = create_dwelling()
+            insert_dwelling(dwelling)
+
+            # The customer changes distributor
+            if random.random() < 0.3:
+               distributor = random.choice(distributors)
+
+            insert_distributor_dwelling(
+               distributor,
+               dwelling,
+               distributor_dwelling_init_date.strftime("%Y-%m-%d"),
+            )
+
+         for _ in range(INVOICES_NUMBER):
+            invoice = create_invoice(
+               contract_number_id,
+               contract["contracted_power"],
+               invoice_init_date,
+               kwh_price
+            )
+            insert_invoice(invoice)
+            invoice_init_date += INVOICE_CYCLE
+
+         contract_number += 1
+         kwh_price += kwh_annual_increase
          
-         lectura_anterior = random.randint(0,100000)
-         consumo_anterior = random.randint(0,7000)
-
-         insert_customer(result)
-         
-         for f in range(Nfacturas):
-
-            result['FechaInicio'] = \
-               time.strftime(format, time.localtime(fechainicio))
-            result['FechaFin'] = \
-               time.strftime(format, time.localtime(fechainicio+2*month_time))
-            result['FinContrato'] = \
-               time.strftime(format, time.localtime(fechainicio+2*month_time))
-            result['FechaEmision'] = \
-               time.strftime(format, time.localtime(fechainicio+2*month_time+2*day_time))
-            result['FechaCargo'] = \
-               time.strftime(format, time.localtime(fechainicio+2*month_time+5*day_time))
-            result['NumeroFactura'] = \
-               'FI' + str(random.randint(10**9, 10**10-1))
-
-            fechainicio += 2*month_time
-     
-            result['ImportePotenciaContratada'] = \
-               Decimal(random.random()*50).quantize(Decimal('.01'), rounding=ROUND_UP)  
-            result['ImporteEnergiaConsumida'] = \
-               Decimal(random.random()*300).quantize(Decimal('.01'), rounding=ROUND_UP) 
-            result['ImporteAlquilerEquipos'] = \
-               Decimal(random.choice([0.50, 0.83, 0.97, 1.10, 1.30, 1.50, 2.00, 2.10])).quantize(Decimal('.01'), rounding=ROUND_UP) 
-            result['ImporteOtros'] = \
-               Decimal(random.random()*20).quantize(Decimal('.01'), rounding=ROUND_UP) 
-            result['ImporteDescuento'] = \
-               - Decimal(random.random()*10).quantize(Decimal('.01'), rounding=ROUND_UP) 
-            subtotal = result['ImportePotenciaContratada'] + \
-                       result['ImporteEnergiaConsumida'] + \
-                       result['ImporteAlquilerEquipos'] + \
-                       result['ImporteOtros'] + result['ImporteDescuento']
-            result['ImporteSubTotal'] = Decimal(subtotal).quantize(Decimal('.01'), rounding=ROUND_UP)
-            impuesto = subtotal * Decimal(random.choice([0.02, 0.03, 0.07, 0.1]))
-            result['ImporteImpuestos'] = \
-               Decimal(impuesto).quantize(Decimal('.01'), rounding=ROUND_UP) 
-            result['ImporteTotal'] = \
-               Decimal(subtotal + result['ImporteImpuestos']).quantize(Decimal('.01'), rounding=ROUND_UP) 
-                 
-            result['LecturaAnterior'] = lectura_anterior
-            result['LecturaActual'] = lectura_anterior + random.randint(0,1000)
-            #result['LecturaActualPunta']
-            #result['LecturaActualValle']
-            #result['LecturaAnteriorPunta']
-            #result['LecturaAnteriorValle']
-
-            result['ConsumoAnterior'] = consumo_anterior
-            result['ConsumoActual'] = result['LecturaActual'] - lectura_anterior
-            #result['ConsumoActualPunta']
-            #result['ConsumoActualValle']
-            #result['ConsumoAnteriorPunta']
-            #result['ConsumoAnteriorValle']
-            result['ConsumoTotal'] = result['ConsumoActual']
-            
-            lectura_anterior = result['LecturaActual']
-            consumo_anterior = result['ConsumoActual']
-            
-            #create the 
-            # fill_template(template, directory, result, c, f)
-            
-
-            # out_str = pprint.pformat(result)
-            # file_name = directory + "/labels_" + str(c) + "_" + str(f) + ".txt"
-            # open(file_name,"w").write(out_str)
-
-            insert_contract(result, c + 1)
-            bill_id = insert_bill(result, c + 1)
-            insert_amount(result, bill_id)
-            insert_consumption(result, bill_id)
-   else:
-      print ("\nSimulación facturas: Numero insuficiente de parametros.\n")
-      
-   
-   
 
       
