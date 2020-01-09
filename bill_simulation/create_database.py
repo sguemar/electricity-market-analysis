@@ -16,13 +16,29 @@ cursor.execute("CREATE DATABASE IF NOT EXISTS electricity_market_analysis")
 conector = get_database_connector("localhost", "root", "", "electricity_market_analysis")
 cursor = conector.cursor()
 
+
+cursor.execute(
+  """
+    CREATE TABLE IF NOT EXISTS users
+      (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(255) NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        type TINYINT NOT NULL
+      );
+  """
+)
+
 cursor.execute(
   """
     CREATE TABLE IF NOT EXISTS customers
       (
         nif VARCHAR(9) PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
-        surname VARCHAR(255) NOT NULL
+        surname VARCHAR(255) NOT NULL,
+        email VARCHAR(255),
+        user_id INT,
+        FOREIGN KEY (user_id) REFERENCES users(id)
       );
   """
 )
@@ -51,7 +67,9 @@ cursor.execute(
         url VARCHAR(255),
         email VARCHAR(255),
         type TINYINT NOT NULL,
-        phone INT NOT NULL
+        phone INT NOT NULL,
+        user_id INT,
+        FOREIGN KEY (user_id) REFERENCES users(id)
       );
   """
 )

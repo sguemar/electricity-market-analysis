@@ -3,6 +3,8 @@ Program for simulating electricity bills
 '''
 
 import random, string, datetime, mysql.connector
+from werkzeug.security import generate_password_hash
+
 
 mydb = mysql.connector.connect(
   host = "localhost",
@@ -43,20 +45,22 @@ def create_customer():
                      random.choice(string.ascii_uppercase))
    return customer
 
-def insert_customer(customer):
+def insert_customer(customer, user_id):
    sql = """
             INSERT INTO customers
             (
                name,
                surname,
-               nif
+               nif,
+               user_id
             )
-            VALUES (%s, %s, %s);
+            VALUES (%s, %s, %s, %s);
          """
    val = (
          customer['name'],
          customer['surname'],
          customer['nif'],
+         user_id,
       )
    cursor.execute(sql, val)
    mydb.commit()
@@ -126,7 +130,7 @@ def create_distributor(distributor_info):
    distributors.append(distributor)
    return distributor
 
-def insert_company(company):
+def insert_company(company, user_id):
    sql = """
             INSERT INTO companies
             (
@@ -136,9 +140,10 @@ def insert_company(company):
                url,
                email,
                type,
-               phone
+               phone,
+               user_id
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s);
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
          """
    val = (
          company['cif'],
@@ -148,6 +153,7 @@ def insert_company(company):
          company['email'],
          company['type'],
          company['phone'],
+         user_id,
       )
    cursor.execute(sql, val)
    mydb.commit()
@@ -312,6 +318,45 @@ def insert_invoice(invoice):
    cursor.execute(sql, val)
    mydb.commit()
 
+
+def insert_user(user, user_type):
+   sql = """
+            INSERT INTO users
+            (
+               username,
+               password,
+               type
+            )
+            VALUES (%s, %s, %s);
+         """
+
+   if user_type == 0:
+      username = user["cif"]
+   else:
+      username = user["nif"]
+   password = generate_password_hash(username)
+
+   val = (
+         username,
+         password,
+         user_type,
+      )
+   cursor.execute(sql, val)
+   mydb.commit()
+
+   sql = """
+            SELECT id
+            FROM users
+            WHERE username = %s
+            AND password = %s
+            AND type = %s
+         """
+   cursor.execute(sql, val)
+
+   user = cursor.fetchone()
+
+   return user[0]
+
 if __name__ == '__main__':
 
    names = open("bill_simulation/names.txt").readlines()
@@ -323,19 +368,22 @@ if __name__ == '__main__':
    with open('bill_simulation/trading_companies.txt') as trading_companies_file:
       for trading_company in trading_companies_file:
          company = create_trading_company(trading_company.split(";"))
-         insert_company(company)
+         user_id = insert_user(company, 0)
+         insert_company(company, user_id)
 
    # Create distributors
    with open('bill_simulation/distributors.txt') as distributors_file:
       for distributor in distributors_file:
          company = create_distributor(distributor.split(";"))
-         insert_company(company)
+         user_id = insert_user(company, 0)
+         insert_company(company, user_id)
 
    # Create customers
    for _ in range(CUSTOMERS_NUMBER):
       customer = create_customer()
-      insert_customer(customer)
-
+      user_id = insert_user(customer, 1)
+      insert_customer(customer, user_id)
+      
       dwelling = create_dwelling()
       insert_dwelling(dwelling)
 
