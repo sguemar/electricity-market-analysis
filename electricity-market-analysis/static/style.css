@@ -1,0 +1,31 @@
+*, *:before, *:after {
+	box-sizing: inherit;
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	box-sizing: border-box;
+}
+
+/*** NAVIGATION MENU BAR ***/
+
+nav {
+	display: flex;
+	justify-content: space-between;
+	background: rgb(132, 235, 132);
+}
+
+.right-nav-bar ul {
+	list-style-type: none;
+	display: flex;
+}
+
+.right-nav-bar ul li, .left-nav-bar ul li {
+	padding: 1rem;
+}
+
+nav a {
+	text-decoration: none;
+	color: white;
+}
