@@ -16,13 +16,15 @@ nav {
 	background: rgb(132, 235, 132);
 }
 
-.right-nav-bar ul {
+nav ul {
 	list-style-type: none;
 	display: flex;
 }
 
-.right-nav-bar ul li, .left-nav-bar ul li {
+nav li {
 	padding: 1rem;
+	margin: 1em;
+	border: 1px solid white;
 }
 
 nav a {
