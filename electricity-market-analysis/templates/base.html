@@ -21,22 +21,30 @@
 				</ul>
 			</div>
 			<div class="right-nav-bar">
+				{% if current_user.is_anonymous %}
 				<ul>
-					<li class="signup"><a href="#">Regístrate</a></li>
-					<li class="login"><a href="#">Iniciar sesión</a></li>
+					<li><a href="{{ url_for('sign_up') }}">Regístrate</a></li>
+					<li><a href="{{ url_for('log_in') }}">Iniciar sesión</a></li>
 				</ul>
-			</div>
-		</nav>        
+				{% else %}
+				<ul>
+					<li>{{ current_user.username }}</li>
+					<li><a href="{{ url_for('log_out') }}">Cerrar sesión</a></li>
+				</ul> 
+				{% endif %} 
+			</div>		
+		</nav>
 	</header>
-
+					
 	<main>
-		{% block content %}{% endblock content%}
+	{% block content %}{% endblock content%}
 	</main>
-	
+
 	<footer>
 		{% block footer %}
 		<p>&copy; 2020 Electricity-Market-Analysis</p>
 		{% endblock footer %}
 	</footer>
 </body>
+
 </html>

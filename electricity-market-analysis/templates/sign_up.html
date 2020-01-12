@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Registro de usuarios{% endblock title %}
+
+{% block content %}
+
+{% if error %}
+<p style="color: red;"><strong>Error:</strong> {{ error }}</p>
+{% endif %}
+
+<div class="signup-form">
+	<form action="" method="post" novalidate>
+		{{ form.hidden_tag() }}
+
+		{{ form.username }}
+		{% for error in form.username.errors %}
+		<span style="color: red;">{{ error }}</span>
+		{% endfor %}
+
+		{{ form.password }}
+		{% for error in form.password.errors %}
+		<span style="color: red;">{{ error }}</span>
+		{% endfor %}
+
+		{{ form.password_confirmation }}
+		{% for error in form.password_confirmation.errors %}
+		<span style="color: red;">{{ error }}</span>
+		{% endfor %}
+
+		{{ form.name }}
+		{% for error in form.name.errors %}
+		<span style="color: red;">{{ error }}</span>
+		{% endfor %}
+
+		{{ form.surname }}
+		{% for error in form.surname.errors %}
+		<span style="color: red;">{{ error }}</span>
+		{% endfor %}
+
+		{{ form.nif }}
+		{% for error in form.nif.errors %}
+		<span style="color: red;">{{ error }}</span>
+		{% endfor %}
+
+		{{ form.email }}
+		{% for error in form.email.errors %}
+		<span style="color: red;">{{ error }}</span>
+		{% endfor %}
+
+		{{ form.submit }}
+	</form>
+</div>
+
+{% endblock content %}

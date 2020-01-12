@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block content %}
+
+<form action="" method="post" novalidate>
+	{{ form.hidden_tag() }}
+
+	{{ form.username }}
+	{% for error in form.username.errors %}
+	<span style="color: red;">{{ error }}</span>
+	{% endfor %}
+
+	{{ form.password }}
+	{% for error in form.password.errors %}
+	<span style="color: red;">{{ error }}</span>
+	{% endfor %}
+
+	{{ form.remember_me() }} {{ form.remember_me.label }}
+
+	{{ form.submit() }}
+</form>
+<div>¿No tienes cuenta?<a href="{{ url_for('sign_up') }}">Regístrate</a></div>
+{% endblock %}
