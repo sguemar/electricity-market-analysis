@@ -68,7 +68,7 @@ cursor.execute(
 			address VARCHAR(255) NOT NULL,
 			url VARCHAR(255),
 			email VARCHAR(255),
-			type TINYINT NOT NULL,
+			company_type TINYINT NOT NULL,
 			phone INT NOT NULL,
 			user_id INT,
 			FOREIGN KEY (user_id) REFERENCES users(id)
