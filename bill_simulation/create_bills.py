@@ -139,7 +139,7 @@ def insert_company(company, user_id):
                address,
                url,
                email,
-               type,
+               company_type,
                phone,
                user_id
             )
@@ -325,7 +325,7 @@ def insert_user(user, user_type):
             (
                username,
                password,
-               type
+               user_type
             )
             VALUES (%s, %s, %s);
          """
@@ -349,7 +349,7 @@ def insert_user(user, user_type):
             FROM users
             WHERE username = %s
             AND password = %s
-            AND type = %s
+            AND user_type = %s
          """
    cursor.execute(sql, val)
 
