@@ -92,7 +92,7 @@ def sign_up():
 				next_page = url_for('index')
 			return redirect(next_page)
 	return render_template(
-		"sign_up.html",
+		"auth/sign_up.html",
 		customer_form=customer_form,
 		company_form=company_form,
 		form_type=form_type,
@@ -113,7 +113,7 @@ def log_in():
 			if not next_page or url_parse(next_page).netloc != '':
 				next_page = url_for('index')
 			return redirect(next_page)
-	return render_template('login.html', form=form)
+	return render_template('auth/login.html', form=form)
 
 
 @login_manager.user_loader
