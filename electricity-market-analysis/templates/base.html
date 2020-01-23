@@ -7,12 +7,13 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>{% block title %}{% endblock %}</title>
 	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	{% block stylesheets %}{% endblock stylesheets %}
 	{% endblock head %}
 </head>
 
-<body>
-	<header>
-		<nav>
+<body class="body">
+	<header class="header">
+		<nav class="nav-bar">
 			<div class="left-nav-bar">
 				<ul>
 					<li>
@@ -36,15 +37,18 @@
 		</nav>
 	</header>
 					
-	<main>
+	<main class="main">
 	{% block content %}{% endblock content%}
 	</main>
 
-	<footer>
+	<footer class="footer">
 		{% block footer %}
 		<p>&copy; 2020 Electricity-Market-Analysis</p>
 		{% endblock footer %}
 	</footer>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	{% block script %}{% endblock script %}
 </body>
 
 </html>

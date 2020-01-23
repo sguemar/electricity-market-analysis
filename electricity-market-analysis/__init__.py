@@ -3,7 +3,7 @@ from flask_login import LoginManager, current_user, login_user, logout_user, log
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.urls import url_parse
 
-from .forms import SignUpForm, LoginForm
+from .forms import CustomerSignUpForm, CompanySignUpForm, LoginForm
 
 
 app = Flask(__name__)
@@ -14,7 +14,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 login_manager = LoginManager(app)
 db = SQLAlchemy(app)
 
-from .models import User
+from .models import User, Customer, Company
 
 @app.route("/")
 def index():
@@ -25,24 +25,79 @@ def index():
 def sign_up():
 	if current_user.is_authenticated:
 		return redirect(url_for("index"))
-	form = SignUpForm()
+
+	customer_form = CustomerSignUpForm(form_type="customer")
+	company_form = CompanySignUpForm(form_type="company")
 	error = None
-	if form.validate_on_submit():
-		username = form.username.data
-		password = form.password.data
+	form_type = None
+
+	if request.method == "POST":
+		form_type = request.form["form_type"]
+
+	if form_type == "customer" and customer_form.validate_on_submit():
+		username = customer_form.username.data
+		password = customer_form.password.data
+		nif = customer_form.nif.data
 		user = User.get_by_username(username)
+		customer = Customer.get_by_nif(nif)
 		if user is not None:
 			error = f"El nombre de usuario '{username}' ya está siendo utilizado por otro usuario"
+		elif customer is not None:
+			error = f"El NIF '{nif}' ya ha sido registrado"
 		else:
 			user = User(username=username, user_type=1)
 			user.set_password(password)
 			user.save()
+			customer = Customer(
+				nif=customer_form.nif.data,
+				name=customer_form.name.data,
+				surname=customer_form.surname.data,
+				email=customer_form.email.data,
+				user_id=user.id
+			)
+			customer.save()
 			login_user(user, remember=True)
 			next_page = request.args.get('next', None)
 			if not next_page or url_parse(next_page).netloc != '':
 				next_page = url_for('index')
 			return redirect(next_page)
-	return render_template("sign_up.html", form=form, error=error)
+	if form_type == "company" and company_form.validate_on_submit():
+		username = company_form.username.data
+		password = company_form.password.data
+		cif = company_form.cif.data
+		user = User.get_by_username(username)
+		company = Company.get_by_cif(cif)
+		if user is not None:
+			error = f"El nombre de usuario '{username}' ya está siendo utilizado por otro usuario"
+		elif company is not None:
+			error = f"El CIF '{cif}' ya ha sido registrado"
+		else:
+			user = User(username=username, user_type=0)
+			user.set_password(password)
+			user.save()
+			company = Company(
+				cif=company_form.cif.data,
+				name=company_form.name.data,
+				address=company_form.address.data,
+				url=company_form.url.data,
+				email=company_form.email.data,
+				company_type=company_form.company_type.data,
+				phone=company_form.phone.data,
+				user_id=user.id
+			)
+			company.save()
+			login_user(user, remember=True)
+			next_page = request.args.get('next', None)
+			if not next_page or url_parse(next_page).netloc != '':
+				next_page = url_for('index')
+			return redirect(next_page)
+	return render_template(
+		"sign_up.html",
+		customer_form=customer_form,
+		company_form=company_form,
+		form_type=form_type,
+		error=error
+	)
 
 
 @app.route("/login", methods=["GET", "POST"])

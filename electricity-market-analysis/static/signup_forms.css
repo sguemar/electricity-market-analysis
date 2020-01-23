@@ -1,0 +1,192 @@
+.main {
+	width: 100%;
+	height: 100%;
+	display: grid;
+	justify-items: center;
+	align-items: center;
+}
+
+.signup-forms-container {
+	padding: 5rem;
+	background-color: rgb(248, 246, 246);
+	border: 1px solid black;
+	border-radius: 5px;
+}
+
+.choose-form-buttons {
+	display: flex;
+}
+
+.choose-form-buttons button {
+	flex-grow: 1;
+	border: 1px solid black;
+	color: black;
+	padding: 1rem 2rem;
+	font-size: 1rem;
+	margin: 4px 2px;
+	cursor: pointer;
+}
+
+.selected-button {
+	background-color: white;
+}
+
+.company-signup-form-content {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: auto;
+	grid-column-gap: 5px;
+	grid-row-gap: 8px;
+	grid-template-areas: 
+		"username username"
+		"username-error username-error"
+		"password password-confirmation"
+		"password-error password-confirmation-error"
+		"name cif"
+		"name-error cif-error"
+		"email phone"
+		"email-error phone-error"
+		"address url"
+		"address-error address-error"
+		"label-company-type input-company-type"
+		"submit submit";
+}
+
+.customer-signup-form-content {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: auto;
+	grid-column-gap: 5px;
+	grid-row-gap: 8px;
+	grid-template-areas: 
+		"username username"
+		"username-error username-error"
+		"password password-confirmation"
+		"password-error password-confirmation-error"
+		"name surname"
+		"name-error surname-error"
+		"nif email"
+		"nif-error email-error"
+		"submit submit";
+}
+
+.username {
+	grid-area: username;
+}
+
+.username-error {
+	grid-area: username-error;
+}
+
+.password {
+	grid-area: password;
+}
+
+.password-error {
+	grid-area: password-error;
+}
+
+.password-confirmation {
+	grid-area: password-confirmation;
+}
+
+.password-confirmation-error {
+	grid-area: password-confirmation-error;
+}
+
+.cif {
+	grid-area: cif;
+}
+
+.cif-error {
+	grid-area: cif-error;
+}
+
+.nif {
+	grid-area: nif;
+}
+
+.nif-error {
+	grid-area: nif-error;
+}
+
+.name {
+	grid-area: name;
+}
+
+.name-error {
+	grid-area: name-error;
+}
+
+.surname {
+	grid-area: surname;
+}
+
+.surname-error {
+	grid-area: surname-error;
+}
+
+.address {
+	grid-area: address;
+}
+
+.address-error {
+	grid-area: address-error;
+}
+
+.url {
+	grid-area: url;
+}
+
+.email {
+	grid-area: email;
+}
+
+.email-error {
+	grid-area: email-error;
+}
+
+.phone {
+	grid-area: phone;
+}
+
+.phone-error {
+	grid-area: phone-error;
+}
+
+label.company-type {
+	grid-area: label-company-type;
+}
+
+select.company-type {
+	grid-area: input-company-type;
+}
+
+.submit {
+	grid-area: submit;
+}
+
+label.company-type {
+	justify-self: end;
+	align-self: center;
+	padding-right: 5px;
+}
+
+span.error {
+	color: rgb(240, 34, 34);
+}
+
+input[type=text], input[type=password], select {
+	padding: 12px 20px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+input[type=submit] {
+	background-color: #4CAF50;
+	color: white;
+	padding: 14px 20px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}

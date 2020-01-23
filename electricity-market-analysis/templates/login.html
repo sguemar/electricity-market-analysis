@@ -2,24 +2,33 @@
 
 {% block title %}Iniciar sesión{% endblock %}
 
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ url_for('static', filename='login_form.css') }}">
+{% endblock stylesheets %}
+
 {% block content %}
-
-<form action="" method="post" novalidate>
-	{{ form.hidden_tag() }}
-
-	{{ form.username }}
-	{% for error in form.username.errors %}
-	<span style="color: red;">{{ error }}</span>
-	{% endfor %}
-
-	{{ form.password }}
-	{% for error in form.password.errors %}
-	<span style="color: red;">{{ error }}</span>
-	{% endfor %}
-
-	{{ form.remember_me() }} {{ form.remember_me.label }}
-
-	{{ form.submit() }}
-</form>
-<div>¿No tienes cuenta?<a href="{{ url_for('sign_up') }}">Regístrate</a></div>
+<div class="login-form-container">
+	<p class="login-title">Inicia sesión</p>
+	<form action="" method="post" novalidate>
+		{{ form.hidden_tag() }}
+	
+		<div class="login-form-content">
+			{{ form.username(class_="username") }}
+			{% for error in form.username.errors %}
+				<span class="error username-error">{{ error }}</span>
+			{% endfor %}
+		
+			{{ form.password(class_="password") }}
+			{% for error in form.password.errors %}
+				<span class="error password-error">{{ error }}</span>
+			{% endfor %}
+		
+			{{ form.remember_me(class_="remember-me") }}
+			{{ form.remember_me.label(class_="remember-me") }}
+		
+			{{ form.submit(class_="submit") }}
+		</div>
+	</form>
+	<div class="register-link">¿No tienes cuenta?<a href="{{ url_for('sign_up') }}">Regístrate</a></div>
+</div>
 {% endblock %}
