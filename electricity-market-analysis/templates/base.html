@@ -19,6 +19,11 @@
 					<li>
 						<a href="{{ url_for('index') }}">Inicio</a>
 					</li>
+					{% if not current_user.is_anonymous %}
+					<li>
+						<a href="{{ url_for('my_bills') }}">Mis facturas</a>
+					</li>
+					{% endif %} 
 				</ul>
 			</div>
 			<div class="right-nav-bar">
@@ -38,7 +43,7 @@
 	</header>
 					
 	<main class="main">
-	{% block content %}{% endblock content%}
+	{% block content %}{% endblock content %}
 	</main>
 
 	<footer class="footer">

@@ -14,7 +14,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 login_manager = LoginManager(app)
 db = SQLAlchemy(app)
 
-from .models import User, Customer, Company
+from .models import User, Customer, Company, Customer_Dwelling_Contract, Contract, Invoice
 
 @app.route("/")
 def index():
@@ -126,3 +126,21 @@ def load_user(user_id):
 def log_out():
 	logout_user()
 	return redirect(url_for('index'))
+
+
+@app.route('/my-bills', methods=["GET", "POST"])
+@login_required
+def my_bills():
+	customer = None
+	contracts = None
+	contract_invoices = None
+	if current_user.user_type == 1:
+		customer = Customer.get_by_user_id(current_user.id)
+		customers_dwellings_contracts = Customer_Dwelling_Contract.get_by_nif(customer.nif)
+		contracts = []
+		for customer_dwelling_contract in customers_dwellings_contracts:
+			contracts.append(Contract.get_by_contract_number(customer_dwelling_contract.contract_number))
+		contract_invoices = {}
+		for contract in contracts:
+			contract_invoices[contract] = Invoice.get_by_contract_number(contract.contract_number)
+	return render_template("bills/my_bills.html", contracts=contracts, contract_invoices=contract_invoices)
