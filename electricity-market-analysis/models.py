@@ -142,6 +142,10 @@ class Invoice(db.Model):
 		nullable=False
 	)
 
+	def delete(self):
+		db.session.delete(self)
+		db.session.commit()
+
 	@staticmethod
 	def get_by_invoice_number(invoice_number):
 		return Invoice.query.get(invoice_number)

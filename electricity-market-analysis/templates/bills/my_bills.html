@@ -10,35 +10,37 @@
 <div class="wrapper">
 	{% if contract_invoices %}
 		{% for contract, invoices in contract_invoices.items() %}
-			<div class="container">
-				{{ contract }}
-				<table class="invoice-table">
-					<thead>
-						<th>Fecha de inicio</th>
-						<th>Fecha de fin</th>
-						<th>Importe total</th>
-						<th>Operaciones</th>	
-					</thead>
-					<tbody>
-						{% for invoice in invoices %}
-							<input type="hidden" name="invoice_id" value="{{ invoice.invoice_number }}">
-							<tr>
-								<td>{{ invoice.init_date }}</td>
-								<td>{{ invoice.end_date }}</td>
-								<td>{{ invoice.total_amount }} €</td>
-								<td>
-									<a href="/my-bills/show-bill/{{ invoice.invoice_number }}">
-										<button type="button" class="show-button">Consultar</button>
-									</a>
-									<a href="">
-										<button type="button" class="delete-button">Eliminar</button>
-									</a>
-								</td>
-							</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-			</div>
+			{% if invoices %}
+				<div class="container">
+					{{ contract }}
+					<table class="invoice-table">
+						<thead>
+							<th>Fecha de inicio</th>
+							<th>Fecha de fin</th>
+							<th>Importe total</th>
+							<th>Operaciones</th>	
+						</thead>
+						<tbody>
+							{% for invoice in invoices %}
+								<input type="hidden" name="invoice_id" value="{{ invoice.invoice_number }}">
+								<tr>
+									<td>{{ invoice.init_date }}</td>
+									<td>{{ invoice.end_date }}</td>
+									<td>{{ invoice.total_amount }} €</td>
+									<td>
+										<a href="/my-bills/show-bill/{{ invoice.invoice_number }}">
+											<button type="button" class="show-button">Consultar</button>
+										</a>
+										<a href="/my-bills/delete/{{ invoice.invoice_number }}">
+											<button type="button" class="delete-button">Eliminar</button>
+										</a>
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			{% endif %}
 		{% endfor %}
 	{% endif %}
 </div>

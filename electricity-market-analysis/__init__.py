@@ -151,3 +151,11 @@ def my_bills():
 def show_bill(invoice_number):
 	invoice = Invoice.get_by_invoice_number(invoice_number)
 	return render_template("bills/show_bill.html", invoice=invoice)
+
+
+@app.route('/my-bills/delete/<int:invoice_number>')
+@login_required
+def delete_bill(invoice_number):
+	invoice = Invoice.get_by_invoice_number(invoice_number)
+	invoice.delete()
+	return redirect(url_for('my_bills'))
