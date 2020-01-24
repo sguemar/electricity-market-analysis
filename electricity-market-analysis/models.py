@@ -143,6 +143,10 @@ class Invoice(db.Model):
 	)
 
 	@staticmethod
+	def get_by_invoice_number(invoice_number):
+		return Invoice.query.get(invoice_number)
+
+	@staticmethod
 	def get_by_contract_number(contract_number):
 		return Invoice.query.filter_by(contract_number=contract_number).all()
 

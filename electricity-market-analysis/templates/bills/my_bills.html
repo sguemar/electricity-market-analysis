@@ -27,8 +27,12 @@
 								<td>{{ invoice.end_date }}</td>
 								<td>{{ invoice.total_amount }} €</td>
 								<td>
-									<button type="button" class="show-button">Consultar</button>
-									<button type="button" class="delete-button">Eliminar</button>
+									<a href="/my-bills/show-bill/{{ invoice.invoice_number }}">
+										<button type="button" class="show-button">Consultar</button>
+									</a>
+									<a href="">
+										<button type="button" class="delete-button">Eliminar</button>
+									</a>
 								</td>
 							</tr>
 						{% endfor %}

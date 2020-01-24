@@ -144,3 +144,10 @@ def my_bills():
 		for contract in contracts:
 			contract_invoices[contract] = Invoice.get_by_contract_number(contract.contract_number)
 	return render_template("bills/my_bills.html", contracts=contracts, contract_invoices=contract_invoices)
+
+
+@app.route('/my-bills/show-bill/<int:invoice_number>')
+@login_required
+def show_bill(invoice_number):
+	invoice = Invoice.get_by_invoice_number(invoice_number)
+	return render_template("bills/show_bill.html", invoice=invoice)

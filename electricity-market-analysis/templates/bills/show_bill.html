@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Consultar Factura{% endblock title %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ url_for('static', filename='show_bill.css') }}">
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container">
+	<ul>
+		<li>
+			<p><span class="underline">Importe potencia contratada:</span> {{ invoice.contracted_power_amount }}€</p>
+		</li>
+		<li>
+			<p><span class="underline">Importe energía consumida:</span> {{ invoice.consumed_energy_amount }}€</p>
+		</li>
+		<li>
+			<p><span class="underline">Fecha de emisión:</span> {{ invoice.issue_date }}</p>
+		</li>
+		<li>
+			<p><span class="underline">Fecha de cargo</span>: {{ invoice.charge_date }}</p>
+		</li>
+		<li>
+			<p><span class="underline">Fecha de inicio:</span> {{ invoice.init_date }}</p>
+		</li>
+		<li>
+			<p><span class="underline">Fecha de fin:</span> {{ invoice.end_date }}</p>
+		</li>
+		<li>
+			<p><span class="underline">Importe total:</span> {{ invoice.total_amount }}€</p>
+		</li>
+		<li>
+			<p><span class="underline">Impuesto:</span> {{ invoice.tax }}%</p>
+		</li>
+	</ul>
+</div>
+
+{% endblock content %}
