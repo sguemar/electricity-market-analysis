@@ -1,30 +1,20 @@
-from flask import Flask, render_template, request, redirect, url_for
-from flask_login import LoginManager, current_user, login_user, logout_user, login_required
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.urls import url_parse
-
-from .forms import CustomerSignUpForm, CompanySignUpForm, LoginForm
+from flask import render_template, request, url_for, redirect
+from flask_login import login_required, current_user, login_user, logout_user
+from werkzeug.security import check_password_hash
 
 
-app = Flask(__name__)
-app.secret_key = "dev"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@127.0.0.1/electricity_market_analysis'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-login_manager = LoginManager(app)
-db = SQLAlchemy(app)
-
-from .models import User, Customer, Company, Customer_Dwelling_Contract, Contract, Invoice
-
-@app.route("/")
-def index():
-	return render_template("index.html")
+from app import login_manager
+from . import auth_bp
+from .forms import LoginForm, CustomerSignUpForm, CompanySignUpForm
+from .models import User
+from app.customer.models import Customer
+from app.models import Company
 
 
-@app.route("/signup/", methods=["GET", "POST"])
+@auth_bp.route("/signup/", methods=["GET", "POST"])
 def sign_up():
 	if current_user.is_authenticated:
-		return redirect(url_for("index"))
+		return redirect(url_for("public.index"))
 
 	customer_form = CustomerSignUpForm(form_type="customer")
 	company_form = CompanySignUpForm(form_type="company")
@@ -59,7 +49,7 @@ def sign_up():
 			login_user(user, remember=True)
 			next_page = request.args.get('next', None)
 			if not next_page or url_parse(next_page).netloc != '':
-				next_page = url_for('index')
+				next_page = url_for('public.index')
 			return redirect(next_page)
 	if form_type == "company" and company_form.validate_on_submit():
 		username = company_form.username.data
@@ -89,10 +79,10 @@ def sign_up():
 			login_user(user, remember=True)
 			next_page = request.args.get('next', None)
 			if not next_page or url_parse(next_page).netloc != '':
-				next_page = url_for('index')
+				next_page = url_for('public.index')
 			return redirect(next_page)
 	return render_template(
-		"auth/sign_up.html",
+		"sign_up.html",
 		customer_form=customer_form,
 		company_form=company_form,
 		form_type=form_type,
@@ -100,10 +90,10 @@ def sign_up():
 	)
 
 
-@app.route("/login", methods=["GET", "POST"])
+@auth_bp.route("/login", methods=["GET", "POST"])
 def log_in():
 	if current_user.is_authenticated:
-		return redirect(url_for('index'))
+		return redirect(url_for('public.index'))
 	form = LoginForm()
 	if form.validate_on_submit():
 		user = User.get_by_username(form.username.data)
@@ -111,9 +101,9 @@ def log_in():
 			login_user(user, remember=form.remember_me.data)
 			next_page = request.args.get('next')
 			if not next_page or url_parse(next_page).netloc != '':
-				next_page = url_for('index')
+				next_page = url_for('public.index')
 			return redirect(next_page)
-	return render_template('auth/login.html', form=form)
+	return render_template('login.html', form=form)
 
 
 @login_manager.user_loader
@@ -121,41 +111,8 @@ def load_user(user_id):
 	return User.get_by_id(user_id)
 
 
-@app.route('/logout')
+@auth_bp.route('/logout')
 @login_required
 def log_out():
 	logout_user()
-	return redirect(url_for('index'))
-
-
-@app.route('/my-bills', methods=["GET", "POST"])
-@login_required
-def my_bills():
-	customer = None
-	contracts = None
-	contract_invoices = None
-	if current_user.user_type == 1:
-		customer = Customer.get_by_user_id(current_user.id)
-		customers_dwellings_contracts = Customer_Dwelling_Contract.get_by_nif(customer.nif)
-		contracts = []
-		for customer_dwelling_contract in customers_dwellings_contracts:
-			contracts.append(Contract.get_by_contract_number(customer_dwelling_contract.contract_number))
-		contract_invoices = {}
-		for contract in contracts:
-			contract_invoices[contract] = Invoice.get_by_contract_number(contract.contract_number)
-	return render_template("bills/my_bills.html", contracts=contracts, contract_invoices=contract_invoices)
-
-
-@app.route('/my-bills/show-bill/<int:invoice_number>')
-@login_required
-def show_bill(invoice_number):
-	invoice = Invoice.get_by_invoice_number(invoice_number)
-	return render_template("bills/show_bill.html", invoice=invoice)
-
-
-@app.route('/my-bills/delete/<int:invoice_number>')
-@login_required
-def delete_bill(invoice_number):
-	invoice = Invoice.get_by_invoice_number(invoice_number)
-	invoice.delete()
-	return redirect(url_for('my_bills'))
+	return redirect(url_for('public.index'))
