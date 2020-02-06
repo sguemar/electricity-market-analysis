@@ -17,11 +17,11 @@
 			<div class="left-nav-bar">
 				<ul>
 					<li>
-						<a href="{{ url_for('index') }}">Inicio</a>
+						<a href="{{ url_for('public.index') }}">Inicio</a>
 					</li>
 					{% if not current_user.is_anonymous %}
 					<li>
-						<a href="{{ url_for('my_bills') }}">Mis facturas</a>
+						<a href="{{ url_for('customer.my_bills') }}">Mis facturas</a>
 					</li>
 					{% endif %} 
 				</ul>
@@ -29,13 +29,13 @@
 			<div class="right-nav-bar">
 				{% if current_user.is_anonymous %}
 				<ul>
-					<li><a href="{{ url_for('sign_up') }}">Regístrate</a></li>
-					<li><a href="{{ url_for('log_in') }}">Iniciar sesión</a></li>
+					<li><a href="{{ url_for('auth.sign_up') }}">Regístrate</a></li>
+					<li><a href="{{ url_for('auth.log_in') }}">Iniciar sesión</a></li>
 				</ul>
 				{% else %}
 				<ul>
 					<li>{{ current_user.username }}</li>
-					<li><a href="{{ url_for('log_out') }}">Cerrar sesión</a></li>
+					<li><a href="{{ url_for('auth.log_out') }}">Cerrar sesión</a></li>
 				</ul> 
 				{% endif %} 
 			</div>		
