@@ -28,6 +28,10 @@ class Company(db.Model):
 	def get_by_cif(cif):
 		return Company.query.get(cif)
 
+	@staticmethod
+	def get_trading_company_by_name(name):
+		return Company.query.filter_by(name=name, company_type=0).first()
+
 
 class Contract(db.Model):
 
@@ -45,9 +49,13 @@ class Contract(db.Model):
 	conditions = db.Column(db.Text(), nullable=True)
 	cif = db.Column(
 		db.String(255),
-		db.ForeignKey('company.cif', ondelete='CASCADE'),
+		db.ForeignKey('companies.cif', ondelete='CASCADE'),
 		nullable=False
 	)
+
+	def save(self):
+		db.session.add(self)
+		db.session.commit()
 
 	@staticmethod
 	def get_by_contract_number(contract_number):
@@ -65,23 +73,27 @@ class Invoice(db.Model):
 
 	__tablename__ = "invoices"
 
-	invoice_number = db.Column(db.Integer, primary_key=True)
-	contracted_power_amount = db.Column(db.Float, nullable=False)
-	consumed_energy_amount = db.Column(db.Float, nullable=False)
-	issue_date = db.Column(db.DateTime, nullable=False)
-	charge_date = db.Column(db.DateTime, nullable=False)
-	init_date = db.Column(db.DateTime, nullable=False)
-	end_date = db.Column(db.DateTime, nullable=False)
-	total_amount = db.Column(db.Float, nullable=False)
-	tax = db.Column(db.Float, nullable=False)
+	invoice_number = db.Column(db.String(255), primary_key=True)
+	contracted_power_amount = db.Column(db.Float)
+	consumed_energy_amount = db.Column(db.Float)
+	issue_date = db.Column(db.DateTime)
+	charge_date = db.Column(db.DateTime)
+	init_date = db.Column(db.DateTime)
+	end_date = db.Column(db.DateTime)
+	total_amount = db.Column(db.Float)
+	tax = db.Column(db.Float)
 	contract_number = db.Column(
 		db.Integer,
-		db.ForeignKey('contracts.contract_number', ondelete='CASCADE'),
-		nullable=False
+		db.ForeignKey('contracts.contract_number', ondelete='CASCADE')
 	)
+	document = db.Column(db.LargeBinary)
 
 	def delete(self):
 		db.session.delete(self)
+		db.session.commit()
+		
+	def save(self):
+		db.session.add(self)
 		db.session.commit()
 
 	@staticmethod
@@ -106,11 +118,19 @@ class Dwelling(db.Model):
 	__tablename__ = "dwellings"
 
 	cups = db.Column(db.String(22), primary_key=True)
-	address = db.Column(db.String(255), nullable=False)
-	postal_code = db.Column(db.String(5), nullable=False)
-	meter_box_number = db.Column(db.String(255), nullable=False)
-	population = db.Column(db.String(255), nullable=False)
-	province = db.Column(db.String(255), nullable=False)
+	address = db.Column(db.String(255))
+	postal_code = db.Column(db.String(5))
+	meter_box_number = db.Column(db.String(255))
+	population = db.Column(db.String(255))
+	province = db.Column(db.String(255))
+
+	def save(self):
+		db.session.add(self)
+		db.session.commit()
+
+	@staticmethod
+	def get_by_cups(cups):
+		return Dwelling.query.get(cups)
 
 
 class Customer_Dwelling_Contract(db.Model):
@@ -134,6 +154,10 @@ class Customer_Dwelling_Contract(db.Model):
 	)
 	init_date = db.Column(db.DateTime, nullable=False)
 	end_date = db.Column(db.DateTime, nullable=False)
+
+	def save(self):
+		db.session.add(self)
+		db.session.commit()
 
 	@staticmethod
 	def get_by_nif(nif):

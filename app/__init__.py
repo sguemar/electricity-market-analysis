@@ -12,6 +12,9 @@ def create_app():
 	app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@127.0.0.1/electricity_market_analysis'
 	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+	app.config['UPLOAD_FOLDER'] = '/tmp'
+	app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
 	login_manager.init_app(app)
 	db.init_app(app)
 
