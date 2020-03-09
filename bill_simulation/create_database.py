@@ -50,11 +50,11 @@ cursor.execute(
 		CREATE TABLE IF NOT EXISTS dwellings
 		(
 			cups VARCHAR(22) PRIMARY KEY,
-			address VARCHAR(255) NOT NULL,
-			postal_code VARCHAR(5) NOT NULL,
-			meter_box_number VARCHAR(255) NOT NULL,
-			population VARCHAR(255) NOT NULL,
-			province VARCHAR(255) NOT NULL
+			address VARCHAR(255) DEFAULT '',
+			postal_code VARCHAR(5) DEFAULT '',
+			meter_box_number VARCHAR(255) DEFAULT '',
+			population VARCHAR(255) DEFAULT '',
+			province VARCHAR(255) DEFAULT ''
 		);
 	"""
 )
@@ -80,17 +80,17 @@ cursor.execute(
     """
 		CREATE TABLE IF NOT EXISTS contracts
 		(
-			contract_number INT AUTO_INCREMENT PRIMARY KEY,
+			contract_number INT PRIMARY KEY,
 			contracted_power FLOAT DEFAULT 0,
-			toll_access VARCHAR(255),
-			init_date DATE NOT NULL,
-			end_date DATE NOT NULL,
-			CNAE VARCHAR(10) NOT NULL,
-			tariff_access VARCHAR(255),
-			contract_reference VARCHAR(255) NOT NULL,
+			toll_access VARCHAR(255) DEFAULT '',
+			init_date DATE,
+			end_date DATE,
+			CNAE VARCHAR(10) DEFAULT '',
+			tariff_access VARCHAR(255) DEFAULT '',
+			contract_reference VARCHAR(255) DEFAULT '',
 			description LONGTEXT,
 			conditions LONGTEXT,
-			cif VARCHAR(9) NOT NULL,
+			cif VARCHAR(9),
 			file LONGBLOB,
 			FOREIGN KEY (cif) REFERENCES companies(cif)
 		);
@@ -101,17 +101,17 @@ cursor.execute(
     """
 		CREATE TABLE IF NOT EXISTS invoices
 		(
-			invoice_number INT AUTO_INCREMENT PRIMARY KEY,
-			contracted_power_amount FLOAT NOT NULL,
-			consumed_energy_amount FLOAT NOT NULL,
-			issue_date DATE NOT NULL,
-			charge_date DATE NOT NULL,
-			init_date DATE NOT NULL,
-			end_date DATE NOT NULL,
-			total_amount FLOAT NOT NULL,
-			tax FLOAT NOT NULL,
-			contract_number INT NOT NULL,
-			file LONGBLOB,
+			invoice_number VARCHAR(255) PRIMARY KEY,
+			contracted_power_amount FLOAT DEFAULT 0,
+			consumed_energy_amount FLOAT DEFAULT 0,
+			issue_date DATE,
+			charge_date DATE,
+			init_date DATE,
+			end_date DATE,
+			total_amount FLOAT DEFAULT 0,
+			tax FLOAT DEFAULT 0,
+			contract_number INT DEFAULT 0,
+			document LONGBLOB,
 			FOREIGN KEY (contract_number) REFERENCES contracts(contract_number)
 		);
 	"""
@@ -124,8 +124,8 @@ cursor.execute(
 			nif VARCHAR(9),
 			cups VARCHAR(22),
 			contract_number INT,
-			init_date DATE NOT NULL,
-			end_date DATE NOT NULL,
+			init_date DATE,
+			end_date DATE,
 			CONSTRAINT PK_customer_dwelling_contract PRIMARY KEY (nif, cups, contract_number),
 			FOREIGN KEY (nif) REFERENCES customers(nif),
 			FOREIGN KEY (cups) REFERENCES dwellings(cups),
