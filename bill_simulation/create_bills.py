@@ -16,7 +16,7 @@ cursor = mydb.cursor()
 
 
 CUSTOMERS_NUMBER = 1
-INVOICES_NUMBER = 12
+INVOICES_NUMBER = 10
 CONTRACT_CYCLE = datetime.timedelta(days=365)
 INVOICE_CYCLE = datetime.timedelta(days=30)
 
@@ -174,6 +174,7 @@ def insert_contract(contract):
    sql = """
             INSERT INTO contracts
             (
+               contract_number,
                contracted_power,
                toll_access,
                init_date,
@@ -182,9 +183,10 @@ def insert_contract(contract):
                contract_reference,
                cif
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s);
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
          """
    val = (
+         random.randint(1, 10000000),
          contract["contracted_power"],
          contract["toll_access"],
          contract["init_date"],
@@ -193,7 +195,11 @@ def insert_contract(contract):
          contract["contract_reference"],
          contract["cif"],
       )
-   cursor.execute(sql, val)
+   try:
+      cursor.execute(sql, val)
+   except mysql.connector.errors.IntegrityError:
+      return insert_contract(contract)
+
    mydb.commit()
 
    sql = """
@@ -207,6 +213,17 @@ def insert_contract(contract):
             AND contract_reference = %s
             AND cif = %s
          """
+
+   val = (
+      contract["contracted_power"],
+      contract["toll_access"],
+      contract["init_date"],
+      contract["end_date"],
+      contract["CNAE"],
+      contract["contract_reference"],
+      contract["cif"],
+   )
+
    cursor.execute(sql, val)
 
    contract = cursor.fetchone()
@@ -292,6 +309,7 @@ def insert_invoice(invoice):
    sql = """
             INSERT INTO invoices
             (
+               invoice_number,
                contracted_power_amount,
                consumed_energy_amount,
                init_date,
@@ -302,9 +320,10 @@ def insert_invoice(invoice):
                total_amount,
                contract_number
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
          """
    val = (
+         ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(14)),
          invoice["contracted_power_amount"],
          invoice["consumed_energy_amount"],
          invoice["init_date"],
@@ -315,7 +334,10 @@ def insert_invoice(invoice):
          invoice["total_amount"],
          invoice["contract_number"],
       )
-   cursor.execute(sql, val)
+   try:
+      cursor.execute(sql, val)
+   except mysql.connector.errors.IntegrityError:
+      return insert_invoice(invoice)
    mydb.commit()
 
 
@@ -333,7 +355,7 @@ def insert_user(user, user_type):
    if user_type == 0:
       username = user["cif"]
    else:
-      username = user["nif"]
+      username = user["name"]
    password = generate_password_hash(username)
 
    val = (
