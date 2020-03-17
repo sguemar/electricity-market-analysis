@@ -37,16 +37,15 @@ class Contract(db.Model):
 
 	__tablename__ = "contracts"
 
-	contract_number = db.Column(db.Integer, primary_key=True)
-	contracted_power = db.Column(db.Float, nullable=True)
-	toll_access = db.Column(db.String(255), nullable=True)
-	init_date = db.Column(db.DateTime, nullable=False)
-	end_date = db.Column(db.DateTime, nullable=False)
-	CNAE = db.Column(db.String(10), nullable=False)
-	tariff_access = db.Column(db.String(255), nullable=True)
-	contract_reference = db.Column(db.String(255), nullable=False)
-	description = db.Column(db.Text(), nullable=True)
-	conditions = db.Column(db.Text(), nullable=True)
+	contract_number = db.Column(db.String(255), primary_key=True)
+	contracted_power = db.Column(db.Float)
+	toll_access = db.Column(db.String(255))
+	init_date = db.Column(db.DateTime)
+	end_date = db.Column(db.DateTime)
+	CNAE = db.Column(db.String(10))
+	tariff_access = db.Column(db.String(255))
+	description = db.Column(db.Text())
+	conditions = db.Column(db.Text())
 	cif = db.Column(
 		db.String(255),
 		db.ForeignKey('companies.cif', ondelete='CASCADE'),
@@ -82,6 +81,7 @@ class Invoice(db.Model):
 	end_date = db.Column(db.DateTime)
 	total_amount = db.Column(db.Float)
 	tax = db.Column(db.Float)
+	contract_reference = db.Column(db.String(255))
 	contract_number = db.Column(
 		db.Integer,
 		db.ForeignKey('contracts.contract_number', ondelete='CASCADE')
@@ -152,8 +152,8 @@ class Customer_Dwelling_Contract(db.Model):
 		db.ForeignKey('contracts.contract_number', ondelete='CASCADE'),
 	 	primary_key=True
 	)
-	init_date = db.Column(db.DateTime, nullable=False)
-	end_date = db.Column(db.DateTime, nullable=False)
+	init_date = db.Column(db.DateTime)
+	end_date = db.Column(db.DateTime)
 
 	def save(self):
 		db.session.add(self)

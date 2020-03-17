@@ -80,14 +80,13 @@ cursor.execute(
     """
 		CREATE TABLE IF NOT EXISTS contracts
 		(
-			contract_number INT PRIMARY KEY,
+			contract_number VARCHAR(255) PRIMARY KEY,
 			contracted_power FLOAT DEFAULT 0,
 			toll_access VARCHAR(255) DEFAULT '',
 			init_date DATE,
 			end_date DATE,
 			CNAE VARCHAR(10) DEFAULT '',
 			tariff_access VARCHAR(255) DEFAULT '',
-			contract_reference VARCHAR(255) DEFAULT '',
 			description LONGTEXT,
 			conditions LONGTEXT,
 			cif VARCHAR(9),
@@ -110,7 +109,8 @@ cursor.execute(
 			end_date DATE,
 			total_amount FLOAT DEFAULT 0,
 			tax FLOAT DEFAULT 0,
-			contract_number INT DEFAULT 0,
+			contract_reference VARCHAR(255) DEFAULT '',
+			contract_number VARCHAR(255) DEFAULT '',
 			document LONGBLOB,
 			FOREIGN KEY (contract_number) REFERENCES contracts(contract_number)
 		);
@@ -123,7 +123,7 @@ cursor.execute(
 		(
 			nif VARCHAR(9),
 			cups VARCHAR(22),
-			contract_number INT,
+			contract_number VARCHAR(255),
 			init_date DATE,
 			end_date DATE,
 			CONSTRAINT PK_customer_dwelling_contract PRIMARY KEY (nif, cups, contract_number),

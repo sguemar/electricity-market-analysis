@@ -166,11 +166,11 @@ def create_contract(trading_company, init_date, end_date):
    contract["init_date"] = init_date
    contract["end_date"] = end_date
    contract["CNAE"] = "D35351351" + str(random.randint(2, 9))
-   contract["contract_reference"] = str(random.randint(10**8, 10**9-1))
    contract["cif"] = trading_company['cif']
    return contract
 
 def insert_contract(contract):
+   contract_number = str(random.randint(10**12, 10**13-1))
    sql = """
             INSERT INTO contracts
             (
@@ -180,19 +180,17 @@ def insert_contract(contract):
                init_date,
                end_date,
                CNAE,
-               contract_reference,
                cif
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+            VALUES (%s, %s, %s, %s, %s, %s, %s);
          """
    val = (
-         random.randint(1, 10000000),
+         contract_number,
          contract["contracted_power"],
          contract["toll_access"],
          contract["init_date"],
          contract["end_date"],
          contract["CNAE"],
-         contract["contract_reference"],
          contract["cif"],
       )
    try:
@@ -202,33 +200,7 @@ def insert_contract(contract):
 
    mydb.commit()
 
-   sql = """
-            SELECT contract_number
-            FROM contracts
-            WHERE contracted_power = %s
-            AND toll_access = %s
-            AND init_date = %s
-            AND end_date = %s
-            AND CNAE = %s
-            AND contract_reference = %s
-            AND cif = %s
-         """
-
-   val = (
-      contract["contracted_power"],
-      contract["toll_access"],
-      contract["init_date"],
-      contract["end_date"],
-      contract["CNAE"],
-      contract["contract_reference"],
-      contract["cif"],
-   )
-
-   cursor.execute(sql, val)
-
-   contract = cursor.fetchone()
-
-   return contract[0]
+   return contract_number
 
 
 def insert_customer_dwelling_contract(customer, dwelling, contract, contract_number_id):
@@ -302,6 +274,7 @@ def create_invoice(contract_number, contracted_power, init_date, kwh_price):
    invoice["charge_date"] = charge_date.strftime("%Y-%m-%d")
    invoice["tax"] = 7
    invoice["total_amount"] = (invoice["contracted_power_amount"] + invoice["consumed_energy_amount"]) * (1 + invoice["tax"] / 100) 
+   invoice["contract_reference"] = contract_number
    invoice["contract_number"] = contract_number
    return invoice
 
@@ -318,9 +291,10 @@ def insert_invoice(invoice):
                charge_date,
                tax,
                total_amount,
+               contract_reference,
                contract_number
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
          """
    val = (
          ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(14)),
@@ -332,6 +306,7 @@ def insert_invoice(invoice):
          invoice["charge_date"],
          invoice["tax"],
          invoice["total_amount"],
+         invoice["contract_reference"],
          invoice["contract_number"],
       )
    try:
