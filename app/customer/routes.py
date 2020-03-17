@@ -73,22 +73,35 @@ def process_bill():
 			# information extraction from the bill
 			results = docreco.process_bill(bill_path, file_extension)
 
+			# return results
+
 			# Delete the bill uploaded
 			os.remove(bill_path)
-			
-			contract_data = __get_contract_data(results)
-			invoice_data = __get_invoice_data(results, contract_data["contract_number"])
 
-			contract = Contract(
-				contract_number=contract_data["contract_number"],
-				contracted_power=contract_data["contracted_power"],
-				toll_access=contract_data["toll_access"],
-				end_date=contract_data["end_date"],
-				CNAE=contract_data["CNAE"],
-				tariff_access=contract_data["tariff_access"],
-				contract_reference=contract_data["contract_reference"],
-				cif=contract_data["cif"]
-			)
+			contract_number = __get_first_value(results["Datos del contrato"]["ReferenciaContrato"]) \
+								.split('/')[0] \
+								.split('-')[0] \
+								.split(' ')[0]
+
+			if contract_number:
+				contract = Contract.get_by_contract_number(contract_number)
+				if not contract:
+					contract_data = __get_contract_data(results)
+					contract = Contract(
+						contract_number=contract_number,
+						contracted_power=contract_data["contracted_power"],
+						toll_access=contract_data["toll_access"],
+						end_date=contract_data["end_date"],
+						CNAE=contract_data["CNAE"],
+						tariff_access=contract_data["tariff_access"],
+						cif=contract_data["cif"]
+					)
+					contract.save()
+			else:
+				flash("No se encuentra el número de referencia del contrato")
+				return redirect(url_for("customer.my_bills"))
+
+			invoice_data = __get_invoice_data(results, contract_number)
 
 			invoice = Invoice(
 				invoice_number=invoice_data["invoice_number"],
@@ -99,11 +112,11 @@ def process_bill():
 				init_date=invoice_data["init_date"],
 				end_date=invoice_data["end_date"],
 				total_amount=invoice_data["total_amount"],
+				contract_reference=invoice_data["contract_reference"],
 				contract_number=invoice_data["contract_number"],
 				document=file.read()
 			)
 
-			contract.save()
 			try:
 				invoice.save()
 			except IntegrityError:
@@ -120,9 +133,8 @@ def process_bill():
 			customer_dwelling_contract = Customer_Dwelling_Contract(
 				nif=Customer.get_by_user_id(current_user.id).nif,
 				cups=cups,
-				contract_number=contract_data["contract_number"]
+				contract_number=contract_number
 			)
-
 			customer_dwelling_contract.save()
 
 			flash("La factura se ha guardado con éxito")
@@ -142,8 +154,6 @@ def __allowed_file(filename):
 def __get_contract_data(results):
 	contract = {}
 	
-	contract["contract_number"] = random.randint(1, 10000000)
-
 	contracted_power = __get_first_value(results["Datos del contrato"]["PotenciaContratada"]).replace(',', '.')
 	if contracted_power: 
 		contract["contracted_power"] = float(contracted_power)
@@ -151,11 +161,10 @@ def __get_contract_data(results):
 		contract["contracted_power"] = None
 
 	contract["toll_access"] = __get_first_value(results["Datos del contrato"]["PeajeAcceso"])
-	contract["end_date"] = __format_date(__get_first_value(results["Datos del contrato"]["FinContrato"]))
+	contract["end_date"] = __get_format_date(results["Datos del contrato"]["FinContrato"])
 	contract["CNAE"] = __get_first_value(results["Datos del contrato"]["CNAE"])
 	contract["tariff_access"] = __get_first_value(results["Datos del contrato"]["TarifaAcceso"])
-	contract["contract_reference"] = __get_first_value(results["Datos del contrato"]["ReferenciaContrato"])
-
+	
 	# TODO: find the trading company in database or create a new one
 	contract["cif"] = Company.get_trading_company_by_name("GIROA S.A.").cif
 	if results["Datos de la factura"]["Comercializadora"]:
@@ -185,10 +194,10 @@ def __get_invoice_data(results, contract_number):
 	else:
 		invoice["consumed_energy_amount"] = None
 	
-	invoice["issue_date"] = __format_date(__get_first_value(results["Datos de la factura"]["FechaEmision"]))
-	invoice["charge_date"] = __format_date(__get_first_value(results["Datos de la factura"]["FechaCargo"]))
-	invoice["init_date"] = __format_date(__get_first_value(results["Datos de la factura"]["FechaInicio"]))
-	invoice["end_date"] = __format_date(__get_first_value(results["Datos de la factura"]["FechaFin"]))
+	invoice["issue_date"] = __get_format_date(results["Datos de la factura"]["FechaEmision"])
+	invoice["charge_date"] = __get_format_date(results["Datos de la factura"]["FechaCargo"])
+	invoice["init_date"] = __get_format_date(results["Datos de la factura"]["FechaInicio"])
+	invoice["end_date"] = __get_format_date(results["Datos de la factura"]["FechaFin"])
 
 	# If issue date is empty, new issue date is end date plus three days
 	if not invoice["issue_date"] and invoice["end_date"]:
@@ -203,7 +212,8 @@ def __get_invoice_data(results, contract_number):
 		invoice["total_amount"] = float(total_amount)
 	else:
 		invoice["total_amount"] = None
-
+	
+	invoice["contract_reference"] = __get_first_value(results["Datos del contrato"]["ReferenciaContrato"])
 	invoice["contract_number"] = contract_number 
 
 	return invoice
@@ -231,19 +241,13 @@ def __create_dwelling_with_random_cups(results):
 
 
 def __get_first_value(data):
-	if isinstance(data, dict):
-		return __get_first_value(next(iter(data.values())))
-	elif isinstance(data, list):
-		if data:
-			return __get_first_value(data[0])
-		else:
-			return ""
-	else:
-		return data
+	return "" if len(data) == 0 else data[0]
 
 
-def __format_date(date):
-	try:
-		return dateparser.parse(date).strftime('%Y-%m-%d')
-	except AttributeError:
-		return None
+def __get_format_date(dates):
+	for date in dates:
+		try:
+			return dateparser.parse(date).strftime('%Y-%m-%d')
+		except AttributeError:
+			pass
+	return None
