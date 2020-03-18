@@ -29,8 +29,13 @@ class Company(db.Model):
 		return Company.query.get(cif)
 
 	@staticmethod
-	def get_trading_company_by_name(name):
-		return Company.query.filter_by(name=name, company_type=0).first()
+	def get_trading_company_by_name(name, name_unicode):
+		search = "%{}%".format(name)
+		search_unicode = "%{}%".format(name_unicode)
+		return Company.query.filter(
+			Company.name.like(search) | Company.name.like(search_unicode),
+			Company.company_type == 0
+		).first()
 
 
 class Contract(db.Model):

@@ -1,7 +1,8 @@
 from flask import render_template, redirect, url_for, request, current_app as app
 from flask_login import login_required, current_user
 from sqlalchemy.exc import IntegrityError
-import uuid, os, random, re, dateparser, datetime, string
+
+import uuid, os, random, re, dateparser, datetime, string, unidecode
 
 from flask import flash
 from . import customer_bp, docreco
@@ -86,6 +87,22 @@ def process_bill():
 			if contract_number:
 				contract = Contract.get_by_contract_number(contract_number)
 				if not contract:
+					company_name = __get_first_value(results["Datos de la factura"]["Comercializadora"])
+					if company_name:
+						trading_company = Company.get_trading_company_by_name(
+							company_name,
+							unidecode.unidecode(company_name)
+						)
+						if trading_company:
+							cif = trading_company.cif
+						else:
+							flash("No se encuentra la comercializadora ni existe cif en la factura")
+							return redirect(url_for("customer.my_bills"))
+					else:
+						flash("No se encuentra el nombre de la comercializadora en la factura")
+						return redirect(url_for("customer.my_bills"))
+
+
 					contract_data = __get_contract_data(results)
 					contract = Contract(
 						contract_number=contract_number,
@@ -94,7 +111,7 @@ def process_bill():
 						end_date=contract_data["end_date"],
 						CNAE=contract_data["CNAE"],
 						tariff_access=contract_data["tariff_access"],
-						cif=contract_data["cif"]
+						cif=cif
 					)
 					contract.save()
 			else:
@@ -165,15 +182,6 @@ def __get_contract_data(results):
 	contract["CNAE"] = __get_first_value(results["Datos del contrato"]["CNAE"])
 	contract["tariff_access"] = __get_first_value(results["Datos del contrato"]["TarifaAcceso"])
 	
-	# TODO: find the trading company in database or create a new one
-	contract["cif"] = Company.get_trading_company_by_name("GIROA S.A.").cif
-	if results["Datos de la factura"]["Comercializadora"]:
-		trading_company = Company.get_trading_company_by_name(
-			results["Datos de la factura"]["Comercializadora"]
-		)
-		if trading_company:
-			contract["cif"] = trading_company.cif
-
 	return contract
 
 
