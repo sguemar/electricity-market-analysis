@@ -1,4 +1,4 @@
-from flask import render_template, request, url_for, redirect
+from flask import render_template, request, url_for, redirect, flash
 from flask_login import login_required, current_user, login_user, logout_user
 from werkzeug.security import check_password_hash
 
@@ -103,6 +103,9 @@ def log_in():
 			if not next_page or url_parse(next_page).netloc != '':
 				next_page = url_for('public.index')
 			return redirect(next_page)
+		else:
+			flash("Las credenciales introducidas no son correctas.")
+			return redirect(url_for("auth.log_in"))
 	return render_template('login.html', form=form)
 
 
