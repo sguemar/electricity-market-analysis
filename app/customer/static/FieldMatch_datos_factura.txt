@@ -21,5 +21,14 @@
     ),
     'Comercializadora': ('comercializadora: (.+)', '(Gas.* S.A.)', '(Naturgy.* S.A.)',), 
     'Distribuidora': ('distribuidora: (.+)', '(Endesa.*S.A.)', ),
+    'CIF': (
+        'CIF: (\d+).?',
+        'CIF: \s+(\d+).?',
+        'CIF: \s+(\d+).?',
+        'CIF: \s+(\d+).',
+        'CIF: \s+(\d+).',
+        'CIF: \s+(.+)',
+        'CIF: \s+(.+)',
+    ),
 }
 
