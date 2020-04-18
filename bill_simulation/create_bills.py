@@ -16,7 +16,7 @@ cursor = mydb.cursor()
 
 
 CUSTOMERS_NUMBER = 1
-INVOICES_NUMBER = 10
+INVOICES_NUMBER = 12
 CONTRACT_CYCLE = datetime.timedelta(days=365)
 INVOICE_CYCLE = datetime.timedelta(days=30)
 
@@ -384,7 +384,7 @@ if __name__ == '__main__':
       dwelling = create_dwelling()
       insert_dwelling(dwelling)
 
-      contract_cycle_init_date = get_random_date(random.randint(2015, 2018))
+      contract_cycle_init_date = get_random_date(random.randint(2012, 2019))
       contract_init_date = contract_cycle_init_date
       contract_end_date = contract_cycle_init_date + CONTRACT_CYCLE
       contract_year = contract_cycle_init_date.year
@@ -414,7 +414,7 @@ if __name__ == '__main__':
 
          invoice_init_date = contract_init_date
          
-         contract_init_date = contract_end_date
+         contract_init_date = contract_end_date + datetime.timedelta(days=1)
          contract_end_date = contract_cycle_init_date + contract_number * CONTRACT_CYCLE
          contract_year = contract_init_date.year
 
@@ -453,7 +453,7 @@ if __name__ == '__main__':
                kwh_price
             )
             insert_invoice(invoice)
-            invoice_init_date += INVOICE_CYCLE
+            invoice_init_date += INVOICE_CYCLE + datetime.timedelta(days=1)
 
          contract_number += 1
          kwh_price += kwh_annual_increase
