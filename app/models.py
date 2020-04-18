@@ -107,7 +107,7 @@ class Invoice(db.Model):
 
 	@staticmethod
 	def get_by_contract_number(contract_number):
-		return Invoice.query.filter_by(contract_number=contract_number).all()
+		return Invoice.query.filter_by(contract_number=contract_number).order_by(Invoice.init_date).all()
 
 	def __repr__(self):
 		return 'Factura {}, fecha de inicio: {}, fecha de fin {}, cantidad_total: {}'.format(
