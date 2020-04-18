@@ -26,6 +26,9 @@
 					<li>
 						<a href="{{ url_for('customer.upload_bill') }}">Subir factura</a>
 					</li>
+					<li>
+						<a href="{{ url_for('customer.my_stats') }}">Mi consumo</a>
+					</li>
 					{% endif %} 
 				</ul>
 			</div>
@@ -46,25 +49,26 @@
 	</header>
 					
 	<main class="main">
-	{% with messages = get_flashed_messages() %}
-	{% if messages %}
-		<ul class=flashes>
-		{% for message in messages %}
-		<li>{{ message }}</li>
-		{% endfor %}
-		</ul>
-	{% endif %}
-	{% endwith %}
-	{% block content %}{% endblock content %}
+		{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				<ul class=flashes>
+					{% for message in messages %}
+						<li>{{ message }}</li>
+					{% endfor %}
+				</ul>
+			{% endif %}
+		{% endwith %}
+		{% block content %}{% endblock content %}
 	</main>
 
 	<footer class="footer">
 		{% block footer %}
-		<p>&copy; 2020 Electricity-Market-Analysis</p>
+			<p>&copy; 2020 Electricity-Market-Analysis</p>
 		{% endblock footer %}
 	</footer>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
 	{% block script %}{% endblock script %}
 </body>
 

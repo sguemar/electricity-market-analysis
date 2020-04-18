@@ -1,10 +1,9 @@
-from flask import render_template, redirect, url_for, request, current_app as app
+from flask import render_template, redirect, url_for, request, flash, current_app as app
 from flask_login import login_required, current_user
 from sqlalchemy.exc import IntegrityError
 
 import uuid, os, random, re, dateparser, datetime, string, unidecode
 
-from flask import flash
 from . import customer_bp, docreco
 from .models import Customer
 from app.models import Customer_Dwelling_Contract, Contract, Invoice, Company, Dwelling
@@ -162,6 +161,35 @@ def process_bill():
 			return redirect(url_for("customer.upload_bill"))
 		
 	return "Error POST"
+
+
+@customer_bp.route("/my_stats")
+@login_required
+def my_stats():
+	return render_template("/my_stats.html")
+
+
+@customer_bp.route("/get_stats")
+@login_required
+def get_stats():
+	customer = None
+	contracts = None
+	contract_invoices = None
+	if current_user.user_type == 1:
+		customer = Customer.get_by_user_id(current_user.id)
+		customers_dwellings_contracts = Customer_Dwelling_Contract.get_by_nif(customer.nif)
+		contracts = []
+		for customer_dwelling_contract in customers_dwellings_contracts:
+			contracts.append(Contract.get_by_contract_number(customer_dwelling_contract.contract_number))
+		contract_invoices = {}
+		for contract in contracts:
+			year = int(contract.init_date.strftime("%Y"))
+			year_invoices = Invoice.get_by_contract_number(contract.contract_number)
+			total_amounts = []
+			for invoice in year_invoices:
+				total_amounts.append(invoice.total_amount)
+			contract_invoices[year] = total_amounts
+	return contract_invoices
 
 
 def __allowed_file(filename):
