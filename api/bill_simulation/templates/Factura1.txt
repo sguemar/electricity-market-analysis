@@ -1,0 +1,136 @@
+CG10C170-D-03/09/19
+S0000000
+NNNN
+<Nombre> <Apellido1> <Apellido2>
+<Direccion>
+<CP> - <Poblacion> <Provincia> - ESPAÑA
+<Comercializadora>
+Inscrita
+en
+el
+Registro
+Mercantil
+de
+Madrid,
+tomo
+30.086,
+folio
+98,
+sección
+8,
+hoja
+número
+M-272.593,
+inscripción
+139,
+CIF
+B82846825.
+Domicilio
+Social:c/Ribera
+del
+Loira,
+nº60,
+28042-Madrid
+<Comercializadora>
+CIF B82846825.
+C/ Albareda 38, Edificio Woermann
+35008 - Las Palmas de Gran Canaria
+DATOS DE LA FACTURA (COPIA)
+IMPORTE FACTURA: <ImporteTotal> €
+Nº de factura: <NumeroFactura>
+Referencia: 060003671517/0020
+Fecha emisión factura: <FechaEmision>
+Periodo de facturación: del <FechaInicio> al <FechaFin> (28 días)
+.................................................................................................................................................................................
+RESUMEN DE LA FACTURA
+Por potencia contratada <ImportePotenciaContratada> €
+Por energía consumida <ImporteEnergiaConsumida> €
+Impuesto electricidad <ImporteImpuestos> €
+Alquiler equipos de medida y control <ImporteAlquilerEquipos> €
+IGIC reducido ( 2%) <ImporteImpuestoReducido> €
+IGIC normal ( 5%) <ImporteImpuestoNormal> €
+.......................................................................................................................................................
+TOTAL IMPORTE FACTURA <ImporteTotal> €
+(Detalle de la factura en el reverso)
+INFORMACIÓN DEL CONSUMO ELÉCTRICO
+Consumo en el
+periodo llano
+De 0h a 24h
+..........................................................................................................................................................................
+Lectura anterior
+(real) <LecturaAnterior> kWh
+(23-Abril-2012)
+..........................................................................................................................................................................
+Lectura actual
+(estimada) <LecturaActual> kWh
+(21-Mayo-2012)
+..........................................................................................................................................................................
+Consumo
+en el periodo <ConsumoTotal> kWh
+........................................................................................
+Evolución del consumo
+kWh
+420
+360
+300
+240
+180
+120
+60
+0
+MAY
+12
+Consumo Real
+Media
+Su consumo medio diario en el periodo facturado ha sido de 2,21 €
+Su consumo medio diario en los últimos 14 meses ha sido de 2,21 €
+Su consumo acumulado del último año ha sido de 337 kWh
+DATOS DEL CONTRATO
+Titular del contrato: <Nombre> <Apellido1> <Apellido2>
+NIF: <NIF>
+Dirección de suministro: <Direccion>, <Provincia>
+Producto contratado: Tarifa de Último Recurso
+Potencia contratada: <PotenciaContratada> kW
+CUPS: <CUPS>
+Número de contador: <NumeroContador>
+Referencia del contrato: <ReferenciaContrato>
+Su comercializadora: <Comercializadora>
+Peaje de acceso: <PeajeAcceso>
+Fin de contrato de suministro: <FinContrato>
+(renovación anual automática)
+..........................................
+DETALLE DE LA FACTURA
+ELECTRICIDAD
+Potencia 5,5 kW x 28 días x 0,059817 Eur/kW y día <ImportePotenciaContratada> €
+Facturación del Consumo 337 kWh x 0,142138 Eur/kWh <ImporteEnergiaConsumida> €
+Impuesto electricidad 57,11 Eur x 1,05113 x 5,11269632 % <ImporteImpuestos> €
+Alquiler equipos de medida y control <ImporteAlquilerEquipos> €
+Importe total <ImporteSubTotal> €
+IGIC reducido ( 2%) 2% s/ 60,03 <ImporteImpuestoReducido> €
+IGIC normal ( 5%) 5% s/ 0,50 <ImporteImpuestoNormal> €
+TOTAL IMPORTE FACTURA <ImporteTotal> €
+Contrato acceso: 000515944152 | Fecha fin de Contrato acceso: <FinContrato>
+INFORMACIÓN FACTURACIÓN ATR
+Término de potencia Término energía
+Potencia kW/mes Precio según RD Importe Consumo Precio según RD Importe
+Periodo P1 5,500 0,048888 7,53 337 0,068998 23,25
+Total 7,53 23,25
+La Tarifa de Acceso se calcula de acuerdo con el RD 1164/2001 y con los precios que reglamentariamente
+se establezcan (actualmente en vigor Orden IET/843/2012 (BOE 26-04-2012)).
+INFORMACIÓN DE SU PRODUCTO
+Las condiciones económicas de este contrato en tarifa de último recurso (TUR) se fijan reglamentariamente por la Dirección General de Política Energética y
+Minas. Los precios de la TUR a aplicar desde el 1 de octubre se han publicado en el BOE 235 de 1/10/13. Recuerde puede contratar con otras condiciones
+en mercado libre. Para más información puede llamar al servicio de atención al cliente o consultar nuestra web.
+ATENCIÓN AL CLIENTE: CONSULTAS, GESTIONES Y RECLAMACIONES 24 HORAS
+800 760 333 (tlf. gratuito)
+www.energiaxxi.com/tarifasreguladas
+atencionalcliente_exxi@energiaxxi.com
+Reclamaciones
+C/ Ribera del Loira 60
+28042 Madrid
+Urgencias
+900 85 58 85
+(tlf. gratuito)
+Energía XXI está adherida al Sistema Arbitral de Consumo. Para ampliar la información sobre las reclamaciones que pueden ser tratadas a través del
+arbitraje consultar www.energiaxxi.com.
+

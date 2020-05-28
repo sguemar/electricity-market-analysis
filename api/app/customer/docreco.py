@@ -1,6 +1,6 @@
 import subprocess, uuid, os, pprint, sys
 from shutil import copyfile
-from extract_data import extract_data
+from .extract_data import extract_data
 
 
 def process_bill(file_bill, type):

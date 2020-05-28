@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Electricity-Market-Analysis{% endblock title %}
+
+{% block content %}
+
+  <h1>Mis consumos</h1>
+
+  <div id="container" style="width:80%; height:80%;"></div>
+
+  <p>Elige el año:</p>
+
+  <select name="year" id="year">
+  </select>
+
+{% endblock content %}
+
+{% block script %}
+    <script>
+        var consumption_data, myChart, options;
+
+        $.ajax({
+            url: '/get_stats',
+            type: 'GET',
+            success: function(response) {
+                consumption_data = response;
+                var year = Object.keys(response)[0];
+                for (var y in response)
+                    $("#year").append('<option value="' + y + '">' + y + '</option>');
+                options = {
+                    chart: {
+                        renderTo: 'container',
+                        type: 'column'
+                    },
+                    title: {
+                        text: 'Consumo anual'
+                    },
+                    xAxis: {
+                        title: {
+                            text: 'Meses del año'
+                        },
+                        categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Importe total (€)'
+                        }
+                    },
+                    series: [{
+                        name: year,
+                        data: consumption_data[year]
+                    }]
+                }
+                myChart = Highcharts.chart(options);
+            },
+        });
+
+        $("#year").change(function() {
+            year = $("#year").val();
+            options.series[0].name = year;
+            options.series[0].data = consumption_data[year]
+            myChart = Highcharts.chart(options);
+        });
+    </script>
+{% endblock script %}

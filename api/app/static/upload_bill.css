@@ -1,0 +1,9 @@
+.invoice-preview {
+    display: grid;
+    justify-items: center;
+}
+
+iframe {
+    width: 80%;
+    height: 700px;
+}

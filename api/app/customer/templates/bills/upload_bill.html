@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Subir factura{% endblock title %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ url_for('static', filename='upload_bill.css') }}">
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>Subir factura</h1>
+    
+    <form id="invoice" enctype="multipart/form-data" action="process_bill" method="post">
+        <p>Selecciona la factura que quieres guardar (pdf, jpg, png): <input type="file" name="inputFile" value="Seleccionar" onchange="previewFile()"/></p>
+        <p><input type="submit" value="Registrar factura"/></p>
+    </form>
+    
+    <div class="invoice-preview">
+        <h2>Vista previa</h2>
+        <iframe id="invoice-preview" src="" alt="Vista previa de factura"></iframe>
+        </div>
+    </div>
+    
+</div>
+
+{% endblock content %}
+
+{% block script %}
+<script>
+    function previewFile() {
+        var nodes = document.querySelectorAll('iframe');
+        var preview = nodes[nodes.length- 1];
+        var file = document.querySelector('input[type=file]').files[0];
+        var reader = new FileReader();
+      
+        reader.addEventListener("load", function() {
+          preview.src = reader.result;
+        }, false);
+      
+        if (file) reader.readAsDataURL(file);
+    }
+    
+    function addSubmit(ev) {
+        ev.preventDefault();
+        
+        var formData = new FormData(this);
+  
+        $.ajax({
+          method: 'POST',
+          url: {{ url_for("customer.process_bill") | tojson }},
+          data: formData,
+          cache: false,
+          contentType: false,
+          processData: false,
+          dataType: 'json',
+        }).done(addShow);
+    }
+      
+    function addShow(data) {
+        $('#result').text(data.result);
+    }
+
+    $('#invoice-preview').on('submit', addSubmit);
+</script>
+{% endblock script %}

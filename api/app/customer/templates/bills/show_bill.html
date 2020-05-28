@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Consultar Factura{% endblock title %}
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ url_for('static', filename='show_bill.css') }}">
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container">
+	<ul>
+		<li>
+			<p><span class="underline">Importe potencia contratada:</span>
+				{% if invoice.contracted_power_amount %}
+				{{ invoice.contracted_power_amount }}€
+				{% else %}
+				-
+				{% endif %}
+			</p>
+		</li>
+		<li>
+			<p><span class="underline">Importe energía consumida:</span>
+				{% if invoice.consumed_energy_amount %}
+				{{ invoice.consumed_energy_amount }}€
+				{% else %}
+				-
+				{% endif %}
+			</p>
+		</li>
+		<li>
+			<p><span class="underline">Fecha de emisión:</span>
+				{% if invoice.issue_date %}
+				{{ invoice.issue_date }}
+				{% else %}
+				-
+				{% endif %}
+			</p>
+		</li>
+		<li>
+			<p><span class="underline">Fecha de cargo:</span>
+				{% if invoice.charge_date %}
+				{{ invoice.charge_date }}
+				{% else %}
+				-
+				{% endif %}
+			</p>
+		</li>
+		<li>
+			<p><span class="underline">Fecha de inicio:</span>
+				{% if invoice.init_date %}
+				{{ invoice.init_date }}
+				{% else %}
+				-
+				{% endif %}
+			</p>
+		</li>
+		<li>
+			<p><span class="underline">Fecha de fin:</span>
+				{% if invoice.end_date %}
+				{{ invoice.end_date }}
+				{% else %}
+				-
+				{% endif %}
+			</p>
+		</li>
+		<li>
+			<p><span class="underline">Importe total:</span>
+				{% if invoice.total_amount %}
+				{{ invoice.total_amount }}€
+				{% else %}
+				-
+				{% endif %}
+			</p>
+		</li>
+		<li>
+			<p><span class="underline">Impuesto:</span>
+				{% if invoice.tax %}
+				{{ invoice.tax }}%
+				{% else %}
+				-
+				{% endif %}
+			</p>
+		</li>
+	</ul>
+</div>
+
+{% endblock content %}

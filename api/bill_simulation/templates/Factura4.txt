@@ -1,0 +1,165 @@
+Naturgy Iberia, S.A.
+Fecha de emisión: <FechaEmision>
+Nº factura: <NumeroFactura>
+Nombre: <Nombre> <Apellido1> <Apellido2>
+Dirección suministro: <Direccion>
+<CP> <Poblacion>
+Nº Referencia: 17556993
+Nº cliente: 12125667
+NIF: ES - <NIF>
+Dirección: <Direccion> <CP> 
+<Poblacion>
+Entidad: UNOE BANK S.A.
+Datos bancarios: IBAN ES62 0227 0001 8102 0268 ****
+Fecha de cargo: <FechaCargo>
+Esta factura será cargada en cuenta siguiendo el mandato 000043370401
+¿Son correctos sus datos personales?
+Puede actualizarlos online en su Área Privada de la web entrando en www.naturgy.es/misdatos
+Total a pagar <ImporteTotal> €
+Electricidad Estable Media Luz Contrato: 131656738..............................................
+Del <FechaInicio> al <FechaFin> (28 días = 0,920548 meses)
+Consumo electricidad 1 kWh 0,148026 €/kWh <ImporteEnergiaConsumida> €
+Descuento consumo electricidad 0,15 € 5,00 % <ImporteDescuento> €
+Término de potencia (5,500 kW) 28 días 0,126283 €/kW día <ImportePotenciaContratada> €
+Subtotal <ImporteSubTotal> €
+Impuesto electricidad 19,59 € 0,0511269632 <ImporteImpuestos> €
+Otros conceptos electricidad
+Alquiler de contador 28 días 0,026786 €/día <ImporteAlquilerEquipos> €
+Total electricidad 21,34 €
+Base imponible 20,59 €
+IGIC 0% <ImpuestoReducido> €
+Base imponible 0,75 €
+IGIC 6,5% <ImpuestoNormal> €
+Total factura <ImporteTotal> €
+Canales para contactar con Naturgy......................................................
+..............................................................................
+Web areaclientes.naturgy.es
+Reparación urgente de
+calderas y electrodomésticos 900 408 080
+Lectura del contador 900 234 000
+www.naturgy.es/lecturas
+Averías eléctricas 900 855 885
+Escanee este código para descargarse
+la App Área Clientes
+..............................................................................
+Contratación Productos y Servicios 900 333 555
+Reclamaciones e incidencias 900 100 251
+servicioatencioncliente@naturgy.com
+Plaça del Gas, 1. 08003 Barcelona
+Si quiere una atención más personalizada puede acudir a alguno de los centros que Naturgy tiene a su servicio.
+Encuentre el más cercano en www.naturgy.es/centros.
+Dese de alta gratis en areaprivada.naturgy.es/mifactura
+Naturgy
+Iberia,
+S.A.
+Domicilio
+Social:
+Avenida
+San
+Luis,
+77
+28033
+Madrid.
+Inscrita
+en
+el
+Registro
+Mercantil
+de
+Madrid,
+Tomo
+36955,
+Folio
+1,
+Hoja
+M-660799,
+Inscripción
+1ª.
+C.I.F.
+A-08431090
+<Nombre> <Apellido1> <Apellido2>
+<Direccion>
+<CP> - <Poblacion> -
+<Provincia>
+IIJ2ES - INJ1ES - PHJ2ES
+duplicado
+Las cuentas claras..................................................................................
+A continuación le presentamos información detallada sobre su/s contrato/s y factura.
+Electricidad
+Nº contrato de acceso
+(UNIÓN ELÉCTRICA DE CANARIAS I, S.A. UNIPERSONAL): 523276530
+Fecha final de contrato: <FinContrato>
+Datos instalación electricidad
+Potencia contratada: <PotenciaContratada> kW
+Tarifa de acceso: <PeajeAcceso>
+Cuantía Peaje:
+1
+16,09 €
+Código CUPS: <CUPS>
+Los costes de energía que se le aplican se determinan en el BOE de
+fecha 22.12.2018. Servicio: 97,810%, Permanentes: 0,150%,
+Diversificación y Seguridad de abastecimiento: 2,040%.
+Se aplica el precio del alquiler según BOE N 185 de 03.08.2013.
+Composición del término de energía: precio fijo (0,086458 euros/kWh),
+peaje acceso² (0,044027 euros/kWh) y otros costes regulados²
+(0,017541 euros/kWh).
+Información lecturas / consumos
+Lectura actual: Llano real 05.03.19 <LecturaActual> kWh
+Lectura anterior: Llano real 05.02.19 <LecturaAnterior> kWh
+Consumo: Llano <ConsumoActual> kWh
+Electricidad
+1000
+800
+600
+400
+200
+0
+Consumo periodo 1 real Consumo periodo 1 estimado
+Abr.17
+May.17
+Jun.17
+Jul.17
+Ago.17
+Sep.17
+Oct.17
+Nov.17
+Dic.17
+Ene.18
+Feb.18
+Mar.18
+Abr.18
+May.18
+Jun.18
+Jul.18
+Ago.18
+Sep.18
+Oct.18
+Nov.18
+Dic.18
+Ene.19
+Feb.19
+Mar.19
+1 Importe que la compañía comercializadora debe pagar a la compañía distribuidora correspondiente a la facturación de acceso a su red, de acuerdo
+con el tipo de peaje aplicable de conformidad con el Real Decreto 1164/2001 de 26 de octubre para energía eléctrica y Real Decreto 949/2001 de 3 de
+agosto para gas natural.
+2 Precios objeto de revisión según las modificaciones que experimenten los conceptos regulados. En la presente factura han sido calculados de
+acuerdo con la disposición oficial N.308 de fecha 22.12.2018.
+Si desea información detallada sobre su/s contrato/s e histórico de consumo, llame al teléfono de atención al cliente.
+Destino del importe de la factura...........................................................
+3,48 €
+1,05 €
+16,11 €
+Coste de producción de electricidad
+Impuestos aplicados
+Costes regulados
+6,35 €
+6,50 €
+3,26 €
+Incentivos a las energías renovables, cogeneración y residuos
+Coste de redes de distribución y transporte
+Otros costes regulados
+(incluida la anualidad del déficit)
+El destino del importe de su factura, 21,39 euros, es el siguiente:
+A los importes indicados en el diagrama debe añadirse, en su caso, el alquiler de los equipos de medida y control u otros conceptos.
+duplicado
+

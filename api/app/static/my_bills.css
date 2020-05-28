@@ -1,0 +1,57 @@
+.wrapper {
+	display: grid;
+	grid-gap: 2rem;
+	margin: 2rem 0;
+}
+
+.wrapper div {
+	justify-self: center;
+}
+
+.invoice-table {
+	text-align: center;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+.invoice-table td, .invoice-table th {
+	border: 1px solid #ddd;
+	padding: 8px;
+}
+
+.invoice-table tr:hover {
+	background-color: #ddd;
+}
+
+.invoice-table th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	background-color: #4CAF50;
+	color: white;
+}
+
+.invoice-table button {
+	border: none;
+	color: white;
+	padding: 10px 25px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	margin: 4px 2px;
+	cursor: pointer;
+}
+
+.show-button {
+	background-color: #008CBA;
+}
+
+.delete-button {
+	background-color: #f44336;
+}
+
+.invoice-table a {
+	text-decoration: none;
+	color: white;
+}

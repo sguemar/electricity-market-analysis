@@ -1,0 +1,126 @@
+Gas Natural Servicios SDG, S.A.
+Fecha de emisión: 27.10.2015
+Nº factura: FI15320310485066
+Nombre: <Nombre> <Apellido1> <Apellido2>
+Dirección suministro: <Direccion>
+-<Poblacion>-
+Nº Referencia: 17556993
+Nº cliente: 12125667
+NIF: ES - <NIF>
+Dirección: <Direccion>
+ -<Poblacion>-
+Entidad: UNOE BANK S.A.
+Datos bancarios: IBAN ES62 0227 0001 8102 0268 ****
+Fecha de cargo: <FechaCargo>
+Esta factura será cargada en cuenta siguiendo el mandato 000043370401
+¿Son correctos sus datos personales?
+Puede actualizarlos online en su Área Privada de la web entrando en www.gasnaturalfenosa.es/misdatos
+Total a pagar <ImporteTotal> €
+electricidad Óptima Luz Contrato: 131656738.....................................................
+Del <FechaInicio> al <FechaFin> (63 días = 2,071233 meses)
+Consumo electricidad 0 kWh 0,136194 €/kWh <ImporteEnergiaConsumida> €
+Término de potencia (5,500 kW) 63 días 0,115187 €/kW día <ImportePotenciaContratada> €
+Subtotal <ImporteSubTotal> €
+Otros conceptos electricidad
+Alquiler de contador 63 días 0,017778 €/día <ImporteAlquilerEquipos> €
+Total electricidad <ImporteSubTotal>  €
+Base imponible 39,91 €
+IGIC 3% <ImpuestoReducido> €
+Base imponible 1,12 €
+IGIC 7% <ImpuestoNormal> €
+Total factura <ImporteTotal> €
+Canales para contactar con Gas Natural Fenosa..................................
+24 horas / 365 días del año
+..............................................................................
+Web www.gasnaturalfenosa.es
+Reparación urgente de
+calderas y electrodomésticos 900 408 080
+Lectura del contador 900 234 000
+www.gasnaturalfenosa.es/lecturas
+Averías eléctricas 900 855 885
+Lunes a sábado, de 8 a 22 horas
+..............................................................................
+Contratación Productos y Servicios 900 333 555
+Reclamaciones e incidencias 900 100 251
+servicioatencioncliente@gasnaturalfenosa.com
+Plaça del Gas, 1. 08003 Barcelona
+Si quiere una atención más personalizada puede acudir a alguno de los centros que Gas Natural Fenosa tiene a su
+servicio. Encuentre el más cercano en www.gasnaturalfenosa.es/centros o desde su móvil en
+hogar.gasnaturalfenosa.mobi.
+Dese de alta gratis en areaprivada.gasnaturalfenosa.es/mifactura
+Gas
+Natural
+Servicios
+SDG,
+S.A.
+Dom.
+Social:
+Plaça
+del
+Gas
+nº1
+08003
+Barcelona.
+Tomo
+37.962,
+folio
+51,
+hoja
+número
+B-39048,
+inscripción
+171.
+C.I.F.
+A-08431090
+<Nombre> <Apellido1> <Apellido2>
+<Direccion>
+<CP> - <Poblacion> -
+<Provincia>
+AE81ES
+duplicado
+Las cuentas claras..................................................................................
+A continuación le presentamos información detallada sobre su/s contrato/s y factura.
+Electricidad
+Nº contrato de acceso
+(UNIÓN ELÉCTRICA DE CANARIAS I, S.A. UNIPERSONAL): 523276530
+Fecha final de contrato: <FinContrato>
+Datos instalación electricidad
+Potencia contratada: <PotenciaContratada> kW
+Tarifa de acceso: <PeajeAcceso>
+Cuantía Peaje:1
+36,12 €
+Código CUPS: <CUPS>
+Los costes de energía que se le aplican se determinan en el BOE de
+fecha 26.12.2014. Servicio: 97,337%, Permanentes: 0,150%,
+Diversificación y Seguridad de abastecimiento: 2,513%.
+Se aplica el precio del alquiler según BOE N 185 de 03.08.2013.
+Composición del término de energía: precio fijo (0,074817 euros/kWh),
+peaje acceso¹ (0,044027 euros/kWh) y otros costes regulados¹ (0,01735
+euros/kWh).
+Información lecturas / consumos
+Lectura actual: Llano real 23.10.15 <LecturaActual> kWh
+Lectura anterior: Llano real 21.08.15 <LecturaAnterior> kWh
+Consumo: Llano <ConsumoActual> kWh
+1 Importe que la compañía comercializadora debe pagar a la compañía distribuidora correspondiente a la facturación de acceso a su red, de acuerdo
+con el tipo de peaje aplicable de conformidad con el Real Decreto 1164/2001 de 26 de octubre para energía eléctrica y Real Decreto 949/2001 de 3 de
+agosto para gas natural.
+Si desea información detallada sobre su/s contrato/s e histórico de consumo, entre en su Área Privada en www.gasnaturalfenosa.es/areaprivada.
+Un pequeño apunte sobre energía.........................................................
+Destino del importe de la factura...........................................................
+29,01 %
+21,38 %
+49,61 %
+Coste de producción de electricidad
+Impuestos aplicados
+Costes regulados
+35,69 %
+34,53 %
+29,78 %
+Incentivos a las energías renovables, cogeneración y residuos
+Coste de redes de distribución y transporte
+Otros costes regulados
+(incluida la anualidad del déficit)
+El destino del importe de su factura, 42,31 euros, es el siguiente:
+Porcentajes calculados para un consumo medio.
+duplicado
+

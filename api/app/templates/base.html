@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+	{% block head %}
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{% block title %}{% endblock %}</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	{% block stylesheets %}{% endblock stylesheets %}
+	{% endblock head %}
+</head>
+
+<body class="body">
+	<header class="header">
+		<nav class="nav-bar">
+			<div class="left-nav-bar">
+				<ul>
+					<li>
+						<a href="{{ url_for('public.index') }}">Inicio</a>
+					</li>
+					{% if not current_user.is_anonymous %}
+					<li>
+						<a href="{{ url_for('customer.my_bills') }}">Mis facturas</a>
+					</li>
+					<li>
+						<a href="{{ url_for('customer.upload_bill') }}">Subir factura</a>
+					</li>
+					<li>
+						<a href="{{ url_for('customer.my_stats') }}">Mi consumo</a>
+					</li>
+					{% endif %} 
+				</ul>
+			</div>
+			<div class="right-nav-bar">
+				{% if current_user.is_anonymous %}
+				<ul>
+					<li><a href="{{ url_for('auth.sign_up') }}">Regístrate</a></li>
+					<li><a href="{{ url_for('auth.log_in') }}">Iniciar sesión</a></li>
+				</ul>
+				{% else %}
+				<ul>
+					<li>{{ current_user.username }}</li>
+					<li><a href="{{ url_for('auth.log_out') }}">Cerrar sesión</a></li>
+				</ul> 
+				{% endif %} 
+			</div>		
+		</nav>
+	</header>
+					
+	<main class="main">
+		{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				<ul class=flashes>
+					{% for message in messages %}
+						<li>{{ message }}</li>
+					{% endfor %}
+				</ul>
+			{% endif %}
+		{% endwith %}
+		{% block content %}{% endblock content %}
+	</main>
+
+	<footer class="footer">
+		{% block footer %}
+			<p>&copy; 2020 Electricity-Market-Analysis</p>
+		{% endblock footer %}
+	</footer>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	{% block script %}{% endblock script %}
+</body>
+
+</html>
