@@ -15,10 +15,10 @@ import {
 import GraphDown from './../svg/graph-down.svg';
 import TextFile from './../svg/text-file.svg';
 
-import './main.css';
+import './home.css';
 
 
-const Main = () =>
+const Home = () =>
 	<main>
 		<Carousel>
 			<Carousel.Item>
@@ -109,4 +109,4 @@ const Main = () =>
 		</CardDeck>
 	</main>
 
-export default Main;
+export default Home;
