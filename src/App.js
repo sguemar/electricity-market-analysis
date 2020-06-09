@@ -10,6 +10,7 @@ import {
   Switch
 } from 'react-router-dom';
 
+import './app.css';
 
 function App() {
   return (

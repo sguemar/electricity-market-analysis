@@ -1,7 +1,5 @@
 import React from 'react';
 
-import './noMatch.css';
-
 const NoMatch = () =>
   <div className="my-auto text-center">
     <h1>Oops!</h1>
