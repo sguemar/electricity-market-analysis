@@ -12,14 +12,14 @@ import {
 	People
 } from '@material-ui/icons';
 
-import GraphDown from './../svg/graph-down.svg';
-import TextFile from './../svg/text-file.svg';
+import GraphDown from './../../svg/graph-down.svg';
+import TextFile from './../../svg/text-file.svg';
 
 import './home.css';
 
 
 const Home = () =>
-	<main>
+	<>
 		<Carousel>
 			<Carousel.Item>
 				<Carousel.Caption className="text-left">
@@ -43,7 +43,7 @@ const Home = () =>
 
 		<div class="display-2">Clientes</div>
 
-		<CardDeck>
+		<CardDeck className="mx-0">
 			<Card data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000">
 				<img src={TextFile} alt="Text file" />
 				<Card.Text>
@@ -87,7 +87,7 @@ const Home = () =>
 
 		<div class="display-2">Empresas</div>
 
-		<CardDeck>
+		<CardDeck className="mx-0">
 			<Card data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000">
 				<Search />
 				<Card.Text>
@@ -107,6 +107,6 @@ const Home = () =>
 				</Card.Text>
 			</Card>
 		</CardDeck>
-	</main>
+	</>
 
 export default Home;

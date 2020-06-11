@@ -7,13 +7,13 @@ import {
 const Header = () =>
 	<header>
 		<Navbar bg="dark" variant="dark" expand="sm">
-			<Navbar.Brand href="#">AME</Navbar.Brand>
+			<Navbar.Brand href="/">AME</Navbar.Brand>
 			<Navbar.Toggle aria-controls="navbar-collapse"/>
 			<Navbar.Collapse id="navbar-collapse">
 				<Nav className="w-100">
 					<Nav className="mr-auto">
 						<Nav.Item>
-							<Nav.Link href="#">Inicio</Nav.Link>
+							<Nav.Link href="/">Inicio</Nav.Link>
 						</Nav.Item>
 					</Nav>
 					<Nav>
@@ -23,7 +23,7 @@ const Header = () =>
 						</Nav.Link>
 						</Nav.Item>
 						<Nav.Item>
-							<Nav.Link>
+							<Nav.Link href="/login">
 								Inicia sesión
 						</Nav.Link>
 						</Nav.Item>
