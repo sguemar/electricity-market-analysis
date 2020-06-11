@@ -2,6 +2,7 @@ import React from 'react';
 import Header from '../Header/Header';
 import Footer from '../Footer/Footer';
 import Home from '../Home/Home';
+import Login from '../Login/Login';
 import NoMatch from '../NoMatch/NoMatch';
 
 import {
@@ -20,6 +21,7 @@ function App() {
           <main>
             <Switch>
               <Route path="/" exact component={Home} />
+              <Route path="/login" component={Login} />
               <Route component={NoMatch} />
             </Switch>
           </main>
