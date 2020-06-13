@@ -41,7 +41,7 @@ const Home = () =>
 			</Carousel.Item>
 		</Carousel>
 
-		<div class="display-2">Clientes</div>
+		<div className="display-2">Clientes</div>
 
 		<CardDeck className="mx-0">
 			<Card data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000">
@@ -85,7 +85,7 @@ const Home = () =>
 			</Carousel.Item>
 		</Carousel>
 
-		<div class="display-2">Empresas</div>
+		<div className="display-2">Empresas</div>
 
 		<CardDeck className="mx-0">
 			<Card data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000">
