@@ -1,22 +1,56 @@
-import React from 'react';
-
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { connect } from 'react-redux';
 import {
   Avatar,
   Button,
   TextField,
-  FormControlLabel,
-  Checkbox,
   Link,
+  Box,
   Grid,
   Typography,
   makeStyles,
   Container
 } from '@material-ui/core';
-
+import { Alert } from '@material-ui/lab';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import axios from 'axios';
+import { login } from '../../redux/actions/authentication';
 
 
-const Login = () => {
+const Login = ({ login }) => {
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [displayAlert, setDisplayAlert] = useState('none');
+
+  const history = useHistory();
+
+  function handleUsernameChange(e) {
+    setUsername(e.target.value);
+  }
+
+  function handlePasswordChange(e) {
+    setPassword(e.target.value);
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    let data = {
+      username: username,
+      password: password
+    };
+    try {
+      await axios.post('/api/auth/login', data);
+      let user = { username: username };
+      login(user);
+      history.push('/');
+    } catch (error) {
+      console.log("error", error);
+      setDisplayAlert('block');
+    }
+  }
+
   const classes = useStyles();
 
   return (
@@ -34,10 +68,11 @@ const Login = () => {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Correo electrónico"
-            name="email"
+            id="username"
+            label="Usuario"
+            name="username"
             autoFocus
+            onChange={handleUsernameChange}
           />
           <TextField
             variant="outlined"
@@ -48,17 +83,18 @@ const Login = () => {
             label="Contraseña"
             type="password"
             id="password"
+            onChange={handlePasswordChange}
           />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Recuérdame"
-          />
+          <Box display={displayAlert}>
+            <Alert severity="error">El usuario o la contraseña no son correctos</ Alert>
+          </Box>
           <Button
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={handleSubmit}
           >
             Inicia sesión
           </Button>
@@ -100,4 +136,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default Login;
+export default connect(
+  null,
+  { login }
+)(Login);

@@ -3,34 +3,80 @@ import {
 	Navbar,
 	Nav,
 } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import { useHistory, Link } from 'react-router-dom';
+import axios from 'axios';
+import { logout } from '../../redux/actions/authentication';
 
-const Header = () =>
-	<header>
-		<Navbar bg="dark" variant="dark" expand="sm">
-			<Navbar.Brand href="/">AME</Navbar.Brand>
-			<Navbar.Toggle aria-controls="navbar-collapse"/>
-			<Navbar.Collapse id="navbar-collapse">
-				<Nav className="w-100">
-					<Nav className="mr-auto">
-						<Nav.Item>
-							<Nav.Link href="/">Inicio</Nav.Link>
-						</Nav.Item>
-					</Nav>
-					<Nav>
-						<Nav.Item>
-							<Nav.Link>
-								Regístrate
-						</Nav.Link>
-						</Nav.Item>
-						<Nav.Item>
-							<Nav.Link href="/login">
-								Inicia sesión
-						</Nav.Link>
-						</Nav.Item>
-					</Nav>
-				</Nav>
-			</Navbar.Collapse>
-		</Navbar>
-	</header>
+const Header = ({ username, logout }) => {
 
-export default Header;
+	const history = useHistory();
+
+	async function handleLogout() {
+		try {
+			await axios.post('/api/auth/logout');
+			logout();
+			history.push('/');
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	return (
+		<header>
+			<Navbar bg="dark" variant="dark" expand="sm">
+				<Link className="navbar-brand" to="/">AME</Link>
+				<Navbar.Toggle aria-controls="navbar-collapse" />
+				<Navbar.Collapse id="navbar-collapse">
+					<Nav className="w-100">
+						<Nav className="mr-auto">
+							<Nav.Item>
+								<Link className="nav-link" to="/">Inicio</Link>
+							</Nav.Item>
+						</Nav>
+						<Nav>
+							{username
+								?
+								<>
+									<Nav.Item>
+										<Link className="nav-link" to="">
+											{username}
+										</Link>
+									</Nav.Item>
+									<Nav.Item>
+										<Link className="nav-link" to="/" onClick={handleLogout}>
+											Cerrar sesión
+										</Link>
+									</Nav.Item>
+								</>
+								:
+								<>
+									<Nav.Item>
+										<Link className="nav-link" to="/">
+											Regístrate
+										</Link>
+									</Nav.Item>
+									<Nav.Item>
+										<Link className="nav-link" to="/login">
+											Inicia sesión
+										</Link>
+									</Nav.Item>
+								</>
+							}
+						</Nav>
+					</Nav>
+				</Navbar.Collapse>
+			</Navbar>
+		</header>
+	);
+}
+
+const mapStateToProps = state => {
+	const { authentication } = state;
+	return authentication.loggedUser;
+};
+
+export default connect(
+	mapStateToProps,
+	{ logout }
+)(Header);
