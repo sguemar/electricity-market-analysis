@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
   Avatar,
   Button,
   TextField,
-  Link,
   Box,
   Grid,
   Typography,
@@ -99,14 +98,15 @@ const Login = ({ login }) => {
             Inicia sesión
           </Button>
           <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                ¿Has olvidado la contraseña?
-              </Link>
-            </Grid>
             <Grid item>
-              <Link href="/register" variant="body2">
-                {"¿Aún no tienes cuenta? Regístrate"}
+              <Link 
+                to="/signup"
+                className="MuiTypography-root
+                           MuiLink-root
+                           MuiLink-underlineHover 
+                           MuiTypography-body2 
+                           MuiTypography-colorPrimary">
+                ¿Aún no tienes cuenta? Regístrate
               </Link>
             </Grid>
           </Grid>
