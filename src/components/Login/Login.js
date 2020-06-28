@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useReducer } from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
@@ -19,29 +19,30 @@ import { login } from '../../redux/actions/authentication';
 
 const Login = ({ login }) => {
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const initialState = {
+    username: '',
+    password: '',
+  };
+  const reducer = (state, newState) => ({ ...state, ...newState })
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const handleChange = event => {
+    const { name, value } = event.target;
+    dispatch({ [name]: value });
+  };
+
   const [displayAlert, setDisplayAlert] = useState('none');
-
   const history = useHistory();
-
-  function handleUsernameChange(e) {
-    setUsername(e.target.value);
-  }
-
-  function handlePasswordChange(e) {
-    setPassword(e.target.value);
-  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     let data = {
-      username: username,
-      password: password
+      username: state.username,
+      password: state.password
     };
     try {
       await axios.post('/api/auth/login', data);
-      let user = { username: username };
+      let user = { username: state.username };
       login(user);
       history.push('/');
     } catch (error) {
@@ -71,7 +72,7 @@ const Login = ({ login }) => {
             label="Usuario"
             name="username"
             autoFocus
-            onChange={handleUsernameChange}
+            onChange={handleChange}
           />
           <TextField
             variant="outlined"
@@ -82,7 +83,7 @@ const Login = ({ login }) => {
             label="Contraseña"
             type="password"
             id="password"
-            onChange={handlePasswordChange}
+            onChange={handleChange}
           />
           <Box display={displayAlert}>
             <Alert severity="error">El usuario o la contraseña no son correctos</ Alert>
