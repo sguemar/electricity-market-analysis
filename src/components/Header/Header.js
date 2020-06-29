@@ -52,7 +52,7 @@ const Header = ({ username, logout }) => {
 								:
 								<>
 									<Nav.Item>
-										<Link className="nav-link" to="/">
+										<Link className="nav-link" to="/signup">
 											Regístrate
 										</Link>
 									</Nav.Item>
@@ -71,12 +71,7 @@ const Header = ({ username, logout }) => {
 	);
 }
 
-const mapStateToProps = state => {
-	const { authentication } = state;
-	return authentication.loggedUser;
-};
-
 export default connect(
-	mapStateToProps,
+	null,
 	{ logout }
 )(Header);

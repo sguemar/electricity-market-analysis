@@ -9,6 +9,37 @@ from flask_jwt_extended import (
 
 from . import auth_bp
 from .models import User
+from app.customer.models import Customer
+from .schemas import UserSchema
+from app.customer.schemas import CustomerSchema	
+
+
+@auth_bp.route("/signup", methods=["POST"])
+def signup():
+	if not request.is_json:
+		return "Missing JSON in request", 400
+	data = request.get_json()
+	errors = {}
+	errors.update(validateUser(data))
+	errors.update(validateCustomer(data))
+	if errors:
+		return errors, 422
+	if User.get_by_username(data['username']):
+		return {"username": ["Nombre de usuario no disponible"]}, 422
+	if Customer.get_by_nif(data['nif']):
+		return {"nif": ["Este NIF ya ha sido registrado"]}, 422
+	user = User(username=data['username'], user_type=1)
+	user.set_password(data['password'])
+	user.save()
+	customer = Customer(
+		nif=data['nif'].upper(),
+		name=data['name'],
+		surname=data['surname'],
+		email=data['email'],
+		user_id=user.id
+	)
+	customer.save()
+	return "", 200
 
 
 @auth_bp.route("/login", methods=["POST"])
@@ -34,3 +65,23 @@ def logout():
     resp = make_response({'logout': True})
     unset_jwt_cookies(resp)
     return resp, 200
+
+
+def validateUser(data):
+	user = {
+		"username": data["username"],
+		"password": data["password"],
+		"passwordconfirmation": data["passwordconfirmation"]
+	}
+	user = {k: v for k, v in user.items() if v}
+	return UserSchema().validate(user)
+
+def validateCustomer(data):
+	customer = {
+		"nif": data["nif"],
+		"name": data["name"],
+		"surname": data["surname"],
+		"email": data["email"],
+	}
+	customer = {k: v for k, v in customer.items() if v}
+	return CustomerSchema().validate(customer)
