@@ -19,7 +19,7 @@ const App = ({ username }) => {
   return (
     <div className="app">
       <Router>
-        <Header username={username} />
+        <Header loggedUser={username} />
         <div className="main-content">
           <main>
             <Switch>

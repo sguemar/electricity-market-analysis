@@ -8,7 +8,7 @@ import { useHistory, Link } from 'react-router-dom';
 import axios from 'axios';
 import { logout } from '../../redux/actions/authentication';
 
-const Header = ({ username, logout }) => {
+const Header = ({loggedUser, logout }) => {
 
 	const history = useHistory();
 
@@ -35,12 +35,12 @@ const Header = ({ username, logout }) => {
 							</Nav.Item>
 						</Nav>
 						<Nav>
-							{username
+							{loggedUser
 								?
 								<>
 									<Nav.Item>
 										<Link className="nav-link" to="">
-											{username}
+											{loggedUser}
 										</Link>
 									</Nav.Item>
 									<Nav.Item>
