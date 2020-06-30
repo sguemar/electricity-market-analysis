@@ -46,7 +46,7 @@ const Login = ({ login }) => {
       login(user);
       history.push('/');
     } catch (error) {
-      console.log("error", error);
+      console.log(error);
       setDisplayAlert('block');
     }
   }

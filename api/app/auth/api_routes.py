@@ -10,12 +10,14 @@ from flask_jwt_extended import (
 from . import auth_bp
 from .models import User
 from app.customer.models import Customer
+from app.models import Company
 from .schemas import UserSchema
 from app.customer.schemas import CustomerSchema	
+from app.schemas import CompanySchema
 
 
-@auth_bp.route("/signup", methods=["POST"])
-def signup():
+@auth_bp.route("/signup-customer", methods=["POST"])
+def signup_customer():
 	if not request.is_json:
 		return "Missing JSON in request", 400
 	data = request.get_json()
@@ -39,6 +41,37 @@ def signup():
 		user_id=user.id
 	)
 	customer.save()
+	return "", 200
+
+
+@auth_bp.route('/signup-company', methods=["POST"])
+def signup_company():
+	if not request.is_json:
+		return "Missing JSON in request", 400
+	data = request.get_json()
+	errors = {}
+	errors.update(validateUser(data))
+	errors.update(validateCompany(data))
+	if errors:
+		return errors, 422
+	if User.get_by_username(data['username']):
+		return {"username": ["Nombre de usuario no disponible"]}, 422
+	if Company.get_by_cif(data['cif']):
+		return {"cif": ["Este CIF ya ha sido registrado"]}, 422
+	user = User(username=data['username'], user_type=0)
+	user.set_password(data['password'])
+	user.save()
+	company = Company(
+		cif=data['cif'].upper(),
+		name=data['name'],
+		address=data['address'],
+		url=data['url'],
+		email=data['email'],
+		company_type=data['companytype'],
+		phone=data['phone'],
+		user_id=user.id
+	)
+	company.save()
 	return "", 200
 
 
@@ -76,6 +109,7 @@ def validateUser(data):
 	user = {k: v for k, v in user.items() if v}
 	return UserSchema().validate(user)
 
+
 def validateCustomer(data):
 	customer = {
 		"nif": data["nif"],
@@ -85,3 +119,16 @@ def validateCustomer(data):
 	}
 	customer = {k: v for k, v in customer.items() if v}
 	return CustomerSchema().validate(customer)
+
+
+def validateCompany(data):
+	company = {
+		"name": data["name"],
+		"cif": data["cif"],
+		"url": data["url"],
+		"email": data["email"],
+		"phone": data["phone"],
+		"address": data["address"],
+	}
+	company = {k: v for k, v in company.items() if v}
+	return CompanySchema().validate(company)

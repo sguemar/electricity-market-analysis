@@ -3,7 +3,8 @@ import Header from '../Header/Header';
 import Footer from '../Footer/Footer';
 import Home from '../Home/Home';
 import Login from '../Login/Login';
-import SignUp from '../SignUp/SignUp';
+import CustomerSignUp from '../SignUp/CustomerSignUp';
+import CompanySignUp from '../SignUp/CompanySignUp';
 import NoMatch from '../NoMatch/NoMatch';
 
 import {
@@ -27,8 +28,11 @@ const App = ({ username }) => {
               <Route path="/login" exact>
                 {username ? <Redirect to="/" /> : <Login />}
               </Route>
-              <Route path="/signup" exact>
-                {username ? <Redirect to="/" /> : <SignUp />}
+              <Route path="/signup-customer" exact>
+                {username ? <Redirect to="/" /> : <CustomerSignUp />}
+              </Route>
+              <Route path="/signup-company" exact>
+                {username ? <Redirect to="/" /> : <CompanySignUp />}
               </Route>
               <Route component={NoMatch} />
             </Switch>

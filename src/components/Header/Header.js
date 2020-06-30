@@ -52,7 +52,7 @@ const Header = ({loggedUser, logout }) => {
 								:
 								<>
 									<Nav.Item>
-										<Link className="nav-link" to="/signup">
+										<Link className="nav-link" to="/signup-customer">
 											Regístrate
 										</Link>
 									</Nav.Item>

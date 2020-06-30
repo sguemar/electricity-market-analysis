@@ -7,6 +7,10 @@ import {
   makeStyles,
   Typography,
   Container,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel
 } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { Link, useHistory } from 'react-router-dom';
@@ -33,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignUp = () => {
+const CompanySignUp = () => {
   const classes = useStyles();
   const history = useHistory();
 
@@ -42,9 +46,12 @@ const SignUp = () => {
     password: '',
     passwordconfirmation: '',
     name: '',
-    surname: '',
-    nif: '',
-    email: ''
+    cif: '',
+    companytype: '0',
+    url: '',
+    email: '',
+    phone: '',
+    address: ''
   };
 
   const [formState, dispatchFormState] = useReducer(
@@ -66,10 +73,9 @@ const SignUp = () => {
     dispatchFormErrorState(initialFormState);
     e.preventDefault();
     try {
-      await axios.post('/api/auth/signup', formState);
+      await axios.post('/api/auth/signup-company', formState);
       history.push('/login');
     } catch (error) {
-      console.log(error.response.data);
       const errors = error.response.data;
       for (const key in errors)
         dispatchFormErrorState({ [key]: errors[key][0] });
@@ -82,7 +88,10 @@ const SignUp = () => {
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h4">
+          Empresas
+        </Typography>
+        <Typography component="h2" variant="h5">
           Crea una cuenta
         </Typography>
         <form className={classes.form} noValidate>
@@ -147,25 +156,41 @@ const SignUp = () => {
                 variant="outlined"
                 required
                 fullWidth
-                id="surname"
-                label="Apellidos"
-                name="surname"
+                id="cif"
+                label="CIF"
+                name="cif"
                 onChange={handleChange}
-                error={formErrorState.surname ? true : false}
-                helperText={formErrorState.surname}
+                error={formErrorState.cif ? true : false}
+                helperText={formErrorState.cif}
               />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth variant="outlined" className={classes.formControl}>
+                <InputLabel id="select-company-type-label">Tipo de empresa</InputLabel>
+                <Select
+                  labelId="select-company-type-label"
+                  id="companytype"
+                  name="companytype"
+                  defaultValue="0"
+                  value={formState.companyType}
+                  label="Tipo de empresa"
+                  onChange={handleChange}
+                >
+                  <MenuItem selected value="0">Comercializadora</MenuItem>
+                  <MenuItem value="1">Distribuidora</MenuItem>
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 variant="outlined"
-                required
                 fullWidth
-                id="nif"
-                label="NIF"
-                name="nif"
+                id="url"
+                label="URL"
+                name="url"
                 onChange={handleChange}
-                error={formErrorState.nif ? true : false}
-                helperText={formErrorState.nif}
+                error={formErrorState.url ? true : false}
+                helperText={formErrorState.url}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -181,6 +206,32 @@ const SignUp = () => {
                 helperText={formErrorState.email}
               />
             </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="phone"
+                label="Teléfono"
+                name="phone"
+                onChange={handleChange}
+                error={formErrorState.phone ? true : false}
+                helperText={formErrorState.phone}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="address"
+                label="Dirección"
+                name="address"
+                onChange={handleChange}
+                error={formErrorState.address ? true : false}
+                helperText={formErrorState.address}
+              />
+            </Grid>
           </Grid>
           <Button
             type="submit"
@@ -192,7 +243,18 @@ const SignUp = () => {
           >
             Regístrate
           </Button>
-          <Grid container justify="flex-end">
+          <Grid container justify="space-between">
+            <Grid item>
+              <Link
+                to="/signup-customer"
+                className="MuiTypography-root
+                           MuiLink-root
+                           MuiLink-underlineHover 
+                           MuiTypography-body2 
+                           MuiTypography-colorPrimary">
+                ¿Eres un particular? Regístrate
+              </Link>
+            </Grid>
             <Grid item>
               <Link
                 to="/login"
@@ -211,4 +273,4 @@ const SignUp = () => {
   );
 }
 
-export default SignUp;
+export default CompanySignUp;
