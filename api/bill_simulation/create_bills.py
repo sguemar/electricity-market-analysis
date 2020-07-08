@@ -20,8 +20,6 @@ INVOICES_NUMBER = 12
 CONTRACT_CYCLE = datetime.timedelta(days=365)
 INVOICE_CYCLE = datetime.timedelta(days=30)
 
-trading_companies = []
-distributors = []
 kwh_base_price = 0.0398
 kwh_annual_increase = 0.01078
 
@@ -99,61 +97,6 @@ def insert_dwelling(dwelling):
          dwelling['meter_box_number'],
          dwelling['population'],
          dwelling['province'],
-      )
-   cursor.execute(sql, val)
-   mydb.commit()
-
-
-def create_trading_company(trading_company_info):
-   trading_company = {}
-   trading_company['cif'] = random.choice(string.ascii_uppercase) + str(random.randint(10**7, 10**8-1))
-   trading_company['name'] = trading_company_info[1]
-   trading_company['address'] = trading_company_info[4]
-   domain = trading_company['name'].split(',')[0].replace(' ', '').replace('.', '').lower()
-   trading_company['url'] = "www." + domain + ".es"
-   trading_company['email'] = domain + "@gmail.com"
-   trading_company['type'] = 0
-   trading_company['phone'] = str(random.randint(10**8, 10**9-1))
-   trading_companies.append(trading_company)
-   return trading_company
-
-def create_distributor(distributor_info):
-   distributor = {}
-   distributor['cif'] = random.choice(string.ascii_uppercase) + str(random.randint(10**7, 10**8-1))
-   distributor['name'] = distributor_info[2]
-   distributor['address'] = (random.choice(streets)).replace('\n','')
-   domain = distributor['name'].split(',')[0].replace(' ', '').replace('.', '').lower()
-   distributor['url'] = "www." + domain + ".es"
-   distributor['email'] = domain + "@gmail.com"
-   distributor['type'] = 1
-   distributor['phone'] = str(random.randint(10**8, 10**9-1))
-   distributors.append(distributor)
-   return distributor
-
-def insert_company(company, user_id):
-   sql = """
-            INSERT INTO companies
-            (
-               cif,
-               name,
-               address,
-               url,
-               email,
-               company_type,
-               phone,
-               user_id
-            )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
-         """
-   val = (
-         company['cif'],
-         company['name'],
-         company['address'],
-         company['url'],
-         company['email'],
-         company['type'],
-         company['phone'],
-         user_id,
       )
    cursor.execute(sql, val)
    mydb.commit()
@@ -354,26 +297,39 @@ def insert_user(user, user_type):
 
    return user[0]
 
+
+def get_trading_companies():
+	cursor.execute("SHOW columns from companies")
+	keys = [column[0] for column in cursor.fetchall()]
+	cursor.execute("SELECT * FROM companies WHERE company_type = 0")
+	trading_companies = cursor.fetchall()
+	result = []
+	[
+		result.append(dict(zip(keys, trading_company)))
+		for trading_company in trading_companies
+	]
+	return result
+
+def get_distributors():
+	cursor.execute("SHOW columns from companies")
+	keys = [column[0] for column in cursor.fetchall()]
+	cursor.execute("SELECT * FROM companies WHERE company_type = 1")
+	distributors = cursor.fetchall()
+	result = []
+	[
+		result.append(dict(zip(keys, distributor)))
+		for distributor in distributors
+	]
+	return result
+
 if __name__ == '__main__':
 
    names = open("bill_simulation/names.txt", encoding='utf8').readlines()
    surnames = open("bill_simulation/surnames.txt", encoding='utf8').readlines()
    populations = open("bill_simulation/populations.txt", encoding='utf8').readlines()
    streets = open("bill_simulation/streets.txt", encoding='utf8').readlines()
-
-   # Create trading companies
-   with open('bill_simulation/trading_companies.txt', encoding='utf8') as trading_companies_file:
-      for trading_company in trading_companies_file:
-         company = create_trading_company(trading_company.split(";"))
-         user_id = insert_user(company, 0)
-         insert_company(company, user_id)
-
-   # Create distributors
-   with open('bill_simulation/distributors.txt', encoding='utf8') as distributors_file:
-      for distributor in distributors_file:
-         company = create_distributor(distributor.split(";"))
-         user_id = insert_user(company, 0)
-         insert_company(company, user_id)
+   trading_companies = get_trading_companies()
+   distributors = get_distributors()
 
    # Create customers
    for _ in range(CUSTOMERS_NUMBER):
