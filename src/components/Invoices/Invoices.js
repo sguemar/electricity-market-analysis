@@ -7,6 +7,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  CircularProgress
 } from '@material-ui/core';
 import {
   Pagination
@@ -24,6 +25,7 @@ const Invoices = () => {
   const [invoicesPage, setInvoicesPage] = useState(1);
   const [invoicesCount, setInvoicesCount] = useState(0);
   const [contractsCount, setContractsCount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const handleContractsSelectedChange = (contractNumber) => (event, isExpanded) =>
     setContractExpanded(isExpanded ? contractNumber : false);
@@ -32,12 +34,14 @@ const Invoices = () => {
   const handleContractsPageChange = (event, value) => setContractsPage(value);
 
   const getContracts = async () => {
+    setLoading(true);
     const data = await axios.get('/api/customer/get-invoices-data');
     const contracts = data.data;
-    contracts.sort((a, b) => 
+    contracts.sort((a, b) =>
       new Date(a.contract_data.init_date) - new Date(b.contract_data.init_date)
     );
     setContracts(contracts);
+    setLoading(false);
     setContractsCount(Math.ceil(contracts.length / 3));
     setContractExpanded(contracts[0].contract_data.contract_number);
   }
@@ -127,9 +131,15 @@ const Invoices = () => {
             <Grid container direction="column">
               <Typography align="center" variant="h5">Selecciona un contrato</Typography>
               <Box my={4}>
-                {contractsList}
-              </Box>
-              <Box margin="auto">
+                {loading ?
+                  <Box display="flex" justifyContent="center">
+                    <CircularProgress />
+                  </Box>
+                  :
+                  contractsList
+                }
+              </Box >
+              <Box display="flex" justifyContent="center">
                 <Pagination page={contractsPage} count={contractsCount} onChange={handleContractsPageChange} />
               </Box>
             </Grid>
@@ -140,7 +150,13 @@ const Invoices = () => {
             <Grid container direction="column">
               <Typography align="center" variant="h5">Facturas</Typography>
               <Box my={4}>
-                {invoicesList}
+                {loading ?
+                  <Box display="flex" justifyContent="center">
+                    <CircularProgress />
+                  </Box>
+                  :
+                  invoicesList
+                }
               </Box>
               <Box margin="auto">
                 <Pagination page={invoicesPage} count={invoicesCount} onChange={handleInvoicesPageChange} />
