@@ -37,6 +37,6 @@ def create_app():
 	app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
 	from .customer import customer_bp
-	app.register_blueprint(customer_bp)
+	app.register_blueprint(customer_bp, url_prefix='/api/customer')
 
 	return app

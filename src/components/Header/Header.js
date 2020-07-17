@@ -33,6 +33,16 @@ const Header = ({loggedUser, logout }) => {
 							<Nav.Item>
 								<Link className="nav-link" to="/">Inicio</Link>
 							</Nav.Item>
+							{loggedUser
+								?
+								<Nav.Item>
+									<Link className="nav-link" to="/invoices">
+										Mis facturas
+									</Link>
+								</Nav.Item>
+								:
+								<></>
+							}
 						</Nav>
 						<Nav>
 							{loggedUser

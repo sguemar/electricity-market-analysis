@@ -6,6 +6,7 @@ import Login from '../Login/Login';
 import CustomerSignUp from '../SignUp/CustomerSignUp';
 import CompanySignUp from '../SignUp/CompanySignUp';
 import NoMatch from '../NoMatch/NoMatch';
+import Invoices from '../Invoices/Invoices';
 
 import {
   BrowserRouter as Router,
@@ -25,6 +26,9 @@ const App = ({ username }) => {
           <main>
             <Switch>
               <Route path="/" exact component={Home} />
+              <Route path="/invoices" exact>
+                {username ? <Invoices /> : <Login />}
+              </Route>
               <Route path="/login" exact>
                 {username ? <Redirect to="/" /> : <Login />}
               </Route>

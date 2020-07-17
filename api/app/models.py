@@ -1,4 +1,5 @@
 from sqlalchemy.dialects.mysql import TINYINT
+from sqlalchemy_serializer import SerializerMixin
 
 from . import db
 
@@ -38,7 +39,7 @@ class Company(db.Model):
 		).first()
 
 
-class Contract(db.Model):
+class Contract(db.Model, SerializerMixin):
 
 	__tablename__ = "contracts"
 
@@ -73,7 +74,7 @@ class Contract(db.Model):
 		)
 
 
-class Invoice(db.Model):
+class Invoice(db.Model, SerializerMixin):
 
 	__tablename__ = "invoices"
 
