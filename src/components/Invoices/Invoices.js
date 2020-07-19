@@ -185,7 +185,7 @@ const Invoices = () => {
                 }
               </Box >
               <Box display="flex" justifyContent="center">
-                <Pagination page={contractsPage} count={contractsCount} onChange={handleContractsPageChange} />
+                <Pagination color="primary" page={contractsPage} count={contractsCount} onChange={handleContractsPageChange} />
               </Box>
             </Grid>
           </Box>
@@ -210,7 +210,7 @@ const Invoices = () => {
                 }
               </Box>
               <Box margin="auto">
-                <Pagination page={invoicesPage} count={invoicesCount} onChange={handleInvoicesPageChange} />
+                <Pagination color="primary" page={invoicesPage} count={invoicesCount} onChange={handleInvoicesPageChange} />
               </Box>
               <Dialog open={deleteDialogState}>
                 <DialogContent>
