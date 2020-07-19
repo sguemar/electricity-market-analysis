@@ -200,7 +200,13 @@ const Invoices = () => {
                     <CircularProgress />
                   </Box>
                   :
-                  invoicesList
+                  <>
+                    {
+                      invoicesList.length !== 0 ?
+                        invoicesList :
+                        <Typography align="center">No tienes facturas guardadas en este contrato</Typography>
+                    }
+                  </>
                 }
               </Box>
               <Box margin="auto">
