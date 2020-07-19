@@ -7,31 +7,60 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  CircularProgress
+  CircularProgress,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogActions
 } from '@material-ui/core';
 import {
   Pagination
 } from '@material-ui/lab';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import axios from 'axios';
-
+import Cookies from 'universal-cookie';
 
 const Invoices = () => {
+  const cookies = new Cookies();
+  const csrfAccessToken = cookies.get('csrf_access_token');
+
   const [contracts, setContracts] = useState([]);
   const [contractExpanded, setContractExpanded] = useState(false);
   const [contractsList, setContractsList] = useState("");
   const [contractsPage, setContractsPage] = useState(1);
+  const [contractsCount, setContractsCount] = useState(0);
   const [invoicesList, setInvoicesList] = useState("");
   const [invoicesPage, setInvoicesPage] = useState(1);
   const [invoicesCount, setInvoicesCount] = useState(0);
-  const [contractsCount, setContractsCount] = useState(0);
+  const [invoiceSelected, setInvoiceSelected] = useState("");
   const [loading, setLoading] = useState(false);
+  const [deleteDialogState, setDeleteDialogState] = useState(false);
 
   const handleContractsSelectedChange = (contractNumber) => (event, isExpanded) =>
     setContractExpanded(isExpanded ? contractNumber : false);
 
   const handleInvoicesPageChange = (event, value) => setInvoicesPage(value);
   const handleContractsPageChange = (event, value) => setContractsPage(value);
+
+  const handleDeleteInvoiceDialog = (invoice_number) => {
+    setDeleteDialogState(true);
+    setInvoiceSelected(invoice_number);
+  }
+  const closeDeleteInvoiceDialog = () => setDeleteDialogState(false);
+
+  const handleDeleteInvoice = async () => {
+    try {
+      await axios.delete(
+        '/api/customer/delete-invoice/' + invoiceSelected,
+        { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
+      );
+      setDeleteDialogState(false);
+      getContracts();
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const getContracts = async () => {
     setLoading(true);
@@ -114,7 +143,23 @@ const Invoices = () => {
               <Typography>Fecha de fin: {invoice.end_date}</Typography>
               <Typography>Impuestos: {invoice.tax}%</Typography>
               <Typography>Referencia contrato: {invoice.contract_reference}</Typography>
-              <Typography>Documento: {invoice.file}</Typography>
+              <Box my={2}>
+                <Grid container justify="space-evenly">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                  >
+                    Cambiar
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => handleDeleteInvoiceDialog(invoice.invoice_number)}
+                  >
+                    Eliminar
+                  </Button>
+                </Grid>
+              </Box>
             </Grid>
           </AccordionDetails>
         </Accordion>
@@ -161,6 +206,17 @@ const Invoices = () => {
               <Box margin="auto">
                 <Pagination page={invoicesPage} count={invoicesCount} onChange={handleInvoicesPageChange} />
               </Box>
+              <Dialog open={deleteDialogState}>
+                <DialogContent>
+                  <DialogContentText>
+                    ¿Seguro que quieres eliminar la factura Nº {invoiceSelected}?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button variant="contained" onClick={handleDeleteInvoice} color="secondary">Eliminar</Button>
+                  <Button variant="contained" onClick={closeDeleteInvoiceDialog} autoFocus>Cancelar</Button>
+                </DialogActions>
+              </Dialog>
             </Grid>
           </Box>
         </Grid>

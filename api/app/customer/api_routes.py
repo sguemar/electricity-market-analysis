@@ -27,6 +27,14 @@ def get_invoices_data():
 	return jsonify(data)
 
 
+@customer_bp.route("/delete-invoice/<string:invoice_number>", methods=["DELETE"])
+@jwt_required
+def delete_invoice(invoice_number):
+	invoice = Invoice.get_by_invoice_number(invoice_number)
+	invoice.delete()
+	return "", 200
+
+
 def __get_invoices(contract_number):
 	_invoices = Invoice.get_by_contract_number(contract_number)
 	invoices = []
