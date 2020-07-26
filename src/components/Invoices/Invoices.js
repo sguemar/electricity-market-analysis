@@ -10,55 +10,127 @@ import {
   CircularProgress,
   Button,
   Dialog,
+  DialogTitle,
   DialogContent,
   DialogContentText,
-  DialogActions
+  DialogActions,
+  makeStyles,
+  Slide,
 } from '@material-ui/core';
 import {
   Pagination
 } from '@material-ui/lab';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import {
+  Button as RBButton
+} from 'react-bootstrap';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
 
+
+const useStyles = makeStyles(() => ({
+  input: {
+    display: 'none',
+  },
+  dialogTitle: {
+    textAlign: 'center',
+  },
+  label: {
+    marginBottom: '0',
+  },
+  iframe: {
+    border: 'none',
+    boxShadow: '10px 10px 20px grey',
+    width: '90%',
+    height: '90%',
+    margin: '0 auto',
+    display: 'block',
+  },
+}));
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 const Invoices = () => {
+  const classes = useStyles();
   const cookies = new Cookies();
   const csrfAccessToken = cookies.get('csrf_access_token');
+  
+  const [loading, setLoading] = useState(false);
 
+  // CONTRACTS STATE
   const [contracts, setContracts] = useState([]);
   const [contractExpanded, setContractExpanded] = useState(false);
   const [contractsList, setContractsList] = useState("");
   const [contractsPage, setContractsPage] = useState(1);
   const [contractsCount, setContractsCount] = useState(0);
+  
+  // INVOICES STATE
   const [invoicesList, setInvoicesList] = useState("");
   const [invoicesPage, setInvoicesPage] = useState(1);
   const [invoicesCount, setInvoicesCount] = useState(0);
   const [invoiceSelected, setInvoiceSelected] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [deleteDialogState, setDeleteDialogState] = useState(false);
+  const [deleteInvoiceDialogState, setDeleteInvoiceDialogState] = useState(false);
+  const [addInvoiceDialogState, setAddInvoiceDialogState] = useState(false);
+  const [invoiceFile, setInvoiceFile] = useState({});
+  const [invoceFilePath, setInvoiceFilePath] = useState("");
 
   const handleContractsSelectedChange = (contractNumber) => (event, isExpanded) =>
     setContractExpanded(isExpanded ? contractNumber : false);
 
+  // PAGINATION
   const handleInvoicesPageChange = (event, value) => setInvoicesPage(value);
   const handleContractsPageChange = (event, value) => setContractsPage(value);
 
-  const handleDeleteInvoiceDialog = (invoice_number) => {
-    setDeleteDialogState(true);
+  // DELETE INVOICE
+  const openDeleteInvoiceDialog = (invoice_number) => {
+    setDeleteInvoiceDialogState(true);
     setInvoiceSelected(invoice_number);
   }
-  const closeDeleteInvoiceDialog = () => setDeleteDialogState(false);
-
+  const closeDeleteInvoiceDialog = () => setDeleteInvoiceDialogState(false);
   const handleDeleteInvoice = async () => {
     try {
       await axios.delete(
         '/api/customer/delete-invoice/' + invoiceSelected,
         { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
       );
-      setDeleteDialogState(false);
+      setDeleteInvoiceDialogState(false);
       getContracts();
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  // ADD INVOICE
+  const openAddInvoiceDialog = () => setAddInvoiceDialogState(true);
+  const closeAddInvoiceDialog = () => setAddInvoiceDialogState(false);
+  const handleInputInvoice = (event) => {
+    let inputFile = event.target.files[0];
+    setInvoiceFile(inputFile);
+    let reader = new FileReader();
+    reader.onload = () => setInvoiceFilePath(reader.result);
+    reader.onerror = error => console.log('Error: ', error);
+    reader.readAsDataURL(inputFile);
+  };
+  const handleAddInvoice = async () => {
+    try {
+      var formData = new FormData();
+      formData.append('file', invoiceFile);
+      const results = await axios.post(
+        '/api/customer/add-invoice',
+        formData,
+        {
+          headers: {
+            'X-CSRF-TOKEN': csrfAccessToken,
+            'content-type': 'multipart/form-data'
+          }
+        },
+      );
+      setAddInvoiceDialogState(false);
+      getContracts();
+    } catch (error) {
+      console.log(error.response.data);
     }
   }
 
@@ -154,7 +226,7 @@ const Invoices = () => {
                   <Button
                     variant="contained"
                     color="secondary"
-                    onClick={() => handleDeleteInvoiceDialog(invoice.invoice_number)}
+                    onClick={() => openDeleteInvoiceDialog(invoice.invoice_number)}
                   >
                     Eliminar
                   </Button>
@@ -201,10 +273,9 @@ const Invoices = () => {
                   </Box>
                   :
                   <>
-                    {
-                      invoicesList.length !== 0 ?
-                        invoicesList :
-                        <Typography align="center">No tienes facturas guardadas en este contrato</Typography>
+                    {invoicesList.length !== 0 ?
+                      invoicesList :
+                      <Typography align="center">No tienes facturas guardadas en este contrato</Typography>
                     }
                   </>
                 }
@@ -212,7 +283,10 @@ const Invoices = () => {
               <Box margin="auto">
                 <Pagination color="primary" page={invoicesPage} count={invoicesCount} onChange={handleInvoicesPageChange} />
               </Box>
-              <Dialog open={deleteDialogState}>
+              <Box my={2}>
+                <RBButton variant="success" onClick={openAddInvoiceDialog} block>Añadir factura</RBButton>
+              </Box>
+              <Dialog open={deleteInvoiceDialogState}>
                 <DialogContent>
                   <DialogContentText>
                     ¿Seguro que quieres eliminar la factura Nº {invoiceSelected}?
@@ -220,7 +294,31 @@ const Invoices = () => {
                 </DialogContent>
                 <DialogActions>
                   <Button variant="contained" onClick={handleDeleteInvoice} color="secondary">Eliminar</Button>
-                  <Button variant="contained" onClick={closeDeleteInvoiceDialog} autoFocus>Cancelar</Button>
+                  <Button variant="contained" onClick={closeDeleteInvoiceDialog}>Cancelar</Button>
+                </DialogActions>
+              </Dialog>
+              <Dialog open={addInvoiceDialogState} TransitionComponent={Transition} fullScreen>
+                <DialogTitle className={classes.dialogTitle}>
+                  Selecciona la factura que quieres guardar
+                </DialogTitle>
+                <DialogContent>
+                  <iframe className={classes.iframe} src={invoceFilePath} title="invoice-preview" alt="Vista previa de factura"></iframe>
+                </DialogContent>
+                <DialogActions>
+                  <input
+                    accept=".txt,.pdf,.png,.jpg,.jpeg,.gif"
+                    className={classes.input}
+                    id="upload-button-file"
+                    type="file"
+                    onChange={handleInputInvoice}
+                  />
+                  <label className={classes.label} htmlFor="upload-button-file">
+                    <Button variant="contained" color="primary" component="span">
+                      Seleccionar
+                    </Button>
+                  </label>
+                  <RBButton variant="success" onClick={handleAddInvoice}>Añadir</RBButton>
+                  <Button variant="contained" onClick={closeAddInvoiceDialog}>Cancelar</Button>
                 </DialogActions>
               </Dialog>
             </Grid>
