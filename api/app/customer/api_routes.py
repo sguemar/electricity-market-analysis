@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.exceptions import BadRequestKeyError
 from sqlalchemy.exc import IntegrityError
 
-import uuid, os, unidecode, dateparser, random, string
+import uuid, os, unidecode, dateparser, random, string, datetime
 
 from . import customer_bp, docreco
 from .models import Customer
@@ -52,7 +52,6 @@ def delete_invoice(invoice_number):
 @customer_bp.route("/add-invoice", methods=["POST"])
 @jwt_required
 def process_bill():
-
 	try:
 		file = request.files["file"]
 	except BadRequestKeyError:
@@ -205,7 +204,7 @@ def __get_invoice_data(results, contract_number):
 
 	# If issue date is empty, new issue date is end date plus three days
 	if not invoice["issue_date"] and invoice["end_date"]:
-		split_end_date = invoice_data["end_date"].split("-")
+		split_end_date = invoice["end_date"].split("-")
 		invoice["issue_date"] = str(
 			datetime.datetime(int(split_end_date[0]), int(split_end_date[1]), int(split_end_date[2])) + 
 			datetime.timedelta(days=3)
@@ -255,8 +254,6 @@ def __get_format_date(dates):
 		except AttributeError:
 			pass
 	return None
-
-
 
 
 def __get_invoices(contract_number):
