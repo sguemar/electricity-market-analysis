@@ -46,6 +46,19 @@ def get_invoices_data():
 def delete_invoice(invoice_number):
 	invoice = Invoice.get_by_invoice_number(invoice_number)
 	invoice.delete()
+	contract = Contract.get_by_contract_number(invoice.contract_number)
+	invoices = __get_invoices(contract.contract_number)
+	if len(invoices) == 0:
+		logged_user = User.get_by_username(get_jwt_identity())
+		logged_customer = Customer.get_by_user_id(logged_user.id)
+		nif = logged_customer.nif
+		cus_dwe_con = Customer_Dwelling_Contract \
+			.get_by_nif_and_contract_number(
+				nif,
+				invoice.contract_number
+			)
+		cus_dwe_con.delete()
+		contract.delete()
 	return "", 200
 
 
@@ -144,17 +157,18 @@ def process_bill():
 
 	logged_user = User.get_by_username(get_jwt_identity())
 	logged_customer = Customer.get_by_user_id(logged_user.id)
+	nif = logged_customer.nif
 
-	customer_dwelling_contract = Customer_Dwelling_Contract(
-		nif=logged_customer.nif,
-		cups=cups,
-		contract_number=contract_number
-	)
-
-	try:
-		customer_dwelling_contract.save()
-	except IntegrityError:
-		pass
+	if not Customer_Dwelling_Contract.get_by_nif_and_contract_number(nif, contract_number):
+		customer_dwelling_contract = Customer_Dwelling_Contract(
+			nif=nif,
+			cups=cups,
+			contract_number=contract_number
+		)
+		try:
+			customer_dwelling_contract.save()
+		except IntegrityError:
+			pass
 
 	return "La factura se ha guardado con éxito", 200
 

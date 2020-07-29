@@ -58,6 +58,10 @@ class Contract(db.Model, SerializerMixin):
 		nullable=False
 	)
 
+	def delete(self):
+		db.session.delete(self)
+		db.session.commit()
+
 	def save(self):
 		db.session.add(self)
 		db.session.commit()
@@ -161,10 +165,23 @@ class Customer_Dwelling_Contract(db.Model):
 	init_date = db.Column(db.DateTime)
 	end_date = db.Column(db.DateTime)
 
+	def delete(self):
+		db.session.delete(self)
+		db.session.commit()
+
 	def save(self):
 		db.session.add(self)
 		db.session.commit()
 
 	@staticmethod
 	def get_by_nif(nif):
-		return Customer_Dwelling_Contract.query.filter_by(nif=nif).all()
+		return Customer_Dwelling_Contract.query.filter_by(
+			nif=nif
+		).all()
+
+	@staticmethod
+	def get_by_nif_and_contract_number(nif, contract_number):
+		return Customer_Dwelling_Contract.query.filter_by(
+			nif=nif,
+			contract_number=contract_number
+		).first()

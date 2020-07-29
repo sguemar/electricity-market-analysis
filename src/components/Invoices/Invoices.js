@@ -95,6 +95,7 @@ const Invoices = () => {
         '/api/customer/delete-invoice/' + invoiceSelected,
         { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
       );
+      setContractExpanded(false);
       setDeleteInvoiceDialogState(false);
       getContracts();
     } catch (error) {
@@ -117,7 +118,7 @@ const Invoices = () => {
     try {
       var formData = new FormData();
       formData.append('file', invoiceFile);
-      const results = await axios.post(
+      await axios.post(
         '/api/customer/add-invoice',
         formData,
         {
@@ -141,10 +142,18 @@ const Invoices = () => {
     contracts.sort((a, b) =>
       new Date(a.contract_data.init_date) - new Date(b.contract_data.init_date)
     );
-    setContracts(contracts);
+    if (contracts.length === 0) {
+      setContracts([]);
+      setContractsCount(0);
+      setContractExpanded(false);
+      setContractsList("");
+      setInvoicesList("");
+    } else {
+      setContracts(contracts);
+      setContractsCount(Math.ceil(contracts.length / 3));
+      setContractExpanded(contracts[0].contract_data.contract_number);
+    }
     setLoading(false);
-    setContractsCount(Math.ceil(contracts.length / 3));
-    setContractExpanded(contracts[0].contract_data.contract_number);
   }
 
   useEffect(() => {
@@ -253,7 +262,12 @@ const Invoices = () => {
                     <CircularProgress />
                   </Box>
                   :
-                  contractsList
+                  <>
+                    {contractsList.length !== 0 ?
+                      contractsList :
+                      <Typography align="center">No tienes ningún contrato, añade alguna factura</Typography>
+                    }
+                  </>
                 }
               </Box >
               <Box display="flex" justifyContent="center">
@@ -275,7 +289,7 @@ const Invoices = () => {
                   <>
                     {invoicesList.length !== 0 ?
                       invoicesList :
-                      <Typography align="center">No tienes facturas guardadas en este contrato</Typography>
+                      <Typography align="center">No tienes facturas guardadas</Typography>
                     }
                   </>
                 }
