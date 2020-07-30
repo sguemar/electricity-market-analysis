@@ -71,10 +71,16 @@ const Invoices = () => {
   const [invoicesPage, setInvoicesPage] = useState(1);
   const [invoicesCount, setInvoicesCount] = useState(0);
   const [invoiceSelected, setInvoiceSelected] = useState("");
+    // DELETE
   const [deleteInvoiceDialogState, setDeleteInvoiceDialogState] = useState(false);
+    // ADD
   const [addInvoiceDialogState, setAddInvoiceDialogState] = useState(false);
-  const [invoiceFile, setInvoiceFile] = useState({});
-  const [invoceFilePath, setInvoiceFilePath] = useState("");
+  const [addInvoiceFile, setAddInvoiceFile] = useState({});
+  const [addInvoceFilePath, setAddInvoiceFilePath] = useState("");
+    // CHANGE
+  const [changeInvoiceDialogState, setChangeInvoiceDialogState] = useState(false);
+  const [changeInvoiceFile, setChangeInvoiceFile] = useState({});
+  const [changeInvoceFilePath, setChangeInvoiceFilePath] = useState("");
 
   const handleContractsSelectedChange = (contractNumber) => (event, isExpanded) =>
     setContractExpanded(isExpanded ? contractNumber : false);
@@ -108,16 +114,16 @@ const Invoices = () => {
   const closeAddInvoiceDialog = () => setAddInvoiceDialogState(false);
   const handleInputInvoice = (event) => {
     let inputFile = event.target.files[0];
-    setInvoiceFile(inputFile);
+    setAddInvoiceFile(inputFile);
     let reader = new FileReader();
-    reader.onload = () => setInvoiceFilePath(reader.result);
+    reader.onload = () => setAddInvoiceFilePath(reader.result);
     reader.onerror = error => console.log('Error: ', error);
     reader.readAsDataURL(inputFile);
   };
   const handleAddInvoice = async () => {
     try {
       var formData = new FormData();
-      formData.append('file', invoiceFile);
+      formData.append('file', addInvoiceFile);
       await axios.post(
         '/api/customer/add-invoice',
         formData,
@@ -129,6 +135,46 @@ const Invoices = () => {
         },
       );
       setAddInvoiceDialogState(false);
+      getContracts();
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  }
+
+  // CHANGE INVOICE
+  const openChangeInvoiceDialog = (invoice_number) => {
+    setChangeInvoiceDialogState(true);
+    setInvoiceSelected(invoice_number);
+  }
+  const closeChangeInvoiceDialog = () => setChangeInvoiceDialogState(false);
+  const handleInputChangeInvoice = (event) => {
+    let inputFile = event.target.files[0];
+    setChangeInvoiceFile(inputFile);
+    let reader = new FileReader();
+    reader.onload = () => setChangeInvoiceFilePath(reader.result);
+    reader.onerror = error => console.log('Error: ', error);
+    reader.readAsDataURL(inputFile);
+  };
+  const handleChangeInvoice = async () => {
+    setContractExpanded(false);
+    try {
+      var formData = new FormData();
+      formData.append('file', changeInvoiceFile);
+      await axios.post(
+        '/api/customer/add-invoice',
+        formData,
+        {
+          headers: {
+            'X-CSRF-TOKEN': csrfAccessToken,
+            'content-type': 'multipart/form-data'
+          }
+        },
+      );
+      await axios.delete(
+        '/api/customer/delete-invoice/' + invoiceSelected,
+        { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
+      );
+      setChangeInvoiceDialogState(false);
       getContracts();
     } catch (error) {
       console.log(error.response.data);
@@ -229,6 +275,7 @@ const Invoices = () => {
                   <Button
                     variant="contained"
                     color="primary"
+                    onClick={() => openChangeInvoiceDialog(invoice.invoice_number)}
                   >
                     Cambiar
                   </Button>
@@ -316,7 +363,7 @@ const Invoices = () => {
                   Selecciona la factura que quieres guardar
                 </DialogTitle>
                 <DialogContent>
-                  <iframe className={classes.iframe} src={invoceFilePath} title="invoice-preview" alt="Vista previa de factura"></iframe>
+                  <iframe className={classes.iframe} src={addInvoceFilePath} title="invoice-preview" alt="Vista previa de factura"></iframe>
                 </DialogContent>
                 <DialogActions>
                   <input
@@ -333,6 +380,30 @@ const Invoices = () => {
                   </label>
                   <RBButton variant="success" onClick={handleAddInvoice}>Añadir</RBButton>
                   <Button variant="contained" onClick={closeAddInvoiceDialog}>Cancelar</Button>
+                </DialogActions>
+              </Dialog>
+              <Dialog open={changeInvoiceDialogState} TransitionComponent={Transition} fullScreen>
+                <DialogTitle className={classes.dialogTitle}>
+                  Selecciona la factura que quieres guardar
+                </DialogTitle>
+                <DialogContent>
+                  <iframe className={classes.iframe} src={changeInvoceFilePath} title="invoice-preview" alt="Vista previa de factura"></iframe>
+                </DialogContent>
+                <DialogActions>
+                  <input
+                    accept=".txt,.pdf,.png,.jpg,.jpeg,.gif"
+                    className={classes.input}
+                    id="upload-button-file"
+                    type="file"
+                    onChange={handleInputChangeInvoice}
+                  />
+                  <label className={classes.label} htmlFor="upload-button-file">
+                    <Button variant="contained" color="primary" component="span">
+                      Seleccionar
+                    </Button>
+                  </label>
+                  <RBButton variant="success" onClick={handleChangeInvoice}>Cambiar</RBButton>
+                  <Button variant="contained" onClick={closeChangeInvoiceDialog}>Cancelar</Button>
                 </DialogActions>
               </Dialog>
             </Grid>
