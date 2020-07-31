@@ -286,6 +286,9 @@ const Invoices = () => {
         contract.contract_data.contract_number === contractExpanded
       ).invoices;
       setInvoicesCount(Math.ceil(invoicesList.length / 5));
+      invoicesList.sort((a, b) =>
+        new Date(a.init_date) - new Date(b.init_date)
+      );
       const endIndex = invoicesPage * 5;
       invoicesList = invoicesList.slice(endIndex - 5, endIndex);
       const updatedInvoicesList = invoicesList.map(invoice =>
