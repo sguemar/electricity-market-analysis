@@ -16,6 +16,11 @@ import {
   DialogActions,
   makeStyles,
   Slide,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField
 } from '@material-ui/core';
 import {
   Pagination
@@ -28,7 +33,7 @@ import axios from 'axios';
 import Cookies from 'universal-cookie';
 
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   input: {
     display: 'none',
   },
@@ -45,6 +50,13 @@ const useStyles = makeStyles(() => ({
     height: '90%',
     margin: '0 auto',
     display: 'block',
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 100,
+  },
+  yearTextField: {
+    width: 100,
   },
 }));
 
@@ -65,6 +77,8 @@ const Invoices = () => {
   const [contractsList, setContractsList] = useState("");
   const [contractsPage, setContractsPage] = useState(1);
   const [contractsCount, setContractsCount] = useState(0);
+  const [contractMonth, setContractMonth] = useState("");
+  const [contractYear, setContractYear] = useState("");
   
   // INVOICES STATE
   const [invoicesList, setInvoicesList] = useState("");
@@ -84,6 +98,12 @@ const Invoices = () => {
 
   const handleContractsSelectedChange = (contractNumber) => (event, isExpanded) =>
     setContractExpanded(isExpanded ? contractNumber : false);
+
+  const handleChangeContractMonth = (event) => setContractMonth(event.target.value);
+  const handleChangeContractYear = (event) => {
+    let year = parseInt(event.target.value);
+    Number.isInteger(year) ? setContractYear(year) : setContractYear("");
+  }
 
   // PAGINATION
   const handleInvoicesPageChange = (event, value) => setInvoicesPage(value);
@@ -208,8 +228,20 @@ const Invoices = () => {
 
   useEffect(() => {
     if (contractExpanded) {
+      let contractsToShow = [...contracts];
+      if (Number.isInteger(contractMonth))
+        contractsToShow = contractsToShow.filter(contract =>
+          new Date(contract.contract_data.init_date).getMonth() === contractMonth
+        );
+      if (Number.isInteger(contractYear)) {
+        console.log("entro en year");
+        contractsToShow = contractsToShow.filter(contract =>
+          new Date(contract.contract_data.init_date).getFullYear() === contractYear
+        );
+      }
+      setContractsCount(Math.ceil(contractsToShow.length / 3));
       const endIndex = contractsPage * 3;
-      const paginatedContracts = contracts.slice(endIndex - 3, endIndex);
+      const paginatedContracts = contractsToShow.slice(endIndex - 3, endIndex);
       const updatedContractsList = paginatedContracts.map(contract => {
         const contractNumber = contract.contract_data.contract_number;
         return (
@@ -240,7 +272,13 @@ const Invoices = () => {
       });
       setContractsList(updatedContractsList);
     }
-  }, [contractExpanded, contracts, contractsPage]);
+  }, [
+    contractExpanded,
+    contracts,
+    contractsPage,
+    contractMonth,
+    contractYear
+  ]);
 
   useEffect(() => {
     if (contractExpanded) {
@@ -312,13 +350,53 @@ const Invoices = () => {
                   <>
                     {contractsList.length !== 0 ?
                       contractsList :
-                      <Typography align="center">No tienes ningún contrato, añade alguna factura</Typography>
+                      <>
+                        {contractMonth || contractYear ?
+                        <Typography align="center">No tienes contratos en la fecha seleccionada</Typography> :
+                        <Typography align="center">No tienes ningún contrato, añade alguna factura</Typography>
+                        }
+                      </>
                     }
                   </>
                 }
               </Box >
               <Box display="flex" justifyContent="center">
                 <Pagination color="primary" page={contractsPage} count={contractsCount} onChange={handleContractsPageChange} />
+              </Box>
+              <Box display="flex" justifyContent="center" alignItems="center" mt={2}>
+                <FormControl variant="outlined" className={classes.formControl}>
+                  <InputLabel id="contract-select-month">Mes</InputLabel>
+                  <Select
+                    labelId="contract-select-month"
+                    id="contract-select-month"
+                    value={contractMonth}
+                    onChange={handleChangeContractMonth}
+                    label="contract-month"
+                  >
+                    <MenuItem value=""><em>&nbsp;</em></MenuItem>
+                    <MenuItem value={0}>Enero</MenuItem>
+                    <MenuItem value={1}>Febrero</MenuItem>
+                    <MenuItem value={2}>Marzo</MenuItem>
+                    <MenuItem value={3}>Abril</MenuItem>
+                    <MenuItem value={4}>Mayo</MenuItem>
+                    <MenuItem value={5}>Junio</MenuItem>
+                    <MenuItem value={6}>Julio</MenuItem>
+                    <MenuItem value={7}>Agosto</MenuItem>
+                    <MenuItem value={8}>Septiembre</MenuItem>
+                    <MenuItem value={9}>Octubre</MenuItem>
+                    <MenuItem value={10}>Noviembre</MenuItem>
+                    <MenuItem value={11}>Diciembre</MenuItem>
+                  </Select>
+                </FormControl>
+                <TextField
+                  className={classes.yearTextField}
+                  id="contract-select-year"
+                  label="Año"
+                  type="number"
+                  value={contractYear}
+                  onChange={handleChangeContractYear}
+                  variant="outlined"
+                />
               </Box>
             </Grid>
           </Box>
