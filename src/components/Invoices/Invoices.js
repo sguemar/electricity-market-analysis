@@ -85,6 +85,9 @@ const Invoices = () => {
   const [invoicesPage, setInvoicesPage] = useState(1);
   const [invoicesCount, setInvoicesCount] = useState(0);
   const [invoiceSelected, setInvoiceSelected] = useState("");
+  const [invoiceMonth, setInvoiceMonth] = useState("");
+  const [invoiceYear, setInvoiceYear] = useState("");
+  
     // DELETE
   const [deleteInvoiceDialogState, setDeleteInvoiceDialogState] = useState(false);
     // ADD
@@ -103,6 +106,12 @@ const Invoices = () => {
   const handleChangeContractYear = (event) => {
     let year = parseInt(event.target.value);
     Number.isInteger(year) ? setContractYear(year) : setContractYear("");
+  }
+
+  const handleChangeInvoiceMonth = (event) => setInvoiceMonth(event.target.value);
+  const handleChangeInvoiceYear = (event) => {
+    let year = parseInt(event.target.value);
+    Number.isInteger(year) ? setInvoiceYear(year) : setInvoiceYear("");
   }
 
   // PAGINATION
@@ -234,7 +243,6 @@ const Invoices = () => {
           new Date(contract.contract_data.init_date).getMonth() === contractMonth
         );
       if (Number.isInteger(contractYear)) {
-        console.log("entro en year");
         contractsToShow = contractsToShow.filter(contract =>
           new Date(contract.contract_data.init_date).getFullYear() === contractYear
         );
@@ -285,6 +293,15 @@ const Invoices = () => {
       let invoicesList = contracts.find(contract =>
         contract.contract_data.contract_number === contractExpanded
       ).invoices;
+      if (Number.isInteger(invoiceMonth))
+        invoicesList = invoicesList.filter(invoice =>
+          new Date(invoice.init_date).getMonth() === invoiceMonth
+        );
+      if (Number.isInteger(invoiceYear)) {
+        invoicesList = invoicesList.filter(invoice =>
+          new Date(invoice.init_date).getFullYear() === invoiceYear
+        );
+      }
       setInvoicesCount(Math.ceil(invoicesList.length / 5));
       invoicesList.sort((a, b) =>
         new Date(a.init_date) - new Date(b.init_date)
@@ -335,7 +352,13 @@ const Invoices = () => {
       );
       setInvoicesList(updatedInvoicesList);
     }
-  }, [contractExpanded, contracts, invoicesPage]);
+  }, [
+    contractExpanded,
+    contracts,
+    invoicesPage,
+    invoiceMonth,
+    invoiceYear
+  ]);
 
   return (
     <Container>
@@ -417,13 +440,53 @@ const Invoices = () => {
                   <>
                     {invoicesList.length !== 0 ?
                       invoicesList :
-                      <Typography align="center">No tienes facturas guardadas</Typography>
+                      <>
+                        {invoiceMonth || invoiceYear ?
+                        <Typography align="center">No tienes facturas en la fecha seleccionada</Typography> :
+                        <Typography align="center">No tienes facturas guardadas</Typography>
+                        }
+                      </>
                     }
                   </>
                 }
               </Box>
               <Box margin="auto">
                 <Pagination color="primary" page={invoicesPage} count={invoicesCount} onChange={handleInvoicesPageChange} />
+              </Box>
+              <Box display="flex" justifyContent="center" alignItems="center" mt={2}>
+                <FormControl variant="outlined" className={classes.formControl}>
+                  <InputLabel id="invoice-select-month">Mes</InputLabel>
+                  <Select
+                    labelId="invoice-select-month"
+                    id="invoice-select-month"
+                    value={invoiceMonth}
+                    onChange={handleChangeInvoiceMonth}
+                    label="invoice-month"
+                  >
+                    <MenuItem value=""><em>&nbsp;</em></MenuItem>
+                    <MenuItem value={0}>Enero</MenuItem>
+                    <MenuItem value={1}>Febrero</MenuItem>
+                    <MenuItem value={2}>Marzo</MenuItem>
+                    <MenuItem value={3}>Abril</MenuItem>
+                    <MenuItem value={4}>Mayo</MenuItem>
+                    <MenuItem value={5}>Junio</MenuItem>
+                    <MenuItem value={6}>Julio</MenuItem>
+                    <MenuItem value={7}>Agosto</MenuItem>
+                    <MenuItem value={8}>Septiembre</MenuItem>
+                    <MenuItem value={9}>Octubre</MenuItem>
+                    <MenuItem value={10}>Noviembre</MenuItem>
+                    <MenuItem value={11}>Diciembre</MenuItem>
+                  </Select>
+                </FormControl>
+                <TextField
+                  className={classes.yearTextField}
+                  id="invoice-select-year"
+                  label="Año"
+                  type="number"
+                  value={invoiceYear}
+                  onChange={handleChangeInvoiceYear}
+                  variant="outlined"
+                />
               </Box>
               <Box my={2}>
                 <RBButton variant="success" onClick={openAddInvoiceDialog} block>Añadir factura</RBButton>
