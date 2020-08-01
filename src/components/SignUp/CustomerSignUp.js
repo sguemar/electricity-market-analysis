@@ -1,4 +1,5 @@
 import React, { useReducer } from 'react';
+import { connect } from 'react-redux';
 import {
   Avatar,
   Button,
@@ -11,6 +12,8 @@ import {
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
+import { createNotification } from 'react-redux-notify';
+import { successSignUpNotification } from '../../redux/constants/notifications';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -33,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CustomerSignUp = () => {
+const CustomerSignUp = ({ createNotification }) => {
   const classes = useStyles();
   const history = useHistory();
 
@@ -67,6 +70,7 @@ const CustomerSignUp = () => {
     e.preventDefault();
     try {
       await axios.post('/api/auth/signup-customer', formState);
+      createNotification(successSignUpNotification);
       history.push('/login');
     } catch (error) {
       const errors = error.response.data;
@@ -224,4 +228,10 @@ const CustomerSignUp = () => {
   );
 }
 
-export default CustomerSignUp;
+const mapDispatchToProps = dispatch => ({
+  createNotification: (config) => {
+    dispatch(createNotification(config))
+  },
+})
+
+export default connect(null, mapDispatchToProps)(CustomerSignUp);

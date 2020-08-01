@@ -15,6 +15,8 @@ import { Alert } from '@material-ui/lab';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import axios from 'axios';
 import { login } from '../../redux/actions/authentication';
+import { Notify } from 'react-redux-notify';
+
 
 
 const Login = ({ login }) => {
@@ -113,6 +115,7 @@ const Login = ({ login }) => {
           </Grid>
         </form>
       </div>
+      <Notify />
     </Container>
   );
 }

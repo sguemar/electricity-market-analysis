@@ -7,6 +7,9 @@ import { Provider } from 'react-redux';
 // Importing the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+// Importing react-redux-notify CSS
+import 'react-redux-notify/dist/ReactReduxNotify.css';
+
 // Importing AOS
 import AOS from 'aos';
 import 'aos/dist/aos.css';
