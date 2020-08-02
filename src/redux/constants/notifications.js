@@ -43,3 +43,19 @@ export const errorRemoveInvoiceNotification = {
   canDismiss: false,
   icon: <ErrorOutlineOutlinedIcon />,      
 }
+
+export const successChangeInvoiceNotification = {
+  message: 'La factura se ha cambiado correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: false,
+  icon: <CheckCircleSharpIcon />,
+}
+
+export const errorChangeInvoiceNotification = {
+  message: "Ha ocurrido un error, la factura no se ha cambiado correctamente",
+  type: NOTIFICATION_TYPE_ERROR,
+  duration: 5000,
+  canDismiss: false,
+  icon: <ErrorOutlineOutlinedIcon />,      
+}

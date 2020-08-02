@@ -37,7 +37,9 @@ import {
   succeessAddInvoiceNotification,
   errorAddInvoiceNotification,
   successRemoveInvoiceNotification,
-  errorRemoveInvoiceNotification
+  errorRemoveInvoiceNotification,
+  successChangeInvoiceNotification,
+  errorChangeInvoiceNotification
 } from '../../redux/constants/notifications';
 
 
@@ -207,7 +209,7 @@ const Invoices = ({ createNotification }) => {
     try {
       var formData = new FormData();
       formData.append('file', changeInvoiceFile);
-      await axios.post(
+      const result = await axios.post(
         '/api/customer/add-invoice',
         formData,
         {
@@ -217,13 +219,19 @@ const Invoices = ({ createNotification }) => {
           }
         },
       );
-      await axios.delete(
-        '/api/customer/delete-invoice/' + invoiceSelected,
-        { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
-      );
-      setChangeInvoiceDialogState(false);
-      getContracts();
+      if (result.data.type === "error")
+        createNotification(errorAddInvoiceNotification(result.data.message));
+      else {
+        await axios.delete(
+          '/api/customer/delete-invoice/' + invoiceSelected,
+          { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
+        );
+        createNotification(successChangeInvoiceNotification);
+        setChangeInvoiceDialogState(false);
+        getContracts();
+      }
     } catch (error) {
+      createNotification(errorChangeInvoiceNotification);
       console.log(error.response.data);
     }
   }
