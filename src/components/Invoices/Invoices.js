@@ -33,7 +33,12 @@ import {
 import axios from 'axios';
 import Cookies from 'universal-cookie';
 import { Notify, createNotification } from 'react-redux-notify';
-import { succeessAddInvoiceNotification, errorAddInvoiceNotification } from '../../redux/constants/notifications';
+import {
+  succeessAddInvoiceNotification,
+  errorAddInvoiceNotification,
+  successRemoveInvoiceNotification,
+  errorRemoveInvoiceNotification
+} from '../../redux/constants/notifications';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -133,10 +138,12 @@ const Invoices = ({ createNotification }) => {
         '/api/customer/delete-invoice/' + invoiceSelected,
         { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
       );
+      createNotification(successRemoveInvoiceNotification);
       setContractExpanded(false);
       setDeleteInvoiceDialogState(false);
       getContracts();
     } catch (error) {
+      createNotification(errorRemoveInvoiceNotification);
       console.log(error);
     }
   }

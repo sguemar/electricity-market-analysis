@@ -27,3 +27,19 @@ export const errorAddInvoiceNotification = (message) =>
     canDismiss: false,
     icon: <ErrorOutlineOutlinedIcon />,      
   })
+
+export const successRemoveInvoiceNotification = {
+  message: 'La factura se ha eliminado correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: false,
+  icon: <CheckCircleSharpIcon />,
+}
+
+export const errorRemoveInvoiceNotification = {
+  message: "Ha ocurrido un error, la factura no se ha eliminado correctamente",
+  type: NOTIFICATION_TYPE_ERROR,
+  duration: 5000,
+  canDismiss: false,
+  icon: <ErrorOutlineOutlinedIcon />,      
+}
