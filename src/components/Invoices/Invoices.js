@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import {
   Container,
   Typography,
@@ -31,6 +32,8 @@ import {
 } from 'react-bootstrap';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
+import { Notify, createNotification } from 'react-redux-notify';
+import { succeessAddInvoiceNotification, errorAddInvoiceNotification } from '../../redux/constants/notifications';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -64,11 +67,11 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const Invoices = () => {
+const Invoices = ({ createNotification }) => {
   const classes = useStyles();
   const cookies = new Cookies();
   const csrfAccessToken = cookies.get('csrf_access_token');
-  
+
   const [loading, setLoading] = useState(false);
 
   // CONTRACTS STATE
@@ -79,7 +82,7 @@ const Invoices = () => {
   const [contractsCount, setContractsCount] = useState(0);
   const [contractMonth, setContractMonth] = useState("");
   const [contractYear, setContractYear] = useState("");
-  
+
   // INVOICES STATE
   const [invoicesList, setInvoicesList] = useState("");
   const [invoicesPage, setInvoicesPage] = useState(1);
@@ -87,14 +90,14 @@ const Invoices = () => {
   const [invoiceSelected, setInvoiceSelected] = useState("");
   const [invoiceMonth, setInvoiceMonth] = useState("");
   const [invoiceYear, setInvoiceYear] = useState("");
-  
-    // DELETE
+
+  // DELETE
   const [deleteInvoiceDialogState, setDeleteInvoiceDialogState] = useState(false);
-    // ADD
+  // ADD
   const [addInvoiceDialogState, setAddInvoiceDialogState] = useState(false);
   const [addInvoiceFile, setAddInvoiceFile] = useState({});
   const [addInvoceFilePath, setAddInvoiceFilePath] = useState("");
-    // CHANGE
+  // CHANGE
   const [changeInvoiceDialogState, setChangeInvoiceDialogState] = useState(false);
   const [changeInvoiceFile, setChangeInvoiceFile] = useState({});
   const [changeInvoceFilePath, setChangeInvoiceFilePath] = useState("");
@@ -153,7 +156,7 @@ const Invoices = () => {
     try {
       var formData = new FormData();
       formData.append('file', addInvoiceFile);
-      await axios.post(
+      const result = await axios.post(
         '/api/customer/add-invoice',
         formData,
         {
@@ -163,10 +166,18 @@ const Invoices = () => {
           }
         },
       );
-      setAddInvoiceDialogState(false);
-      getContracts();
+      if (result.data.type === "error") {
+        createNotification(errorAddInvoiceNotification(result.data.message));
+      } else {
+        createNotification(succeessAddInvoiceNotification);
+        setAddInvoiceDialogState(false);
+        getContracts();
+      }
     } catch (error) {
-      console.log(error.response.data);
+      createNotification(errorAddInvoiceNotification(
+        "Ha ocurrido un error, la factura no se ha guardado"
+      ));
+      console.log(error.response);
     }
   }
 
@@ -378,8 +389,8 @@ const Invoices = () => {
                       contractsList :
                       <>
                         {contractMonth || contractYear ?
-                        <Typography align="center">No tienes contratos en la fecha seleccionada</Typography> :
-                        <Typography align="center">No tienes ningún contrato, añade alguna factura</Typography>
+                          <Typography align="center">No tienes contratos en la fecha seleccionada</Typography> :
+                          <Typography align="center">No tienes ningún contrato, añade alguna factura</Typography>
                         }
                       </>
                     }
@@ -442,8 +453,8 @@ const Invoices = () => {
                       invoicesList :
                       <>
                         {invoiceMonth || invoiceYear ?
-                        <Typography align="center">No tienes facturas en la fecha seleccionada</Typography> :
-                        <Typography align="center">No tienes facturas guardadas</Typography>
+                          <Typography align="center">No tienes facturas en la fecha seleccionada</Typography> :
+                          <Typography align="center">No tienes facturas guardadas</Typography>
                         }
                       </>
                     }
@@ -554,8 +565,15 @@ const Invoices = () => {
           </Box>
         </Grid>
       </Grid>
+      <Notify />
     </Container>
   );
 }
 
-export default Invoices;
+const mapDispatchToProps = dispatch => ({
+  createNotification: (config) => {
+    dispatch(createNotification(config))
+  },
+})
+
+export default connect(null, mapDispatchToProps)(Invoices);

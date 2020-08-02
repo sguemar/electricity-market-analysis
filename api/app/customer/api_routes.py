@@ -68,10 +68,16 @@ def process_bill():
 	try:
 		file = request.files["file"]
 	except BadRequestKeyError:
-		return "No se ha seleccionado ningún archivo", 422
+		return {
+			"message": "No se ha seleccionado ningún archivo",
+			"type": "error"
+		}, 200
 
 	if not __allowed_file(file.filename):
-		return "Los tipos de fichero permitidos son txt, pdf, png, jpg, jpeg, gif", 415
+		return {
+			"message": "Los tipos de fichero permitidos son txt, pdf, png, jpg, jpeg, gif",
+			"type": "error"
+		}, 200
 
 	# save file to upload directory with a hash code
 	file_extension = file.filename.rsplit(".", 1)[1].lower()
@@ -97,7 +103,10 @@ def process_bill():
 			if cif:
 				trading_company = Company.get_by_cif(cif)
 				if not trading_company:
-					return "No se encuentra la comercializadora en la factura", 500
+					return {
+						"message": "No se encuentra la comercializadora",
+						"type": "error"
+					}, 200
 			else:
 				company_name = __get_first_value(results["Datos de la factura"]["Comercializadora"])
 				if company_name:
@@ -108,10 +117,15 @@ def process_bill():
 					if trading_company:
 						cif = trading_company.cif
 					else:
-						return "No se encuentra la comercializadora ni existe cif en la factura", 500
+						return {
+							"message": "No se encuentra la comercializadora ni el cif en la factura",
+							"type": "error"
+						}, 200
 				else:
-					return "No se encuentra el nombre de la comercializadora en la factura", 500
-
+						return {
+							"message": "No se encuentra el nombre de la comercializadora en la factura",
+							"type": "error"
+						}, 200					
 			contract_data = __get_contract_data(results)
 			contract = Contract(
 				contract_number=contract_number,
@@ -124,8 +138,10 @@ def process_bill():
 			)
 			contract.save()
 	else:
-		return "No se encuentra el número de referencia del contrato", 500
-
+		return {
+			"message": "No se encuentra el número de referencia del contrato",
+			"type": "error"
+		}, 200
 	invoice_data = __get_invoice_data(results, contract_number)
 
 	invoice = Invoice(
@@ -145,7 +161,10 @@ def process_bill():
 	try:
 		invoice.save()
 	except IntegrityError:
-		return "Esta factura ya está registrada", 500
+		return {
+			"message": "Esta factura ya está registrada",
+			"type": "error"
+		}, 200
 
 	cups = __get_first_value(results["Datos del contrato"]["CUPS"])
 
@@ -169,8 +188,10 @@ def process_bill():
 			customer_dwelling_contract.save()
 		except IntegrityError:
 			pass
-
-	return "La factura se ha guardado con éxito", 200
+	return {
+		"message": "La factura se ha guardado con éxito",
+		"type": "success"
+	}, 200
 
 
 def __allowed_file(filename):
