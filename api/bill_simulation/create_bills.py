@@ -17,7 +17,7 @@ cursor = mydb.cursor()
 
 CUSTOMERS_NUMBER = 1
 INVOICES_NUMBER = 12
-CONTRACT_CYCLE = datetime.timedelta(days=365)
+INIT_CONTRACTS_YEAR = 2010
 INVOICE_CYCLE = datetime.timedelta(days=30)
 
 kwh_base_price = 0.0398
@@ -30,7 +30,7 @@ def get_random_date(year):
       return get_random_date(year)
 
 def get_kwh_base_price(year):
-   year_difference = year - 1990
+   year_difference = year - INIT_CONTRACTS_YEAR - 1
    return kwh_base_price + kwh_annual_increase * year_difference
 
 
@@ -102,12 +102,11 @@ def insert_dwelling(dwelling):
    mydb.commit()
 
 
-def create_contract(trading_company, init_date, end_date):
+def create_contract(trading_company, init_date):
    contract = {}
    contract["contracted_power"] = random.choice([2.00, 2.50, 3.00, 3.50, 4.00, 4.50, 5.00, 5.50])
-   contract["toll_access"] = random.choice(['2.0A', '20DHA'])
+   contract["toll_access"] = random.choice(['2.0A', '2.0DHA', '2.1A', '2.1DHA'])
    contract["init_date"] = init_date
-   contract["end_date"] = end_date
    contract["CNAE"] = "D35351351" + str(random.randint(2, 9))
    contract["cif"] = trading_company['cif']
    return contract
@@ -115,27 +114,25 @@ def create_contract(trading_company, init_date, end_date):
 def insert_contract(contract):
    contract_number = str(random.randint(10**12, 10**13-1))
    sql = """
-            INSERT INTO contracts
-            (
-               contract_number,
-               contracted_power,
-               toll_access,
-               init_date,
-               end_date,
-               CNAE,
-               cif
-            )
-            VALUES (%s, %s, %s, %s, %s, %s, %s);
-         """
-   val = (
+      INSERT INTO contracts
+      (
          contract_number,
-         contract["contracted_power"],
-         contract["toll_access"],
-         contract["init_date"],
-         contract["end_date"],
-         contract["CNAE"],
-         contract["cif"],
+         contracted_power,
+         toll_access,
+         init_date,
+         CNAE,
+         cif
       )
+      VALUES (%s, %s, %s, %s, %s, %s);
+   """
+   val = (
+      contract_number,
+      contract["contracted_power"],
+      contract["toll_access"],
+      contract["init_date"],
+      contract["CNAE"],
+      contract["cif"],
+   )
    try:
       cursor.execute(sql, val)
    except mysql.connector.errors.IntegrityError:
@@ -145,26 +142,54 @@ def insert_contract(contract):
 
    return contract_number
 
-
-def insert_customer_dwelling_contract(customer, dwelling, contract, contract_number_id):
+def contract_set_end_date(contract_number, end_date):
    sql = """
-            INSERT INTO customer_dwelling_contract
-            (
-               nif,
-               cups,
-               contract_number,
-               init_date,
-               end_date
-            )
-            VALUES (%s, %s, %s, %s, %s);
-         """
+      UPDATE contracts
+      SET end_date = %s
+      WHERE contract_number = %s
+   """
    val = (
-            customer["nif"],
-            dwelling["cups"],
-            contract_number_id,
-            contract["init_date"],
-            contract["end_date"],
-          )
+      end_date,
+      contract_number,
+   )
+   cursor.execute(sql, val)
+   mydb.commit() 
+
+
+def insert_customer_dwelling_contract(customer, dwelling, contract, contract_number):
+   sql = """
+      INSERT INTO customer_dwelling_contract
+      (
+         nif,
+         cups,
+         contract_number,
+         init_date
+      )
+      VALUES (%s, %s, %s, %s);
+   """
+   val = (
+         customer["nif"],
+         dwelling["cups"],
+         contract_number,
+         contract["init_date"],
+   )
+   cursor.execute(sql, val)
+   mydb.commit()
+
+def customer_dwelling_contract_set_end_date(nif, cups, contract_number, end_date):
+   sql = """
+      UPDATE customer_dwelling_contract
+      SET end_date = %s
+      WHERE nif = %s
+      AND cups = %s
+      AND contract_number = %s
+   """
+   val = (
+      end_date,
+      nif,
+      cups,
+      contract_number,
+   )
    cursor.execute(sql, val)
    mydb.commit()
 
@@ -188,25 +213,24 @@ def insert_distributor_dwelling(distributor, dwelling, init_date):
 
 def set_end_date_last_relation_distributor_dwelling(distributors, dwelling, relation_init_date, relation_end_date):
    sql = """
-            UPDATE distributor_dwelling
-            SET end_date = %s
-            WHERE cif = %s
-            AND cups = %s
-            AND init_date = %s
-         """
+      UPDATE distributor_dwelling
+      SET end_date = %s
+      WHERE cif = %s
+      AND cups = %s
+      AND init_date = %s
+   """
    val = (
-         relation_end_date,
-         distributors["cif"],
-         dwelling["cups"],
-         relation_init_date,
-      )
+      relation_end_date,
+      distributors["cif"],
+      dwelling["cups"],
+      relation_init_date,
+   )
    cursor.execute(sql, val)
    mydb.commit()
 
 
-def create_invoice(contract_number, contracted_power, init_date, kwh_price):
+def create_invoice(contract_number, contracted_power, init_date, end_date, kwh_price):
    invoice = {}
-   end_date = init_date + INVOICE_CYCLE
    issue_date = end_date + datetime.timedelta(days=1)
    charge_date = end_date + datetime.timedelta(days=random.randint(2, 5))
    invoice["contracted_power_amount"] = contracted_power * INVOICE_CYCLE.days * kwh_price
@@ -340,11 +364,10 @@ if __name__ == '__main__':
       dwelling = create_dwelling()
       insert_dwelling(dwelling)
 
-      contract_cycle_init_date = get_random_date(random.randint(2012, 2019))
-      contract_init_date = contract_cycle_init_date
-      contract_end_date = contract_cycle_init_date + CONTRACT_CYCLE
-      contract_year = contract_cycle_init_date.year
-      distributor_dwelling_init_date = contract_cycle_init_date.strftime("%Y-%m-%d")
+      current_date = get_random_date(INIT_CONTRACTS_YEAR)
+      contract_init_date = current_date
+      contract_year = contract_init_date.year
+      distributor_dwelling_init_date = current_date.strftime("%Y-%m-%d")
       
       distributor = random.choice(distributors)
       insert_distributor_dwelling(
@@ -354,7 +377,6 @@ if __name__ == '__main__':
       )
 
       trading_company = random.choice(trading_companies)
-      contract_number = 2
 
       kwh_price = get_kwh_base_price(contract_year)
 
@@ -363,16 +385,9 @@ if __name__ == '__main__':
          contract = create_contract(
             trading_company,
             contract_init_date.strftime("%Y-%m-%d"),
-            contract_end_date.strftime("%Y-%m-%d")
          )
-         contract_number_id = insert_contract(contract)
-         insert_customer_dwelling_contract(customer, dwelling, contract, contract_number_id)
-
-         invoice_init_date = contract_init_date
-         
-         contract_init_date = contract_end_date + datetime.timedelta(days=1)
-         contract_end_date = contract_cycle_init_date + contract_number * CONTRACT_CYCLE
-         contract_year = contract_init_date.year
+         contract_number = insert_contract(contract)
+         insert_customer_dwelling_contract(customer, dwelling, contract, contract_number)
 
          # The customer changes trading company
          if random.random() < 0.2:
@@ -403,15 +418,20 @@ if __name__ == '__main__':
 
          for _ in range(INVOICES_NUMBER):
             invoice = create_invoice(
-               contract_number_id,
+               contract_number,
                contract["contracted_power"],
-               invoice_init_date,
+               current_date,
+               current_date + INVOICE_CYCLE,
                kwh_price
             )
+            current_date += INVOICE_CYCLE + datetime.timedelta(days=1)
             insert_invoice(invoice)
-            invoice_init_date += INVOICE_CYCLE + datetime.timedelta(days=1)
 
-         contract_number += 1
+         end_date = current_date - datetime.timedelta(days=1)
+         contract_set_end_date(contract_number, end_date)
+         customer_dwelling_contract_set_end_date(customer['nif'], dwelling['cups'], contract_number, end_date)
+         contract_year = current_date.year
+         contract_init_date = current_date
          kwh_price += kwh_annual_increase
          
 
