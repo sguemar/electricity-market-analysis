@@ -17,8 +17,8 @@ cursor = mydb.cursor()
 
 CUSTOMERS_NUMBER = 1
 INVOICES_NUMBER = 12
-INIT_CONTRACTS_YEAR = 2010
-INVOICE_CYCLE = datetime.timedelta(days=30)
+INIT_CONTRACTS_YEAR = 2000
+INVOICE_CYCLE = datetime.timedelta(days=28)
 
 kwh_base_price = 0.0398
 kwh_annual_increase = 0.01078
@@ -381,7 +381,7 @@ if __name__ == '__main__':
       kwh_price = get_kwh_base_price(contract_year)
 
       # Create contracts
-      while contract_year < 2019:
+      while contract_year < 2020:
          contract = create_contract(
             trading_company,
             contract_init_date.strftime("%Y-%m-%d"),
@@ -417,15 +417,18 @@ if __name__ == '__main__':
             )
 
          for _ in range(INVOICES_NUMBER):
+            end_date = current_date + INVOICE_CYCLE
+            while end_date.month == current_date.month:
+               end_date += datetime.timedelta(days=random.choices([2, 3])[0])
             invoice = create_invoice(
                contract_number,
                contract["contracted_power"],
                current_date,
-               current_date + INVOICE_CYCLE,
+               end_date,
                kwh_price
             )
-            current_date += INVOICE_CYCLE + datetime.timedelta(days=1)
             insert_invoice(invoice)
+            current_date = end_date + datetime.timedelta(days=1)
 
          end_date = current_date - datetime.timedelta(days=1)
          contract_set_end_date(contract_number, end_date)
