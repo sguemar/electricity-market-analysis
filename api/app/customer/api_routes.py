@@ -194,6 +194,36 @@ def process_bill():
 	}, 200
 
 
+@customer_bp.route("/get-consumption-data")
+@jwt_required
+def get_consumption_data():
+	customer = None
+	contracts = None
+	contract_invoices = None
+	logged_user = User.get_by_username(get_jwt_identity())
+	if logged_user.user_type == 1:
+		logged_customer = Customer.get_by_user_id(logged_user.id)
+		customers_dwellings_contracts = Customer_Dwelling_Contract.get_by_nif(logged_customer.nif)
+		contracts = []
+		for customer_dwelling_contract in customers_dwellings_contracts:
+			contracts.append(Contract.get_by_contract_number(customer_dwelling_contract.contract_number))
+		contract_invoices = {}
+		for contract in contracts:
+			invoices = Invoice.get_by_contract_number(contract.contract_number)
+			for invoice in invoices:
+				year = int(invoice.init_date.strftime("%Y"))
+				if year in contract_invoices:
+					total_amounts_list = contract_invoices[year]
+				else:
+					total_amounts_list = [0 for _ in range(12)]
+				month = int(invoice.init_date.strftime("%m")) - 1
+				total_amounts_list[month] = round(invoice.total_amount, 2)	
+				contract_invoices[year] = total_amounts_list
+	else:
+		return "No tienes permiso", 403
+	return contract_invoices
+
+
 def __allowed_file(filename):
   return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 

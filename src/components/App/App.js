@@ -7,6 +7,7 @@ import CustomerSignUp from '../SignUp/CustomerSignUp';
 import CompanySignUp from '../SignUp/CompanySignUp';
 import NoMatch from '../NoMatch/NoMatch';
 import Invoices from '../Invoices/Invoices';
+import Consumptions from '../Consumptions/Consumptions';
 
 import {
   BrowserRouter as Router,
@@ -37,6 +38,9 @@ const App = ({ username }) => {
               </Route>
               <Route path="/signup-company" exact>
                 {username ? <Redirect to="/" /> : <CompanySignUp />}
+              </Route>
+              <Route path="/consumptions" exact>
+                {username ? <Consumptions /> : <Login />}
               </Route>
               <Route component={NoMatch} />
             </Switch>

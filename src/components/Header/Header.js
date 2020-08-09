@@ -35,11 +35,18 @@ const Header = ({loggedUser, logout }) => {
 							</Nav.Item>
 							{loggedUser
 								?
-								<Nav.Item>
-									<Link className="nav-link" to="/invoices">
-										Mis facturas
-									</Link>
-								</Nav.Item>
+								<>
+									<Nav.Item>
+										<Link className="nav-link" to="/invoices">
+											Mis facturas
+										</Link>
+									</Nav.Item>
+									<Nav.Item>
+										<Link className="nav-link" to="/consumptions">
+											Mis consumos
+										</Link>
+									</Nav.Item>
+								</>
 								:
 								<></>
 							}
