@@ -342,7 +342,7 @@ const Invoices = ({ createNotification }) => {
             <Grid container direction="column">
               <Typography>Nº de factura: {invoice.invoice_number}</Typography>
               <Typography>Fecha de inicio: {invoice.init_date}</Typography>
-              <Typography>Cuantía total: {invoice.total_amount} €</Typography>
+              <Typography>Cuantía total: {Math.round(invoice.total_amount * 100) / 100} €</Typography>
             </Grid>
           </AccordionSummary>
           <AccordionDetails>
