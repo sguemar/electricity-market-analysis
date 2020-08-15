@@ -197,9 +197,7 @@ def process_bill():
 @customer_bp.route("/get-consumption-data")
 @jwt_required
 def get_consumption_data():
-	customer = None
-	contracts = None
-	contract_invoices = None
+	contract_invoices = {}
 	logged_user = User.get_by_username(get_jwt_identity())
 	if logged_user.user_type == 1:
 		logged_customer = Customer.get_by_user_id(logged_user.id)
@@ -207,18 +205,23 @@ def get_consumption_data():
 		contracts = []
 		for customer_dwelling_contract in customers_dwellings_contracts:
 			contracts.append(Contract.get_by_contract_number(customer_dwelling_contract.contract_number))
-		contract_invoices = {}
 		for contract in contracts:
 			invoices = Invoice.get_by_contract_number(contract.contract_number)
 			for invoice in invoices:
 				year = int(invoice.init_date.strftime("%Y"))
 				if year in contract_invoices:
-					total_amounts_list = contract_invoices[year]
+					total_amounts_list = contract_invoices[year]["total_amount_list"]
+					consumed_energy_amount_list = contract_invoices[year]["consumed_energy_amount_list"]
 				else:
 					total_amounts_list = [0 for _ in range(12)]
+					consumed_energy_amount_list = [0 for _ in range(12)]
 				month = int(invoice.init_date.strftime("%m")) - 1
-				total_amounts_list[month] = round(invoice.total_amount, 2)	
-				contract_invoices[year] = total_amounts_list
+				total_amounts_list[month] = round(invoice.total_amount, 2)
+				consumed_energy_amount_list[month] = round(invoice.consumed_energy_amount, 2)
+				contract_invoices[year] = {
+					"total_amount_list": total_amounts_list,
+					"consumed_energy_amount_list": consumed_energy_amount_list
+				}
 	else:
 		return "No tienes permiso", 403
 	return contract_invoices
