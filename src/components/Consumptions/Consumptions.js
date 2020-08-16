@@ -110,9 +110,7 @@ const initialStackedGraphOptions = {
   },
   tooltip: {
     borderRadius: 10,
-    formatter: function () {
-      return '<b>' + this.y + '</b> €';
-    }
+    pointFormat: '{series.name}: <b>{point.y} €</b> ({point.percentage:.1f}%)<br/>'
   }
 };
 
