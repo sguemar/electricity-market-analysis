@@ -17,11 +17,9 @@ cursor = mydb.cursor()
 
 CUSTOMERS_NUMBER = 1
 INVOICES_NUMBER = 12
-CONTRACT_CYCLE = datetime.timedelta(days=365)
-INVOICE_CYCLE = datetime.timedelta(days=30)
+INIT_CONTRACTS_YEAR = 2000
+INVOICE_CYCLE = datetime.timedelta(days=28)
 
-trading_companies = []
-distributors = []
 kwh_base_price = 0.0398
 kwh_annual_increase = 0.01078
 
@@ -32,7 +30,7 @@ def get_random_date(year):
       return get_random_date(year)
 
 def get_kwh_base_price(year):
-   year_difference = year - 1990
+   year_difference = year - INIT_CONTRACTS_YEAR - 1
    return kwh_base_price + kwh_annual_increase * year_difference
 
 
@@ -104,67 +102,11 @@ def insert_dwelling(dwelling):
    mydb.commit()
 
 
-def create_trading_company(trading_company_info):
-   trading_company = {}
-   trading_company['cif'] = random.choice(string.ascii_uppercase) + str(random.randint(10**7, 10**8-1))
-   trading_company['name'] = trading_company_info[1]
-   trading_company['address'] = trading_company_info[4]
-   domain = trading_company['name'].split(',')[0].replace(' ', '').replace('.', '').lower()
-   trading_company['url'] = "www." + domain + ".es"
-   trading_company['email'] = domain + "@gmail.com"
-   trading_company['type'] = 0
-   trading_company['phone'] = str(random.randint(10**8, 10**9-1))
-   trading_companies.append(trading_company)
-   return trading_company
-
-def create_distributor(distributor_info):
-   distributor = {}
-   distributor['cif'] = random.choice(string.ascii_uppercase) + str(random.randint(10**7, 10**8-1))
-   distributor['name'] = distributor_info[2]
-   distributor['address'] = (random.choice(streets)).replace('\n','')
-   domain = distributor['name'].split(',')[0].replace(' ', '').replace('.', '').lower()
-   distributor['url'] = "www." + domain + ".es"
-   distributor['email'] = domain + "@gmail.com"
-   distributor['type'] = 1
-   distributor['phone'] = str(random.randint(10**8, 10**9-1))
-   distributors.append(distributor)
-   return distributor
-
-def insert_company(company, user_id):
-   sql = """
-            INSERT INTO companies
-            (
-               cif,
-               name,
-               address,
-               url,
-               email,
-               company_type,
-               phone,
-               user_id
-            )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
-         """
-   val = (
-         company['cif'],
-         company['name'],
-         company['address'],
-         company['url'],
-         company['email'],
-         company['type'],
-         company['phone'],
-         user_id,
-      )
-   cursor.execute(sql, val)
-   mydb.commit()
-
-
-def create_contract(trading_company, init_date, end_date):
+def create_contract(trading_company, init_date):
    contract = {}
    contract["contracted_power"] = random.choice([2.00, 2.50, 3.00, 3.50, 4.00, 4.50, 5.00, 5.50])
-   contract["toll_access"] = random.choice(['2.0A', '20DHA'])
+   contract["toll_access"] = random.choice(['2.0A', '2.0DHA', '2.1A', '2.1DHA'])
    contract["init_date"] = init_date
-   contract["end_date"] = end_date
    contract["CNAE"] = "D35351351" + str(random.randint(2, 9))
    contract["cif"] = trading_company['cif']
    return contract
@@ -172,27 +114,25 @@ def create_contract(trading_company, init_date, end_date):
 def insert_contract(contract):
    contract_number = str(random.randint(10**12, 10**13-1))
    sql = """
-            INSERT INTO contracts
-            (
-               contract_number,
-               contracted_power,
-               toll_access,
-               init_date,
-               end_date,
-               CNAE,
-               cif
-            )
-            VALUES (%s, %s, %s, %s, %s, %s, %s);
-         """
-   val = (
+      INSERT INTO contracts
+      (
          contract_number,
-         contract["contracted_power"],
-         contract["toll_access"],
-         contract["init_date"],
-         contract["end_date"],
-         contract["CNAE"],
-         contract["cif"],
+         contracted_power,
+         toll_access,
+         init_date,
+         CNAE,
+         cif
       )
+      VALUES (%s, %s, %s, %s, %s, %s);
+   """
+   val = (
+      contract_number,
+      contract["contracted_power"],
+      contract["toll_access"],
+      contract["init_date"],
+      contract["CNAE"],
+      contract["cif"],
+   )
    try:
       cursor.execute(sql, val)
    except mysql.connector.errors.IntegrityError:
@@ -202,26 +142,54 @@ def insert_contract(contract):
 
    return contract_number
 
-
-def insert_customer_dwelling_contract(customer, dwelling, contract, contract_number_id):
+def contract_set_end_date(contract_number, end_date):
    sql = """
-            INSERT INTO customer_dwelling_contract
-            (
-               nif,
-               cups,
-               contract_number,
-               init_date,
-               end_date
-            )
-            VALUES (%s, %s, %s, %s, %s);
-         """
+      UPDATE contracts
+      SET end_date = %s
+      WHERE contract_number = %s
+   """
    val = (
-            customer["nif"],
-            dwelling["cups"],
-            contract_number_id,
-            contract["init_date"],
-            contract["end_date"],
-          )
+      end_date,
+      contract_number,
+   )
+   cursor.execute(sql, val)
+   mydb.commit() 
+
+
+def insert_customer_dwelling_contract(customer, dwelling, contract, contract_number):
+   sql = """
+      INSERT INTO customer_dwelling_contract
+      (
+         nif,
+         cups,
+         contract_number,
+         init_date
+      )
+      VALUES (%s, %s, %s, %s);
+   """
+   val = (
+         customer["nif"],
+         dwelling["cups"],
+         contract_number,
+         contract["init_date"],
+   )
+   cursor.execute(sql, val)
+   mydb.commit()
+
+def customer_dwelling_contract_set_end_date(nif, cups, contract_number, end_date):
+   sql = """
+      UPDATE customer_dwelling_contract
+      SET end_date = %s
+      WHERE nif = %s
+      AND cups = %s
+      AND contract_number = %s
+   """
+   val = (
+      end_date,
+      nif,
+      cups,
+      contract_number,
+   )
    cursor.execute(sql, val)
    mydb.commit()
 
@@ -245,35 +213,43 @@ def insert_distributor_dwelling(distributor, dwelling, init_date):
 
 def set_end_date_last_relation_distributor_dwelling(distributors, dwelling, relation_init_date, relation_end_date):
    sql = """
-            UPDATE distributor_dwelling
-            SET end_date = %s
-            WHERE cif = %s
-            AND cups = %s
-            AND init_date = %s
-         """
+      UPDATE distributor_dwelling
+      SET end_date = %s
+      WHERE cif = %s
+      AND cups = %s
+      AND init_date = %s
+   """
    val = (
-         relation_end_date,
-         distributors["cif"],
-         dwelling["cups"],
-         relation_init_date,
-      )
+      relation_end_date,
+      distributors["cif"],
+      dwelling["cups"],
+      relation_init_date,
+   )
    cursor.execute(sql, val)
    mydb.commit()
 
 
-def create_invoice(contract_number, contracted_power, init_date, kwh_price):
+def create_invoice(contract_number, contracted_power, init_date, end_date, kwh_price, province):
    invoice = {}
-   end_date = init_date + INVOICE_CYCLE
    issue_date = end_date + datetime.timedelta(days=1)
    charge_date = end_date + datetime.timedelta(days=random.randint(2, 5))
-   invoice["contracted_power_amount"] = contracted_power * INVOICE_CYCLE.days * kwh_price
-   invoice["consumed_energy_amount"] = random.randint(100, 400) * kwh_price
+   consumption_period = end_date - init_date
+   invoice["contracted_power_amount"] = contracted_power * consumption_period.days * kwh_price
+   if init_date.month in [4, 5, 6, 7, 8, 9]:
+      invoice["consumed_energy"] = random.randint(100, 250)
+   else:
+      invoice["consumed_energy"] = random.randint(200, 350)
+   invoice["consumed_energy_amount"] = invoice["consumed_energy"] * kwh_price
    invoice["init_date"] = init_date.strftime("%Y-%m-%d")
    invoice["end_date"] = end_date.strftime("%Y-%m-%d")
    invoice["issue_date"] = issue_date.strftime("%Y-%m-%d")
    invoice["charge_date"] = charge_date.strftime("%Y-%m-%d")
-   invoice["tax"] = 7
+   if province == "Las Palmas" or province == "Santa Cruz de Tenerife" or province == "Ceuta" or province == "Melilla":
+      invoice["tax"] = 7
+   else:
+      invoice["tax"] = 21
    invoice["total_amount"] = (invoice["contracted_power_amount"] + invoice["consumed_energy_amount"]) * (1 + invoice["tax"] / 100) 
+   invoice["tax_amount"] = invoice["total_amount"] - invoice["contracted_power_amount"] - invoice["consumed_energy_amount"]
    invoice["contract_reference"] = contract_number
    invoice["contract_number"] = contract_number
    return invoice
@@ -285,26 +261,30 @@ def insert_invoice(invoice):
                invoice_number,
                contracted_power_amount,
                consumed_energy_amount,
+               consumed_energy,
                init_date,
                end_date,
                issue_date,
                charge_date,
                tax,
+               tax_amount,
                total_amount,
                contract_reference,
                contract_number
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
          """
    val = (
          ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(14)),
          invoice["contracted_power_amount"],
          invoice["consumed_energy_amount"],
+         invoice["consumed_energy"],
          invoice["init_date"],
          invoice["end_date"],
          invoice["issue_date"],
          invoice["charge_date"],
          invoice["tax"],
+         invoice["tax_amount"],
          invoice["total_amount"],
          invoice["contract_reference"],
          invoice["contract_number"],
@@ -354,26 +334,39 @@ def insert_user(user, user_type):
 
    return user[0]
 
+
+def get_trading_companies():
+	cursor.execute("SHOW columns from companies")
+	keys = [column[0] for column in cursor.fetchall()]
+	cursor.execute("SELECT * FROM companies WHERE company_type = 0")
+	trading_companies = cursor.fetchall()
+	result = []
+	[
+		result.append(dict(zip(keys, trading_company)))
+		for trading_company in trading_companies
+	]
+	return result
+
+def get_distributors():
+	cursor.execute("SHOW columns from companies")
+	keys = [column[0] for column in cursor.fetchall()]
+	cursor.execute("SELECT * FROM companies WHERE company_type = 1")
+	distributors = cursor.fetchall()
+	result = []
+	[
+		result.append(dict(zip(keys, distributor)))
+		for distributor in distributors
+	]
+	return result
+
 if __name__ == '__main__':
 
    names = open("bill_simulation/names.txt", encoding='utf8').readlines()
    surnames = open("bill_simulation/surnames.txt", encoding='utf8').readlines()
    populations = open("bill_simulation/populations.txt", encoding='utf8').readlines()
    streets = open("bill_simulation/streets.txt", encoding='utf8').readlines()
-
-   # Create trading companies
-   with open('bill_simulation/trading_companies.txt', encoding='utf8') as trading_companies_file:
-      for trading_company in trading_companies_file:
-         company = create_trading_company(trading_company.split(";"))
-         user_id = insert_user(company, 0)
-         insert_company(company, user_id)
-
-   # Create distributors
-   with open('bill_simulation/distributors.txt', encoding='utf8') as distributors_file:
-      for distributor in distributors_file:
-         company = create_distributor(distributor.split(";"))
-         user_id = insert_user(company, 0)
-         insert_company(company, user_id)
+   trading_companies = get_trading_companies()
+   distributors = get_distributors()
 
    # Create customers
    for _ in range(CUSTOMERS_NUMBER):
@@ -384,11 +377,10 @@ if __name__ == '__main__':
       dwelling = create_dwelling()
       insert_dwelling(dwelling)
 
-      contract_cycle_init_date = get_random_date(random.randint(2012, 2019))
-      contract_init_date = contract_cycle_init_date
-      contract_end_date = contract_cycle_init_date + CONTRACT_CYCLE
-      contract_year = contract_cycle_init_date.year
-      distributor_dwelling_init_date = contract_cycle_init_date.strftime("%Y-%m-%d")
+      current_date = get_random_date(INIT_CONTRACTS_YEAR)
+      contract_init_date = current_date
+      contract_year = contract_init_date.year
+      distributor_dwelling_init_date = current_date.strftime("%Y-%m-%d")
       
       distributor = random.choice(distributors)
       insert_distributor_dwelling(
@@ -398,25 +390,17 @@ if __name__ == '__main__':
       )
 
       trading_company = random.choice(trading_companies)
-      contract_number = 2
 
       kwh_price = get_kwh_base_price(contract_year)
 
       # Create contracts
-      while contract_year < 2019:
+      while contract_year < 2020:
          contract = create_contract(
             trading_company,
             contract_init_date.strftime("%Y-%m-%d"),
-            contract_end_date.strftime("%Y-%m-%d")
          )
-         contract_number_id = insert_contract(contract)
-         insert_customer_dwelling_contract(customer, dwelling, contract, contract_number_id)
-
-         invoice_init_date = contract_init_date
-         
-         contract_init_date = contract_end_date + datetime.timedelta(days=1)
-         contract_end_date = contract_cycle_init_date + contract_number * CONTRACT_CYCLE
-         contract_year = contract_init_date.year
+         contract_number = insert_contract(contract)
+         insert_customer_dwelling_contract(customer, dwelling, contract, contract_number)
 
          # The customer changes trading company
          if random.random() < 0.2:
@@ -446,16 +430,25 @@ if __name__ == '__main__':
             )
 
          for _ in range(INVOICES_NUMBER):
+            end_date = current_date + INVOICE_CYCLE
+            while end_date.month == current_date.month:
+               end_date += datetime.timedelta(days=random.choices([2, 3])[0])
             invoice = create_invoice(
-               contract_number_id,
+               contract_number,
                contract["contracted_power"],
-               invoice_init_date,
-               kwh_price
+               current_date,
+               end_date,
+               kwh_price,
+               dwelling["province"]
             )
             insert_invoice(invoice)
-            invoice_init_date += INVOICE_CYCLE + datetime.timedelta(days=1)
+            current_date = end_date + datetime.timedelta(days=1)
 
-         contract_number += 1
+         end_date = current_date - datetime.timedelta(days=1)
+         contract_set_end_date(contract_number, end_date)
+         customer_dwelling_contract_set_end_date(customer['nif'], dwelling['cups'], contract_number, end_date)
+         contract_year = current_date.year
+         contract_init_date = current_date
          kwh_price += kwh_annual_increase
          
 
