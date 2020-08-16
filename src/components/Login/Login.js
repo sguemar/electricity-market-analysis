@@ -103,7 +103,7 @@ const Login = ({ login }) => {
           <Grid container>
             <Grid item>
               <Link 
-                to="/signup"
+                to="/signup-customer"
                 className="MuiTypography-root
                            MuiLink-root
                            MuiLink-underlineHover 
