@@ -1,4 +1,5 @@
 from sqlalchemy.dialects.mysql import TINYINT
+from sqlalchemy_serializer import SerializerMixin
 
 from . import db
 
@@ -38,7 +39,7 @@ class Company(db.Model):
 		).first()
 
 
-class Contract(db.Model):
+class Contract(db.Model, SerializerMixin):
 
 	__tablename__ = "contracts"
 
@@ -57,6 +58,10 @@ class Contract(db.Model):
 		nullable=False
 	)
 
+	def delete(self):
+		db.session.delete(self)
+		db.session.commit()
+
 	def save(self):
 		db.session.add(self)
 		db.session.commit()
@@ -73,19 +78,21 @@ class Contract(db.Model):
 		)
 
 
-class Invoice(db.Model):
+class Invoice(db.Model, SerializerMixin):
 
 	__tablename__ = "invoices"
 
 	invoice_number = db.Column(db.String(255), primary_key=True)
 	contracted_power_amount = db.Column(db.Float)
 	consumed_energy_amount = db.Column(db.Float)
+	consumed_energy = db.Column(db.Float)
 	issue_date = db.Column(db.DateTime)
 	charge_date = db.Column(db.DateTime)
 	init_date = db.Column(db.DateTime)
 	end_date = db.Column(db.DateTime)
 	total_amount = db.Column(db.Float)
 	tax = db.Column(db.Float)
+	tax_amount = db.Column(db.Float)
 	contract_reference = db.Column(db.String(255))
 	contract_number = db.Column(
 		db.Integer,
@@ -160,10 +167,23 @@ class Customer_Dwelling_Contract(db.Model):
 	init_date = db.Column(db.DateTime)
 	end_date = db.Column(db.DateTime)
 
+	def delete(self):
+		db.session.delete(self)
+		db.session.commit()
+
 	def save(self):
 		db.session.add(self)
 		db.session.commit()
 
 	@staticmethod
 	def get_by_nif(nif):
-		return Customer_Dwelling_Contract.query.filter_by(nif=nif).all()
+		return Customer_Dwelling_Contract.query.filter_by(
+			nif=nif
+		).all()
+
+	@staticmethod
+	def get_by_nif_and_contract_number(nif, contract_number):
+		return Customer_Dwelling_Contract.query.filter_by(
+			nif=nif,
+			contract_number=contract_number
+		).first()

@@ -1,0 +1,135 @@
+/***  CAROUSEL  ***/
+.carousel-item {
+  height: 37rem;
+  background-color: #343a40;
+}
+.carousel-caption {
+  top: 20%;
+  color: white;
+}
+.carousel-caption > h3 {
+  font-size: 3.5rem;
+}
+.carousel-caption > p {
+  font-size: 2rem;
+}
+
+/***  HEADINGS  ***/
+div .display-2 {
+  text-align: center;
+  margin-top: 4rem;
+  color: #343a40;
+}
+
+/***  CARDS  ***/
+.card-deck {
+  padding: 7rem;
+}
+.card {
+  padding: 3rem;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 10px 10px 20px grey;
+}
+.card > img {
+  width: 8rem;
+  height: 8rem;
+}
+.card .MuiSvgIcon-root {
+  font-size: 9rem;
+}
+.card-text {
+  font-size: 2rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/***  MEDIA QUERIES  ***/
+@media (max-width: 1200px) {
+  /***  HEADINGS  ***/
+  div .display-2 {
+    font-size: 4rem;
+  }
+  /***  CARDS  ***/
+  .card-deck {
+    padding: 4rem;
+  }
+  .card {
+    padding: 2.5rem;
+  }
+  .card > img {
+    width: 5rem;
+    height: 5rem;
+  }
+  .card .MuiSvgIcon-root {
+    font-size: 6em;
+  }
+  .card-text {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 720px) {
+  /***  CAROUSEL  ***/
+  .carousel-caption {
+    top: 25%;
+  }
+  .carousel-caption > h3 {
+    font-size: 2.5rem;
+  }
+  .carousel-caption > p {
+    font-size: 1.5rem;
+  }
+  /***  HEADINGS  ***/
+  div .display-2 {
+    font-size: 3rem;
+  }
+  /***  CARDS  ***/
+  .card-deck {
+    padding: 2.5rem;
+  }
+  .card {
+    padding: 2rem;
+  }
+  .card > img {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+  .card .MuiSvgIcon-root {
+    font-size: 4em;
+  }
+  .card-text {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 375px) {
+  /***  CAROUSEL  ***/
+  .carousel-caption > h3 {
+    font-size: 2rem;
+  }
+  .carousel-caption > p {
+    font-size: 1.1rem;
+  }
+  /***  HEADINGS  ***/
+  div .display-2 {
+    font-size: 2.5rem;
+  }
+  /***  CARDS  ***/
+  .card-deck {
+    padding: 2rem;
+  }
+  .card {
+    padding: 1.5rem;
+  }
+  .card > img {
+    width: 3rem;
+    height: 3rem;
+  }
+  .card .MuiSvgIcon-root {
+    font-size: 3.5em;
+  }
+  .card-text {
+    font-size: 1rem;
+  }
+}
