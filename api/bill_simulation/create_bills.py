@@ -235,12 +235,11 @@ def create_invoice(contract_number, contracted_power, init_date, end_date, kwh_p
    charge_date = end_date + datetime.timedelta(days=random.randint(2, 5))
    consumption_period = end_date - init_date
    invoice["contracted_power_amount"] = contracted_power * consumption_period.days * kwh_price
-   consumed_energy = random.randint(100, 300)
-   invoice["consumed_energy"] = consumed_energy
    if init_date.month in [4, 5, 6, 7, 8, 9]:
-      invoice["consumed_energy_amount"] = consumed_energy * kwh_price * (1 + random.random())
+      invoice["consumed_energy"] = random.randint(100, 250)
    else:
-      invoice["consumed_energy_amount"] = consumed_energy * kwh_price
+      invoice["consumed_energy"] = random.randint(200, 350)
+   invoice["consumed_energy_amount"] = invoice["consumed_energy"] * kwh_price
    invoice["init_date"] = init_date.strftime("%Y-%m-%d")
    invoice["end_date"] = end_date.strftime("%Y-%m-%d")
    invoice["issue_date"] = issue_date.strftime("%Y-%m-%d")
