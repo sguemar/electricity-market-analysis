@@ -16,6 +16,7 @@ import {
   Redirect
 } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { Notify } from 'react-redux-notify';
 
 
 const App = ({ username }) => {
@@ -48,6 +49,7 @@ const App = ({ username }) => {
         </div>
         <Footer />
       </Router>
+      <Notify />
     </div>
   );
 }

@@ -32,7 +32,7 @@ import {
 } from 'react-bootstrap';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
-import { Notify, createNotification } from 'react-redux-notify';
+import { createNotification } from 'react-redux-notify';
 import {
   succeessAddInvoiceNotification,
   errorAddInvoiceNotification,
@@ -581,7 +581,6 @@ const Invoices = ({ createNotification }) => {
           </Box>
         </Grid>
       </Grid>
-      <Notify />
     </Container>
   );
 }

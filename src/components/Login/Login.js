@@ -15,11 +15,14 @@ import { Alert } from '@material-ui/lab';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import axios from 'axios';
 import { login } from '../../redux/actions/authentication';
-import { Notify } from 'react-redux-notify';
+import { createNotification } from 'react-redux-notify';
+import {
+  successLogInNotification,
+} from '../../redux/constants/notifications';
 
 
 
-const Login = ({ login }) => {
+const Login = ({ login, createNotification }) => {
 
   const initialState = {
     username: '',
@@ -46,6 +49,7 @@ const Login = ({ login }) => {
       await axios.post('/api/auth/login', data);
       let user = { username: state.username };
       login(user);
+      createNotification(successLogInNotification);
       history.push('/');
     } catch (error) {
       console.log(error);
@@ -102,7 +106,7 @@ const Login = ({ login }) => {
           </Button>
           <Grid container>
             <Grid item>
-              <Link 
+              <Link
                 to="/signup-customer"
                 className="MuiTypography-root
                            MuiLink-root
@@ -115,7 +119,6 @@ const Login = ({ login }) => {
           </Grid>
         </form>
       </div>
-      <Notify />
     </Container>
   );
 }
@@ -140,7 +143,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const mapDispatchToProps = dispatch => ({
+  createNotification: (config) => {
+    dispatch(createNotification(config))
+  },
+  login: (config) => dispatch(login(config))
+})
+
 export default connect(
   null,
-  { login }
+  mapDispatchToProps
 )(Login);

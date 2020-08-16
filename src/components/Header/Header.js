@@ -7,8 +7,13 @@ import { connect } from 'react-redux';
 import { useHistory, Link } from 'react-router-dom';
 import axios from 'axios';
 import { logout } from '../../redux/actions/authentication';
+import {
+	successLogOutNotification,
+} from '../../redux/constants/notifications';
+import { createNotification } from 'react-redux-notify';
 
-const Header = ({loggedUser, logout }) => {
+
+const Header = ({ loggedUser, logout, createNotification }) => {
 
 	const history = useHistory();
 
@@ -16,6 +21,7 @@ const Header = ({loggedUser, logout }) => {
 		try {
 			await axios.post('/api/auth/logout');
 			logout();
+			createNotification(successLogOutNotification);
 			history.push('/');
 		} catch (error) {
 			console.log(error);
@@ -88,7 +94,14 @@ const Header = ({loggedUser, logout }) => {
 	);
 }
 
+const mapDispatchToProps = dispatch => ({
+	createNotification: (config) => {
+		dispatch(createNotification(config))
+	},
+	logout: () => dispatch(logout())
+})
+
 export default connect(
 	null,
-	{ logout }
+	mapDispatchToProps
 )(Header);
