@@ -209,18 +209,29 @@ def get_consumption_data():
 			invoices = Invoice.get_by_contract_number(contract.contract_number)
 			for invoice in invoices:
 				year = int(invoice.init_date.strftime("%Y"))
+				total_amount_list = [0 for _ in range(12)]
+				consumed_energy_list = [0 for _ in range(12)]
+				contracted_power_amount_list = [0 for _ in range(12)]
+				consumed_energy_amount_list = [0 for _ in range(12)]
+				tax_amount_list = [0 for _ in range(12)]
 				if year in contract_invoices:
-					total_amounts_list = contract_invoices[year]["total_amount_list"]
+					total_amount_list = contract_invoices[year]["total_amount_list"]
+					consumed_energy_list = contract_invoices[year]["consumed_energy_list"]
+					contracted_power_amount_list = contract_invoices[year]["contracted_power_amount_list"]
 					consumed_energy_amount_list = contract_invoices[year]["consumed_energy_amount_list"]
-				else:
-					total_amounts_list = [0 for _ in range(12)]
-					consumed_energy_amount_list = [0 for _ in range(12)]
+					tax_amount_list = contract_invoices[year]["tax_amount_list"]
 				month = int(invoice.init_date.strftime("%m")) - 1
-				total_amounts_list[month] = round(invoice.total_amount, 2)
+				total_amount_list[month] = round(invoice.total_amount, 2)
+				consumed_energy_list[month] = invoice.consumed_energy
+				contracted_power_amount_list[month] = round(invoice.contracted_power_amount, 2)
 				consumed_energy_amount_list[month] = round(invoice.consumed_energy_amount, 2)
+				tax_amount_list[month] = round(invoice.tax_amount, 2)
 				contract_invoices[year] = {
-					"total_amount_list": total_amounts_list,
-					"consumed_energy_amount_list": consumed_energy_amount_list
+					"total_amount_list": total_amount_list,
+					"consumed_energy_list": consumed_energy_list,
+					"contracted_power_amount_list": contracted_power_amount_list,
+					"consumed_energy_amount_list": consumed_energy_amount_list,
+					"tax_amount_list": tax_amount_list
 				}
 	else:
 		return "No tienes permiso", 403

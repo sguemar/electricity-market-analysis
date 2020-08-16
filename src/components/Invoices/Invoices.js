@@ -293,12 +293,12 @@ const Invoices = ({ createNotification }) => {
             </AccordionSummary>
             <AccordionDetails>
               <Grid container direction="column">
-                <Typography>Potencia contratada: {contract.contract_data.contracted_power} kWs/h</Typography>
+                <Typography>Potencia contratada: {contract.contract_data.contracted_power} kWh</Typography>
                 <Typography>Peaje acceso: {contract.contract_data.toll_access}</Typography>
                 <Typography>Fecha fin: {contract.contract_data.end_date}</Typography>
                 <Typography>CNAE: {contract.contract_data.CNAE}</Typography>
-                <Typography>Tarifa acceso: {contract.contract_data.tariff_access}</Typography>
-                <Typography>Descripción: {contract.contract_data.description}</Typography>
+                <Typography>Tarifa acceso: {contract.contract_data.tariff_access ? contract.contract_data.tariff_access : "-"}</Typography>
+                <Typography>Descripción: {contract.contract_data.description ? contract.contract_data.description : "-"}</Typography>
               </Grid>
             </AccordionDetails>
           </Accordion>
@@ -347,12 +347,13 @@ const Invoices = ({ createNotification }) => {
           </AccordionSummary>
           <AccordionDetails>
             <Grid container direction="column">
-              <Typography>Potencia contratada: {invoice.contracted_power_amount} kWs</Typography>
-              <Typography>Energía consumida: {invoice.consumed_energy_amount} kWs</Typography>
+              <Typography>Por potencia contratada: {Math.round(invoice.contracted_power_amount * 100) / 100} €</Typography>
+              <Typography>Por potencia consumida: {Math.round(invoice.consumed_energy_amount * 100) / 100} €</Typography>
+              <Typography>Energía consumida: {invoice.consumed_energy} kWs</Typography>
               <Typography>Fecha de emisión: {invoice.issue_date}</Typography>
               <Typography>Fecha de cargo: {invoice.charge_date}</Typography>
               <Typography>Fecha de fin: {invoice.end_date}</Typography>
-              <Typography>Impuestos: {invoice.tax}%</Typography>
+              <Typography>Impuestos: {Math.round(invoice.tax_amount * 100) / 100} €</Typography>
               <Typography>Referencia contrato: {invoice.contract_reference}</Typography>
               <Box my={2}>
                 <Grid container justify="space-evenly">

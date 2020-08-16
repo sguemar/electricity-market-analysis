@@ -85,12 +85,14 @@ class Invoice(db.Model, SerializerMixin):
 	invoice_number = db.Column(db.String(255), primary_key=True)
 	contracted_power_amount = db.Column(db.Float)
 	consumed_energy_amount = db.Column(db.Float)
+	consumed_energy = db.Column(db.Float)
 	issue_date = db.Column(db.DateTime)
 	charge_date = db.Column(db.DateTime)
 	init_date = db.Column(db.DateTime)
 	end_date = db.Column(db.DateTime)
 	total_amount = db.Column(db.Float)
 	tax = db.Column(db.Float)
+	tax_amount = db.Column(db.Float)
 	contract_reference = db.Column(db.String(255))
 	contract_number = db.Column(
 		db.Integer,

@@ -70,6 +70,52 @@ const initialConsumptionsGraphOptions = {
   }
 };
 
+const initialStackedGraphOptions = {
+  chart: {
+    type: 'column'
+  },
+  title: {
+    text: 'Desglose gasto mensual'
+  },
+  series: [{
+    data: []
+  }],
+  xAxis: {
+    title: {
+      text: 'Mes',
+      style: {
+        fontSize: '14px',
+      },
+    },
+    categories: months
+  },
+  yAxis: {
+    title: {
+      style: {
+        fontSize: '14px',
+      },
+      text: 'Gasto total (€)'
+    },
+    stackLabels: {
+      enabled: true,
+    }
+  },
+  plotOptions: {
+    column: {
+      stacking: 'normal',
+      dataLabels: {
+        enabled: true
+      }
+    }
+  },
+  tooltip: {
+    borderRadius: 10,
+    formatter: function () {
+      return '<b>' + this.y + '</b> €';
+    }
+  }
+};
+
 
 const Consumptions = () => {
   const [loading, setLoading] = useState(false);
@@ -100,11 +146,13 @@ const Consumptions = () => {
   const [years, setYears] = useState([]);
   const [selectedYear, setSelectedYear] = useState({
     expense: false,
-    consumptions: false
+    consumptions: false,
+    stacked: false
   });
 
   const [expenseGraphOptions, setExpenseGraphOptions] = useState(initialExpenseGraphOptions);
   const [consumptionsGraphOptions, setConsumptionsGraphOptions] = useState(initialConsumptionsGraphOptions);
+  const [stackedGraphOptions, setStackedGraphOptions] = useState(initialStackedGraphOptions);
 
   const handleMonthlyExpenseGraph = () => {
     setSwitchButtonState({
@@ -220,7 +268,7 @@ const Consumptions = () => {
   const setMonthlyConsumptionsGraphData = async () => {
     const response = await axios.get('/api/customer/get-consumption-data');
     const consumptions = response.data;
-    const annualAverage = getAverage(consumptions, selectedYear.consumptions, "consumed_energy_amount_list");
+    const annualAverage = getAverage(consumptions, selectedYear.consumptions, "consumed_energy_list");
     setConsumptionsGraphOptions({
       ...consumptionsGraphOptions,
       title: {
@@ -230,7 +278,7 @@ const Consumptions = () => {
         {
           type: 'column',
           name: 'Año ' + selectedYear.consumptions,
-          data: consumptions[selectedYear.consumptions]["consumed_energy_amount_list"]
+          data: consumptions[selectedYear.consumptions]["consumed_energy_list"]
         },
         {
           type: 'line',
@@ -310,7 +358,7 @@ const Consumptions = () => {
     const response = await axios.get('/api/customer/get-consumption-data');
     const consumptions = response.data;
     const currentSelectedYear = event.target.value;
-    const annualAverage = getAverage(consumptions, currentSelectedYear, "consumed_energy_amount_list");
+    const annualAverage = getAverage(consumptions, currentSelectedYear, "consumed_energy_list");
     setSelectedYear({
       ...selectedYear,
       consumptions: currentSelectedYear
@@ -321,7 +369,7 @@ const Consumptions = () => {
         {
           type: 'column',
           name: 'Año ' + currentSelectedYear,
-          data: consumptions[currentSelectedYear]["consumed_energy_amount_list"]
+          data: consumptions[currentSelectedYear]["consumed_energy_list"]
         },
         {
           type: 'line',
@@ -338,6 +386,36 @@ const Consumptions = () => {
     });
   }
 
+  const handleChangeYearStacked = async event => {
+    const response = await axios.get('/api/customer/get-consumption-data');
+    const consumptions = response.data;
+    const currentSelectedYear = event.target.value;
+    setSelectedYear({
+      ...selectedYear,
+      stacked: currentSelectedYear
+    });
+    setStackedGraphOptions({
+      ...stackedGraphOptions,
+      series: [
+        {
+          name: "Gasto por potencia contratada",
+          data: consumptions[currentSelectedYear]["contracted_power_amount_list"],
+          color: "#8fff92"
+        },
+        {
+          name: "Gasto por energía consumida",
+          data: consumptions[currentSelectedYear]["consumed_energy_amount_list"],
+          color: "#7ec4ff"
+        },
+        {
+          name: "Impuestos",
+          data: consumptions[currentSelectedYear]["tax_amount_list"],
+          color: "#ff1e1e"
+        },
+      ]
+    });
+  }
+
   const getConsumptions = async () => {
     setLoading(true);
     const response = await axios.get('/api/customer/get-consumption-data');
@@ -346,7 +424,7 @@ const Consumptions = () => {
       const yearsList = Object.keys(consumptions);
       const maxYear = String(Math.max(...yearsList));
       const expenseAnnualAverage = getAverage(consumptions, maxYear, "total_amount_list");
-      const consumptionsAnnualAverage = getAverage(consumptions, maxYear, "consumed_energy_amount_list");
+      const consumptionsAnnualAverage = getAverage(consumptions, maxYear, "consumed_energy_list");
       setExpenseGraphOptions({
         ...expenseGraphOptions,
         title: {
@@ -382,7 +460,7 @@ const Consumptions = () => {
           {
             type: 'column',
             name: 'Año ' + maxYear,
-            data: consumptions[maxYear]["total_amount_list"],
+            data: consumptions[maxYear]["consumed_energy_list"],
             color: "#9aff8e",
           },
           {
@@ -399,13 +477,33 @@ const Consumptions = () => {
           categories: months
         }
       });
+      setStackedGraphOptions({
+        ...stackedGraphOptions,
+        series: [
+          {
+            name: "Gasto por potencia contratada",
+            data: consumptions[maxYear]["contracted_power_amount_list"],
+            color: "#8fff92"
+          },
+          {
+            name: "Gasto por energía consumida",
+            data: consumptions[maxYear]["consumed_energy_amount_list"],
+            color: "#7ec4ff"
+          },
+          {
+            name: "Impuestos",
+            data: consumptions[maxYear]["tax_amount_list"],
+            color: "#ff1e1e"
+          },
+        ]
+      });
       const expenseYearsAverage = [];
       const consumptionsYearsAverage = [];
       let dataFiltered = [];
       for (let year in consumptions) {
         dataFiltered = consumptions[year]["total_amount_list"].filter(element => element !== 0);
         expenseYearsAverage.push(Math.round((dataFiltered.reduce((a, b) => a + b, 0) / dataFiltered.length) * 100) / 100);
-        dataFiltered = consumptions[year]["consumed_energy_amount_list"].filter(element => element !== 0);
+        dataFiltered = consumptions[year]["consumed_energy_list"].filter(element => element !== 0);
         consumptionsYearsAverage.push(Math.round((dataFiltered.reduce((a, b) => a + b, 0) / dataFiltered.length) * 100) / 100);
       }
       const totalExpenseYearsAverage = Math.round((expenseYearsAverage.reduce((a, b) => a + b, 0) / expenseYearsAverage.length) * 100) / 100;
@@ -423,7 +521,8 @@ const Consumptions = () => {
       });
       setSelectedYear({
         expense: maxYear,
-        consumptions: maxYear
+        consumptions: maxYear,
+        stacked: maxYear,
       })
       setYears(yearsList);
     }
@@ -478,7 +577,7 @@ const Consumptions = () => {
                 </Box>
                 {switchButtonsState.expense.monthlyButtonColor === "primary" ?
                   <TextField
-                    id="outlined-select-year"
+                    id="outlined-select-year-expense"
                     select
                     label="Año"
                     value={selectedYear.expense}
@@ -495,6 +594,24 @@ const Consumptions = () => {
                   <></>
                 }
               </Box>
+              <HighchartsReact
+                highcharts={Highcharts}
+                options={stackedGraphOptions}
+              />
+              <TextField
+                id="outlined-select-year-stacked"
+                select
+                label="Año"
+                value={selectedYear.stacked}
+                onChange={handleChangeYearStacked}
+                variant="outlined"
+              >
+                {years.map((year) => (
+                  <MenuItem key={year} value={year}>
+                    {year}
+                  </MenuItem>
+                ))}
+              </TextField>
               <HighchartsReact
                 highcharts={Highcharts}
                 options={consumptionsGraphOptions}
@@ -520,7 +637,7 @@ const Consumptions = () => {
                 </Box>
                 {switchButtonsState.consumptions.monthlyButtonColor === "primary" ?
                   <TextField
-                    id="outlined-select-year"
+                    id="outlined-select-year-consumptions"
                     select
                     label="Año"
                     value={selectedYear.consumptions}

@@ -229,18 +229,28 @@ def set_end_date_last_relation_distributor_dwelling(distributors, dwelling, rela
    mydb.commit()
 
 
-def create_invoice(contract_number, contracted_power, init_date, end_date, kwh_price):
+def create_invoice(contract_number, contracted_power, init_date, end_date, kwh_price, province):
    invoice = {}
    issue_date = end_date + datetime.timedelta(days=1)
    charge_date = end_date + datetime.timedelta(days=random.randint(2, 5))
-   invoice["contracted_power_amount"] = contracted_power * INVOICE_CYCLE.days * kwh_price
-   invoice["consumed_energy_amount"] = random.randint(100, 400) * kwh_price
+   consumption_period = end_date - init_date
+   invoice["contracted_power_amount"] = contracted_power * consumption_period.days * kwh_price
+   consumed_energy = random.randint(100, 300)
+   invoice["consumed_energy"] = consumed_energy
+   if init_date.month in [4, 5, 6, 7, 8, 9]:
+      invoice["consumed_energy_amount"] = consumed_energy * kwh_price * (1 + random.random())
+   else:
+      invoice["consumed_energy_amount"] = consumed_energy * kwh_price
    invoice["init_date"] = init_date.strftime("%Y-%m-%d")
    invoice["end_date"] = end_date.strftime("%Y-%m-%d")
    invoice["issue_date"] = issue_date.strftime("%Y-%m-%d")
    invoice["charge_date"] = charge_date.strftime("%Y-%m-%d")
-   invoice["tax"] = 7
+   if province == "Las Palmas" or province == "Santa Cruz de Tenerife" or province == "Ceuta" or province == "Melilla":
+      invoice["tax"] = 7
+   else:
+      invoice["tax"] = 21
    invoice["total_amount"] = (invoice["contracted_power_amount"] + invoice["consumed_energy_amount"]) * (1 + invoice["tax"] / 100) 
+   invoice["tax_amount"] = invoice["total_amount"] - invoice["contracted_power_amount"] - invoice["consumed_energy_amount"]
    invoice["contract_reference"] = contract_number
    invoice["contract_number"] = contract_number
    return invoice
@@ -252,26 +262,30 @@ def insert_invoice(invoice):
                invoice_number,
                contracted_power_amount,
                consumed_energy_amount,
+               consumed_energy,
                init_date,
                end_date,
                issue_date,
                charge_date,
                tax,
+               tax_amount,
                total_amount,
                contract_reference,
                contract_number
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
          """
    val = (
          ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(14)),
          invoice["contracted_power_amount"],
          invoice["consumed_energy_amount"],
+         invoice["consumed_energy"],
          invoice["init_date"],
          invoice["end_date"],
          invoice["issue_date"],
          invoice["charge_date"],
          invoice["tax"],
+         invoice["tax_amount"],
          invoice["total_amount"],
          invoice["contract_reference"],
          invoice["contract_number"],
@@ -425,7 +439,8 @@ if __name__ == '__main__':
                contract["contracted_power"],
                current_date,
                end_date,
-               kwh_price
+               kwh_price,
+               dwelling["province"]
             )
             insert_invoice(invoice)
             current_date = end_date + datetime.timedelta(days=1)
