@@ -13,7 +13,7 @@ import {
 import { createNotification } from 'react-redux-notify';
 
 
-const Header = ({ loggedUser, logout, createNotification }) => {
+const Header = ({ username, userType, logout, createNotification }) => {
 
 	const history = useHistory();
 
@@ -39,7 +39,7 @@ const Header = ({ loggedUser, logout, createNotification }) => {
 							<Nav.Item>
 								<Link className="nav-link" to="/">Inicio</Link>
 							</Nav.Item>
-							{loggedUser
+							{userType === 1
 								?
 								<>
 									<Nav.Item>
@@ -58,12 +58,12 @@ const Header = ({ loggedUser, logout, createNotification }) => {
 							}
 						</Nav>
 						<Nav>
-							{loggedUser
+							{username
 								?
 								<>
 									<Nav.Item>
-										<Link className="nav-link" to="">
-											{loggedUser}
+										<Link className="nav-link" to="/profile">
+											{username}
 										</Link>
 									</Nav.Item>
 									<Nav.Item>

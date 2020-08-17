@@ -8,6 +8,7 @@ import CompanySignUp from '../SignUp/CompanySignUp';
 import NoMatch from '../NoMatch/NoMatch';
 import Invoices from '../Invoices/Invoices';
 import Consumptions from '../Consumptions/Consumptions';
+import Profile from '../Profile/Profile';
 
 import {
   BrowserRouter as Router,
@@ -19,11 +20,14 @@ import { connect } from 'react-redux';
 import { Notify } from 'react-redux-notify';
 
 
-const App = ({ username }) => {
+const App = ({ username, type }) => {
   return (
     <div className="app">
       <Router>
-        <Header loggedUser={username} />
+        <Header
+          username={username}
+          userType={type}
+        />
         <div className="main-content">
           <main>
             <Switch>
@@ -39,6 +43,9 @@ const App = ({ username }) => {
               </Route>
               <Route path="/signup-company" exact>
                 {username ? <Redirect to="/" /> : <CompanySignUp />}
+              </Route>
+              <Route path="/profile" exact>
+                {username ? <Profile /> : <Login />}
               </Route>
               <Route path="/consumptions" exact>
                 {username ? <Consumptions /> : <Login />}
