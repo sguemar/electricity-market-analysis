@@ -15,6 +15,8 @@ from app.models import (
 	Invoice,
 	Company
 )
+from app.auth.schemas import ProfileUserSchema
+from app.customer.schemas import ProfileCustomerSchema	
 
 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -238,6 +240,43 @@ def get_consumption_data():
 	return contract_invoices
 
 
+@customer_bp.route("/get-profile-data")
+@jwt_required
+def get_profile_data():
+	logged_user = User.get_by_username(get_jwt_identity())
+	logged_customer = Customer.get_by_user_id(logged_user.id)
+	return {
+		"name": logged_customer.name,
+		"surname": logged_customer.surname,
+		"email": logged_customer.email
+	}
+
+
+@customer_bp.route("/update-profile", methods=["PUT"])
+@jwt_required
+def update_profile():
+	if not request.is_json:
+		return "Missing JSON in request", 400
+	data = request.get_json()
+	errors = {}
+	if data['password'] or data['passwordconfirmation']:
+		if data["password"] != data["passwordconfirmation"]:
+			errors["passwordconfirmation"] = ["Las contraseñas no coinciden"]
+		errors.update(validateUser(data))
+	errors.update(validateCustomer(data))
+	if errors:
+		return errors, 422
+	user = User.get_by_username(get_jwt_identity())
+	customer = Customer.get_by_user_id(user.id)
+	if data['password']:
+		user.set_password(data['password'])
+	user.save()
+	customer.name = data['name']
+	customer.surname = data['surname']
+	customer.email = data['email']
+	customer.save()
+	return "", 200
+
 def __allowed_file(filename):
   return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -341,3 +380,22 @@ def __get_invoices(contract_number):
 	for invoice in _invoices:
 		invoices.append(invoice.to_dict())
 	return invoices
+
+
+def validateUser(data):
+	user = {
+		"password": data["password"],
+		"passwordconfirmation": data["passwordconfirmation"]
+	}
+	user = {k: v for k, v in user.items() if v}
+	return ProfileUserSchema().validate(user)
+
+
+def validateCustomer(data):
+	customer = {
+		"name": data["name"],
+		"surname": data["surname"],
+		"email": data["email"],
+	}
+	customer = {k: v for k, v in customer.items() if v}
+	return ProfileCustomerSchema().validate(customer)
