@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useState, useReducer } from 'react';
 import { connect } from 'react-redux';
 import {
   Typography,
@@ -7,7 +7,11 @@ import {
   makeStyles,
   Grid,
   TextField,
-  Button
+  Button,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Cookies from 'universal-cookie';
@@ -38,6 +42,8 @@ const Profile = ({ type }) => {
   const cookies = new Cookies();
   const csrfAccessToken = cookies.get('csrf_access_token');
 
+  const [saveProfileDialogState, setSaveProfileDialogState] = useState(false);
+
   const initialUserData = {
     name: '',
     surname: '',
@@ -61,16 +67,19 @@ const Profile = ({ type }) => {
     dispatchUserData({ [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const openSaveProfileDialog = () => setSaveProfileDialogState(true);
+  const closeSaveProfileDialog = () => setSaveProfileDialogState(false);
+  const handleSaveProfile = async (e) => {
     dispatchFormErrorState(initialUserData);
-    e.preventDefault();
     try {
       await axios.put(
         '/api/customer/update-profile',
         userData,
         { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
       );
+      setSaveProfileDialogState(false);
     } catch (error) {
+      setSaveProfileDialogState(false);
       const errors = error.response.data;
       for (const key in errors)
         dispatchFormErrorState({ [key]: errors[key][0] });
@@ -167,16 +176,26 @@ const Profile = ({ type }) => {
             </Grid>
             <Grid item xs={12}>
               <Button
-                type="submit"
                 fullWidth
                 variant="contained"
                 color="primary"
                 className={classes.submit}
-                onClick={handleSubmit}
+                onClick={() => openSaveProfileDialog()}
               >
                 Guardar
               </Button>
             </Grid>
+            <Dialog open={saveProfileDialogState}>
+              <DialogContent>
+                <DialogContentText>
+                  ¿Seguro que quieres guardar los datos de tu perfil?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button variant="contained" onClick={handleSaveProfile} color="primary">Aceptar</Button>
+                <Button variant="contained" onClick={closeSaveProfileDialog}>Cancelar</Button>
+              </DialogActions>
+            </Dialog>
           </Grid>
         </form>
       </div>
