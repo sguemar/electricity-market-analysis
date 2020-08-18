@@ -10,10 +10,10 @@ from flask_jwt_extended import (
 from . import auth_bp
 from .models import User
 from app.customer.models import Customer
-from app.models import Company
+from app.company.models import Company
 from .schemas import UserSchema
 from app.customer.schemas import CustomerSchema	
-from app.schemas import CompanySchema
+from app.company.schemas import CompanySchema
 
 
 @auth_bp.route("/signup-customer", methods=["POST"])

@@ -12,9 +12,9 @@ from app.models import (
 	Customer_Dwelling_Contract,
 	Contract,
 	Dwelling,
-	Invoice,
-	Company
+	Invoice
 )
+from app.company.models import Company
 from app.auth.schemas import ProfileUserSchema
 from app.customer.schemas import ProfileCustomerSchema	
 
