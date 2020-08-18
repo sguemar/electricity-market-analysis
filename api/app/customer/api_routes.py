@@ -277,6 +277,20 @@ def update_profile():
 	customer.save()
 	return "", 200
 
+
+@customer_bp.route("/delete-account", methods=["DELETE"])
+@jwt_required
+def delete_account():
+	logged_user = User.get_by_username(get_jwt_identity())
+	logged_customer = Customer.get_by_user_id(logged_user.id)
+	customers_dwellings_contracts = Customer_Dwelling_Contract.get_by_nif(logged_customer.nif)
+	for customer_dwelling_contract in customers_dwellings_contracts:
+		contract_number = customer_dwelling_contract.contract_number
+		Contract.get_by_contract_number(contract_number).delete()
+	logged_user.delete()
+	return "", 200
+
+
 def __allowed_file(filename):
   return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 

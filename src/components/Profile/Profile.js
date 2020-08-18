@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useReducer } from 'react';
+import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
   Typography,
@@ -19,7 +20,10 @@ import axios from 'axios';
 import { createNotification } from 'react-redux-notify';
 import {
   successSaveProfileNotification,
+  successDeleteAccountNotification
 } from '../../redux/constants/notifications';
+import { logout } from '../../redux/actions/authentication';
+
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -36,17 +40,16 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     marginTop: theme.spacing(3),
   },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
 }));
 
-const Profile = ({ type, createNotification }) => {
+const Profile = ({ type, createNotification, logout }) => {
   const classes = useStyles();
+  const history = useHistory();
   const cookies = new Cookies();
   const csrfAccessToken = cookies.get('csrf_access_token');
 
   const [saveProfileDialogState, setSaveProfileDialogState] = useState(false);
+  const [deleteAccountDialogState, setDeleteAccountDialogState] = useState(false);
 
   const initialUserData = {
     name: '',
@@ -88,6 +91,25 @@ const Profile = ({ type, createNotification }) => {
       const errors = error.response.data;
       for (const key in errors)
         dispatchFormErrorState({ [key]: errors[key][0] });
+    }
+  }
+
+  const openDeleteAccountDialog = () => setDeleteAccountDialogState(true);
+  const closeDeleteAccountDialog = () => setDeleteAccountDialogState(false);
+  const handleDeleteAccount = async (e) => {
+    try {
+      await axios.delete(
+        '/api/customer/delete-account',
+        { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
+      );
+      await axios.post('/api/auth/logout');
+			logout();
+      setDeleteAccountDialogState(false);
+      createNotification(successDeleteAccountNotification);
+      history.push('/');
+    } catch (error) {
+      setDeleteAccountDialogState(false);
+      console.log(error);
     }
   }
 
@@ -179,15 +201,24 @@ const Profile = ({ type, createNotification }) => {
                 helperText={formErrorState.email}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <Button
                 fullWidth
                 variant="contained"
                 color="primary"
-                className={classes.submit}
                 onClick={() => openSaveProfileDialog()}
               >
                 Guardar
+              </Button>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="secondary"
+                onClick={() => openDeleteAccountDialog()}
+              >
+                Eliminar cuenta
               </Button>
             </Grid>
             <Dialog open={saveProfileDialogState}>
@@ -199,6 +230,17 @@ const Profile = ({ type, createNotification }) => {
               <DialogActions>
                 <Button variant="contained" onClick={handleSaveProfile} color="primary">Aceptar</Button>
                 <Button variant="contained" onClick={closeSaveProfileDialog}>Cancelar</Button>
+              </DialogActions>
+            </Dialog>
+            <Dialog open={deleteAccountDialogState}>
+              <DialogContent>
+                <DialogContentText>
+                  ¿Seguro que quieres eliminar definitivamente tu cuenta? Se borrarán todos los contratos y las facturas que tengas registradas.
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button variant="contained" onClick={handleDeleteAccount} color="secondary">Eliminar definitivamente</Button>
+                <Button variant="contained" onClick={closeDeleteAccountDialog}>Cancelar</Button>
               </DialogActions>
             </Dialog>
           </Grid>
@@ -217,7 +259,8 @@ const mapDispatchToProps = dispatch => ({
   createNotification: (config) => {
     dispatch(createNotification(config))
   },
-})
+  logout: () => dispatch(logout())
+});
 
 export default connect(
   mapStateToProps,

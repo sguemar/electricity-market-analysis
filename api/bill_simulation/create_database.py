@@ -40,7 +40,7 @@ cursor.execute(
 			surname VARCHAR(255) NOT NULL,
 			email VARCHAR(255),
 			user_id INT,
-			FOREIGN KEY (user_id) REFERENCES users(id)
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 		);
 	"""
 )
@@ -114,7 +114,7 @@ cursor.execute(
 			contract_reference VARCHAR(255) DEFAULT '',
 			contract_number VARCHAR(255) DEFAULT '',
 			document LONGBLOB,
-			FOREIGN KEY (contract_number) REFERENCES contracts(contract_number)
+			FOREIGN KEY (contract_number) REFERENCES contracts(contract_number) ON DELETE CASCADE
 		);
 	"""
 )
@@ -129,9 +129,9 @@ cursor.execute(
 			init_date DATE,
 			end_date DATE,
 			CONSTRAINT PK_customer_dwelling_contract PRIMARY KEY (nif, cups, contract_number),
-			FOREIGN KEY (nif) REFERENCES customers(nif),
-			FOREIGN KEY (cups) REFERENCES dwellings(cups),
-			FOREIGN KEY (contract_number) REFERENCES contracts(contract_number)
+			FOREIGN KEY (nif) REFERENCES customers(nif) ON DELETE CASCADE,
+			FOREIGN KEY (cups) REFERENCES dwellings(cups) ON DELETE CASCADE,
+			FOREIGN KEY (contract_number) REFERENCES contracts(contract_number) ON DELETE CASCADE
 		);
 	"""
 )

@@ -83,3 +83,11 @@ export const successSaveProfileNotification = {
   canDismiss: true,
   icon: <CheckCircleSharpIcon />,
 }
+
+export const successDeleteAccountNotification = {
+  message: 'Tu cuenta se ha borrado correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: true,
+  icon: <CheckCircleSharpIcon />,
+}
