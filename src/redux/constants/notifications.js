@@ -75,3 +75,11 @@ export const errorChangeInvoiceNotification = {
   canDismiss: false,
   icon: <ErrorOutlineOutlinedIcon />,
 }
+
+export const successSaveProfileNotification = {
+  message: 'Los datos de tu perfil se han guardado correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: true,
+  icon: <CheckCircleSharpIcon />,
+}

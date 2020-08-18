@@ -16,6 +16,10 @@ import {
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Cookies from 'universal-cookie';
 import axios from 'axios';
+import { createNotification } from 'react-redux-notify';
+import {
+  successSaveProfileNotification,
+} from '../../redux/constants/notifications';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -37,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Profile = ({ type }) => {
+const Profile = ({ type, createNotification }) => {
   const classes = useStyles();
   const cookies = new Cookies();
   const csrfAccessToken = cookies.get('csrf_access_token');
@@ -78,6 +82,7 @@ const Profile = ({ type }) => {
         { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
       );
       setSaveProfileDialogState(false);
+      createNotification(successSaveProfileNotification);
     } catch (error) {
       setSaveProfileDialogState(false);
       const errors = error.response.data;
@@ -208,4 +213,13 @@ const mapStateToProps = state => {
   return authentication.loggedUser;
 };
 
-export default connect(mapStateToProps)(Profile);
+const mapDispatchToProps = dispatch => ({
+  createNotification: (config) => {
+    dispatch(createNotification(config))
+  },
+})
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Profile);
