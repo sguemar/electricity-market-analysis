@@ -13,6 +13,7 @@ mydb = mysql.connector.connect(
 )
 cursor = mydb.cursor()
 
+streets = open("bill_simulation/text_data/streets.txt", encoding='utf8').readlines()
 
 def create_trading_company(trading_company_info):
 	trading_company = {}
@@ -105,18 +106,16 @@ def insert_user(user, user_type):
 	return user[0]
 
 
-if __name__ == '__main__':
-	streets = open("bill_simulation/streets.txt", encoding='utf8').readlines()
-
+def create_companies():
 	# Create trading companies
-	with open('bill_simulation/trading_companies.txt', encoding='utf8') as trading_companies_file:
+	with open('bill_simulation/text_data/trading_companies.txt', encoding='utf8') as trading_companies_file:
 		for trading_company in trading_companies_file:
 			company = create_trading_company(trading_company.split(";"))
 			user_id = insert_user(company, 0)
 			insert_company(company, user_id)
 
 	# Create distributors
-	with open('bill_simulation/distributors.txt', encoding='utf8') as distributors_file:
+	with open('bill_simulation/text_data/distributors.txt', encoding='utf8') as distributors_file:
 		for distributor in distributors_file:
 			company = create_distributor(distributor.split(";"))
 			user_id = insert_user(company, 0)
