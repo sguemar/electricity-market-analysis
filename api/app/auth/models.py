@@ -20,6 +20,10 @@ class User(db.Model, UserMixin):
 	def check_password(self, password):
 		return check_password_hash(self.password, password)
 
+	def delete(self):
+		db.session.delete(self)
+		db.session.commit()
+
 	def save(self):
 		if not self.id:
 			db.session.add(self)

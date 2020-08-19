@@ -46,8 +46,11 @@ const Login = ({ login, createNotification }) => {
       password: state.password
     };
     try {
-      await axios.post('/api/auth/login', data);
-      let user = { username: state.username };
+      const response = await axios.post('/api/auth/login', data);
+      let user = {
+        username: state.username,
+        type: response.data.user_type
+      };
       login(user);
       createNotification(successLogInNotification);
       history.push('/');

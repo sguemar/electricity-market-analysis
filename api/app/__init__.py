@@ -39,4 +39,7 @@ def create_app():
 	from .customer import customer_bp
 	app.register_blueprint(customer_bp, url_prefix='/api/customer')
 
+	from .company import company_bp
+	app.register_blueprint(company_bp, url_prefix='/api/company')
+
 	return app

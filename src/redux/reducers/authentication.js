@@ -2,17 +2,19 @@ import { LOGIN_USER, LOGOUT_USER } from "../constants/authentication";
 
 const initialState = {
   loggedUser: {
-    username: ''
+    username: false,
+    type: false
   },
 };
 
 export default function (state = initialState, action) {
   switch (action.type) {
     case LOGIN_USER: {
-      const { username } = action.payload;
+      const { username, type } = action.payload;
       return {
         loggedUser: {
           username: username,
+          type: type
         }
       };
     }
