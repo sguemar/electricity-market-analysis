@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Profile = ({ type, createNotification, logout }) => {
+const CompanyProfile = ({ type, createNotification, logout }) => {
   const classes = useStyles();
   const history = useHistory();
   const cookies = new Cookies();
@@ -53,10 +53,12 @@ const Profile = ({ type, createNotification, logout }) => {
 
   const initialUserData = {
     name: '',
-    surname: '',
     password: '',
     passwordconfirmation: '',
     email: '',
+    phone: '',
+    url: '',
+    address: ''
   };
 
   const [userData, dispatchUserData] = useReducer(
@@ -80,7 +82,7 @@ const Profile = ({ type, createNotification, logout }) => {
     dispatchFormErrorState(initialUserData);
     try {
       await axios.put(
-        '/api/customer/update-profile',
+        '/api/company/update-profile',
         userData,
         { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
       );
@@ -99,11 +101,11 @@ const Profile = ({ type, createNotification, logout }) => {
   const handleDeleteAccount = async (e) => {
     try {
       await axios.delete(
-        '/api/customer/delete-account',
+        '/api/company/delete-account',
         { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
       );
       await axios.post('/api/auth/logout');
-			logout();
+      logout();
       setDeleteAccountDialogState(false);
       createNotification(successDeleteAccountNotification);
       history.push('/');
@@ -114,10 +116,8 @@ const Profile = ({ type, createNotification, logout }) => {
   }
 
   const getProfileData = async () => {
-    if (type === 1) {
-      const response = await axios.get('/api/customer/get-profile-data');
-      dispatchUserData(response.data);
-    }
+    const response = await axios.get('/api/company/get-profile-data');
+    dispatchUserData(response.data);
   }
 
   useEffect(() => {
@@ -133,7 +133,7 @@ const Profile = ({ type, createNotification, logout }) => {
         <Typography variant="h4" align="center">Mi perfil</Typography>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
@@ -145,20 +145,6 @@ const Profile = ({ type, createNotification, logout }) => {
                 onChange={handleChange}
                 error={formErrorState.name ? true : false}
                 helperText={formErrorState.name}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="surname"
-                label="Apellidos"
-                name="surname"
-                value={userData.surname || ''}
-                onChange={handleChange}
-                error={formErrorState.surname ? true : false}
-                helperText={formErrorState.surname}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -187,7 +173,7 @@ const Profile = ({ type, createNotification, logout }) => {
                 helperText={formErrorState.passwordconfirmation}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={8}>
               <TextField
                 variant="outlined"
                 type="email"
@@ -199,6 +185,47 @@ const Profile = ({ type, createNotification, logout }) => {
                 onChange={handleChange}
                 error={formErrorState.email ? true : false}
                 helperText={formErrorState.email}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="phone"
+                label="Teléfono"
+                name="phone"
+                value={userData.phone || ''}
+                onChange={handleChange}
+                error={formErrorState.phone ? true : false}
+                helperText={formErrorState.phone}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                fullWidth
+                id="url"
+                label="URL"
+                name="url"
+                value={userData.url || ''}
+                onChange={handleChange}
+                error={formErrorState.url ? true : false}
+                helperText={formErrorState.url}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="address"
+                label="Dirección"
+                name="address"
+                value={userData.address || ''}
+                onChange={handleChange}
+                error={formErrorState.address ? true : false}
+                helperText={formErrorState.address}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -235,7 +262,7 @@ const Profile = ({ type, createNotification, logout }) => {
             <Dialog open={deleteAccountDialogState}>
               <DialogContent>
                 <DialogContentText>
-                  ¿Seguro que quieres eliminar definitivamente tu cuenta? Se borrarán todos los contratos y las facturas que tengas registradas.
+                  ¿Seguro que quieres eliminar definitivamente tu cuenta?
                 </DialogContentText>
               </DialogContent>
               <DialogActions>
@@ -265,4 +292,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Profile);
+)(CompanyProfile);

@@ -18,8 +18,7 @@ class Contract(db.Model, SerializerMixin):
 	conditions = db.Column(db.Text())
 	cif = db.Column(
 		db.String(255),
-		db.ForeignKey('companies.cif', ondelete='CASCADE'),
-		nullable=False
+		db.ForeignKey('companies.cif'),
 	)
 
 	def delete(self):

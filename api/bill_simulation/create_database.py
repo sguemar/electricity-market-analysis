@@ -71,7 +71,7 @@ cursor.execute(
 			company_type TINYINT NOT NULL,
 			phone INT NOT NULL,
 			user_id INT,
-			FOREIGN KEY (user_id) REFERENCES users(id)
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 		);
 	"""
 )
@@ -91,7 +91,7 @@ cursor.execute(
 			conditions LONGTEXT,
 			cif VARCHAR(9),
 			file LONGBLOB,
-			FOREIGN KEY (cif) REFERENCES companies(cif)
+			FOREIGN KEY (cif) REFERENCES companies(cif) ON DELETE SET NULL
 		);
 	"""
 )
@@ -145,7 +145,7 @@ cursor.execute(
 			init_date DATE,
 			end_date DATE,
 			CONSTRAINT PK_distributor_dwelling PRIMARY KEY (cif, cups, init_date),
-			FOREIGN KEY (cif) REFERENCES companies(cif),
+			FOREIGN KEY (cif) REFERENCES companies(cif) ON DELETE CASCADE,
 			FOREIGN KEY (cups) REFERENCES dwellings(cups)
 		);
 	"""

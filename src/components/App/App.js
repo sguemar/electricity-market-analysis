@@ -8,7 +8,8 @@ import CompanySignUp from '../SignUp/CompanySignUp';
 import NoMatch from '../NoMatch/NoMatch';
 import Invoices from '../Invoices/Invoices';
 import Consumptions from '../Consumptions/Consumptions';
-import Profile from '../Profile/Profile';
+import CustomerProfile from '../Profile/CustomerProfile';
+import CompanyProfile from '../Profile/CompanyProfile';
 
 import {
   BrowserRouter as Router,
@@ -45,7 +46,13 @@ const App = ({ username, type }) => {
                 {username ? <Redirect to="/" /> : <CompanySignUp />}
               </Route>
               <Route path="/profile" exact>
-                {username ? <Profile /> : <Login />}
+                {username ?
+                  <>
+                    {type === 1 ? <CustomerProfile /> : <CompanyProfile />}
+                  </>
+                  :
+                  <Login />
+                }
               </Route>
               <Route path="/consumptions" exact>
                 {username ? <Consumptions /> : <Login />}
