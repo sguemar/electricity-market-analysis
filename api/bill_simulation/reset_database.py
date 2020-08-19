@@ -154,17 +154,29 @@ cursor.execute(
 
 cursor.execute(
     """
+		CREATE TABLE IF NOT EXISTS offers_types
+		(
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			rate VARCHAR(6) NOT NULL,
+			name VARCHAR(255) NOT NULL
+		);
+	"""
+)
+
+cursor.execute(
+    """
 		CREATE TABLE IF NOT EXISTS offers
 		(
 			id INT AUTO_INCREMENT PRIMARY KEY,
-			type TINYINT DEFAULT 0 NOT NULL,
+			type INT DEFAULT 0 NOT NULL,
 			fixed_term FLOAT DEFAULT 0 NOT NULL,
 			variable_term FLOAT DEFAULT 0,
 			tip FLOAT DEFAULT 0,
 			valley FLOAT DEFAULT 0,
 			super_valley FLOAT DEFAULT 0,
 			cif VARCHAR(9),
-			FOREIGN KEY (cif) REFERENCES companies(cif) ON DELETE CASCADE
+			FOREIGN KEY (cif) REFERENCES companies(cif) ON DELETE CASCADE,
+			FOREIGN KEY (type) REFERENCES offers_types(id) ON DELETE CASCADE
 		);
 	"""
 )
@@ -177,17 +189,6 @@ cursor.execute(
 			text VARCHAR(255) NOT NULL,
 			offer_id INT NOT NULL,
 			FOREIGN KEY (offer_id) REFERENCES offers(id) ON DELETE CASCADE
-		);
-	"""
-)
-
-cursor.execute(
-    """
-		CREATE TABLE IF NOT EXISTS offers_types
-		(
-			id INT AUTO_INCREMENT PRIMARY KEY,
-			rate VARCHAR(6) NOT NULL,
-			name VARCHAR(255) NOT NULL
 		);
 	"""
 )
