@@ -361,10 +361,10 @@ def get_distributors():
 
 if __name__ == '__main__':
 
-   names = open("bill_simulation/names.txt", encoding='utf8').readlines()
-   surnames = open("bill_simulation/surnames.txt", encoding='utf8').readlines()
-   populations = open("bill_simulation/populations.txt", encoding='utf8').readlines()
-   streets = open("bill_simulation/streets.txt", encoding='utf8').readlines()
+   names = open("bill_simulation/text_data/names.txt", encoding='utf8').readlines()
+   surnames = open("bill_simulation/text_data/surnames.txt", encoding='utf8').readlines()
+   populations = open("bill_simulation/text_data/populations.txt", encoding='utf8').readlines()
+   streets = open("bill_simulation/text_data/streets.txt", encoding='utf8').readlines()
    trading_companies = get_trading_companies()
    distributors = get_distributors()
 
