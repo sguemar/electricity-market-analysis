@@ -4,7 +4,7 @@ const initialState = {
   loggedUser: {
     username: false,
     type: false,
-    company_type: false
+    companyType: false
   },
 };
 
@@ -16,17 +16,17 @@ export default function (state = initialState, action) {
         loggedUser: {
           username: username,
           type: type,
-          company_type: false
+          companyType: false
         }
       };
     }
     case LOGIN_COMPANY: {
-      const { username, type, company_type } = action.payload;
+      const { username, type, companyType } = action.payload;
       return {
         loggedUser: {
           username: username,
           type: type,
-          company_type: company_type
+          companyType: companyType
         }
       };
     }

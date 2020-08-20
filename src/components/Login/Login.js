@@ -56,7 +56,7 @@ const Login = ({ loginCustomer, loginCompany, createNotification }) => {
         loginCompany({
           username: state.username,
           type: response.data.user_type,
-          company_type: response.data.company_type
+          companyType: response.data.company_type
         });
       createNotification(successLogInNotification);
       history.push('/');
