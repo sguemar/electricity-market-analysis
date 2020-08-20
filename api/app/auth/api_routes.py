@@ -86,10 +86,14 @@ def login():
 	if user and user.check_password(password):
 		access_token = create_access_token(identity=username)
 		refresh_token = create_refresh_token(identity=username)
-		response = make_response({
+		result_response = {
 			"login": True,
 			"user_type": user.user_type
-		})
+		}
+		if user.user_type == 0:
+			company = Company.get_by_user_id(user.id)
+			result_response["company_type"] = company.company_type
+		response = make_response(result_response)
 		set_access_cookies(response, access_token)
 		set_refresh_cookies(response, refresh_token)
 		return response, 200
