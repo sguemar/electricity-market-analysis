@@ -85,7 +85,7 @@ const Offers = () => {
       const paginatedOffers = offers.slice(endIndex - 2, endIndex);
       const updatedOffersList = paginatedOffers.map(offer => {
         return (
-          <Grid item xs={12} md={12 / paginatedOffers.length}>
+          <Grid key={offer.id} item xs={12} md={12 / paginatedOffers.length}>
             <Card className={classes.card}>
               <CardHeader
                 title={offer.name + " (" + offer.rate + ")"}
