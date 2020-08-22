@@ -4,10 +4,15 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from . import company_bp
 from app.auth.models import User
-from .models import Company, Offers, OffersTypes, OffersFeatures
+from .models import Company, Offer, OfferType, OfferFeature
 from app.auth.schemas import ProfileUserSchema
-from .schemas import ProfileCompanySchema
-
+from .schemas import (
+	ProfileCompanySchema,
+	GeneralOfferSchema,
+	HourlyOfferSchema,
+	SuperValleyOfferSchema,
+	OfferFeaturesSchema
+)
 
 @company_bp.route("/get-profile-data")
 @jwt_required
@@ -68,6 +73,79 @@ def get_offers():
 	offers = __get_offers(logged_company.cif)
 	return jsonify(offers)
 
+@company_bp.route("/get-offers-types")
+@jwt_required
+def get_offers_types():
+	offers_types = OfferType.get_all()
+	return jsonify(__get_offers_types(offers_types))
+
+
+@company_bp.route("/create-offer", methods=["POST"])
+@jwt_required
+def create_offer():
+	if not request.is_json:
+		return "Missing JSON in request", 400
+	offer_data = request.get_json()
+	errors = {}
+	errors.update(validateOffer(offer_data))
+	errors.update(validateFeatures(offer_data))
+	if errors:
+		return errors, 422
+	offer_rate = int(offer_data["offerRate"])	
+	logged_user = User.get_by_username(get_jwt_identity())
+	logged_company = Company.get_by_user_id(logged_user.id)
+	if offer_rate % 3 == 1:
+		offer = Offer(
+			offer_type=offer_rate,
+			fixed_term=offer_data["fixedTerm"],
+			variable_term=offer_data["variableTerm"],
+			tip=0,
+			valley=0,
+			super_valley=0,
+			cif=logged_company.cif
+		)
+	elif offer_rate % 3 == 2:
+		offer = Offer(
+			offer_type=offer_rate,
+			fixed_term=offer_data["fixedTerm"],
+			variable_term=0,
+			tip=offer_data["tip"],
+			valley=offer_data["valley"],
+			super_valley=0,
+			cif=logged_company.cif
+		)
+	else:
+		offer = Offer(
+			offer_type=offer_rate,
+			fixed_term=offer_data["fixedTerm"],
+			variable_term=0,
+			tip=offer_data["tip"],
+			valley=offer_data["valley"],
+			super_valley=offer_data["superValley"],
+			cif=logged_company.cif
+		)
+	offer_id = offer.save()
+	if offer_data["characteristic1"]:
+		offer_feature = OfferFeature(
+			text=offer_data["characteristic1"],
+			offer_id=offer_id
+		)
+		offer_feature.save()
+	if offer_data["characteristic2"]:
+		offer_feature = OfferFeature(
+			text=offer_data["characteristic2"],
+			offer_id=offer_id
+		)
+		offer_feature.save()
+	if offer_data["characteristic3"]:
+		offer_feature = OfferFeature(
+			text=offer_data["characteristic3"],
+			offer_id=offer_id
+		)
+		offer_feature.save()
+	return "", 200
+
+
 def validateUser(data):
 	user = {
 		"password": data["password"],
@@ -89,18 +167,62 @@ def validateCompany(data):
 	return ProfileCompanySchema().validate(company)
 
 
+def validateOffer(data):
+	offer_rate = int(data["offerRate"])	
+	if offer_rate % 3 == 1:
+		offer = {
+			"fixedTerm": data["fixedTerm"],
+			"variableTerm": data["fixedTerm"],
+		}
+		offer = {k: v for k, v in offer.items() if v}
+		return GeneralOfferSchema().validate(offer)
+	elif offer_rate % 3 == 2:
+		offer = {
+			"fixedTerm": data["fixedTerm"],
+			"tip": data["tip"],
+			"valley": data["valley"],
+		}
+		offer = {k: v for k, v in offer.items() if v}
+		return HourlyOfferSchema().validate(offer)
+	else:
+		offer = {
+			"fixedTerm": data["fixedTerm"],
+			"tip": data["tip"],
+			"valley": data["valley"],
+			"superValley": data["superValley"],
+		}
+		offer = {k: v for k, v in offer.items() if v}
+		return SuperValleyOfferSchema().validate(offer)
+
+
+def validateFeatures(data):
+	offer_features = {
+		"characteristic1": data["characteristic1"],
+		"characteristic2": data["characteristic2"],
+		"characteristic3": data["characteristic3"],
+	}
+	offer_features = {k: v for k, v in offer_features.items() if v}
+	return OfferFeaturesSchema().validate(offer_features)
+
 def __get_offers(cif):
-	offers = Offers.get_all_by_cif(cif)
+	offers = Offer.get_all_by_cif(cif)
 	result = []
 	for offer in offers:
 		offer_result = offer.to_dict()
-		offer_type = OffersTypes.get_by_id(offer.offer_type)
+		offer_type = OfferType.get_by_id(offer.offer_type)
 		offer_result["rate"] = offer_type.rate
 		offer_result["name"] = offer_type.name
-		offer_features = OffersFeatures.get_all_by_offer_id(offer.id)
+		offer_features = OfferFeature.get_all_by_offer_id(offer.id)
 		offer_features_text = []
 		for offer_feature in offer_features:
 			offer_features_text.append(offer_feature.text)
 		offer_result["features"] = offer_features_text
 		result.append(offer_result)
+	return result
+
+
+def __get_offers_types(offers_types):
+	result = []
+	for offer_type in offers_types:
+		result.append(offer_type.to_dict())
 	return result

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import {
   makeStyles,
   Typography,
@@ -50,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
 const Offers = () => {
 
   const classes = useStyles();
+	const history = useHistory();
 
   const [loading, setLoading] = useState(false);
   const [offers, setOffers] = useState([]);
@@ -58,6 +60,8 @@ const Offers = () => {
   const [offersCount, setOffersCount] = useState(0);
 
   const handleOffersPageChange = (event, value) => setOffersPage(value);
+
+  const handleCreateOffer = () => history.push('/create-offer');
 
   const getOffers = async () => {
     setLoading(true);
@@ -231,7 +235,7 @@ const Offers = () => {
         }
       </Box >
       <Box display="flex" justifyContent="center" mt={2}>
-        <RBButton variant="success" size="lg">Crear oferta</RBButton>
+        <RBButton variant="success" size="lg" onClick={handleCreateOffer}>Crear oferta</RBButton>
       </Box>
     </Container>
   );

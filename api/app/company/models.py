@@ -42,7 +42,7 @@ class Company(db.Model):
 		).first()
 
 
-class Offers(db.Model, SerializerMixin):
+class Offer(db.Model, SerializerMixin):
 
 	__tablename__ = "offers"
 
@@ -62,17 +62,18 @@ class Offers(db.Model, SerializerMixin):
 	def save(self):
 		db.session.add(self)
 		db.session.commit()
+		return self.id
 
 	@staticmethod
 	def get_by_id(id):
-		return Offers.query.get(id)
+		return Offer.query.get(id)
 
 	@staticmethod
 	def get_all_by_cif(cif):
-		return Offers.query.filter_by(cif=cif).all()
+		return Offer.query.filter_by(cif=cif).all()
 
 
-class OffersTypes(db.Model):
+class OfferType(db.Model, SerializerMixin):
 
 	__tablename__ = "offers_types"
 
@@ -86,10 +87,14 @@ class OffersTypes(db.Model):
 
 	@staticmethod
 	def get_by_id(id):
-		return OffersTypes.query.get(id)
+		return OfferType.query.get(id)
+
+	@staticmethod
+	def get_all():
+		return OfferType.query.all()
 
 
-class OffersFeatures(db.Model):
+class OfferFeature(db.Model):
 
 	__tablename__ = "offers_features"
 
@@ -107,4 +112,4 @@ class OffersFeatures(db.Model):
 
 	@staticmethod
 	def get_all_by_offer_id(offer_id):
-		return OffersFeatures.query.filter_by(offer_id=offer_id).all()
+		return OfferFeature.query.filter_by(offer_id=offer_id).all()

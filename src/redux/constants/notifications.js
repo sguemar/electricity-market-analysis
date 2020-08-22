@@ -91,3 +91,11 @@ export const successDeleteAccountNotification = {
   canDismiss: true,
   icon: <CheckCircleSharpIcon />,
 }
+
+export const successCreateOfferNotification = {
+  message: 'La oferta se ha guardado correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: true,
+  icon: <CheckCircleSharpIcon />,
+}

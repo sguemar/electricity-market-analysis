@@ -11,6 +11,7 @@ import Consumptions from '../Consumptions/Consumptions';
 import CustomerProfile from '../Profile/CustomerProfile';
 import CompanyProfile from '../Profile/CompanyProfile';
 import Offers from '../Offers/Offers';
+import CreateOffer from '../Offers/CreateOffer';
 import {
   BrowserRouter as Router,
   Route,
@@ -65,6 +66,21 @@ const App = ({ username, type, companyType }) => {
                     {companyType === 0
                       ?
                       <Offers />
+                      :
+                      <Redirect to="/" />
+                    }
+                  </>
+                  :
+                  <Login />
+                }
+              </Route>
+              <Route path="/create-offer" exact>
+                {username
+                  ?
+                  <>
+                    {companyType === 0
+                      ?
+                      <CreateOffer />
                       :
                       <Redirect to="/" />
                     }
