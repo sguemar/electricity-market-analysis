@@ -13,7 +13,7 @@ import {
 import { createNotification } from 'react-redux-notify';
 
 
-const Header = ({ username, userType, logout, createNotification }) => {
+const Header = ({ username, userType, companyType, logout, createNotification }) => {
 
 	const history = useHistory();
 
@@ -54,7 +54,18 @@ const Header = ({ username, userType, logout, createNotification }) => {
 									</Nav.Item>
 								</>
 								:
-								<></>
+								<>
+									{companyType === 0
+										?
+										<Nav.Item>
+											<Link className="nav-link" to="/offers">
+												Ofertas
+											</Link>
+										</Nav.Item>
+										:
+										<></>
+									}
+								</>
 							}
 						</Nav>
 						<Nav>

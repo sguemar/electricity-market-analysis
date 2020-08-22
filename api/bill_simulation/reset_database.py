@@ -168,15 +168,15 @@ cursor.execute(
 		CREATE TABLE IF NOT EXISTS offers
 		(
 			id INT AUTO_INCREMENT PRIMARY KEY,
-			type INT DEFAULT 0 NOT NULL,
+			offer_type INT DEFAULT 0 NOT NULL,
 			fixed_term FLOAT DEFAULT 0 NOT NULL,
 			variable_term FLOAT DEFAULT 0,
 			tip FLOAT DEFAULT 0,
 			valley FLOAT DEFAULT 0,
 			super_valley FLOAT DEFAULT 0,
-			cif VARCHAR(9),
+			cif VARCHAR(9) NOT NULL,
 			FOREIGN KEY (cif) REFERENCES companies(cif) ON DELETE CASCADE,
-			FOREIGN KEY (type) REFERENCES offers_types(id) ON DELETE CASCADE
+			FOREIGN KEY (offer_type) REFERENCES offers_types(id) ON DELETE CASCADE
 		);
 	"""
 )

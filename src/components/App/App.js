@@ -10,7 +10,7 @@ import Invoices from '../Invoices/Invoices';
 import Consumptions from '../Consumptions/Consumptions';
 import CustomerProfile from '../Profile/CustomerProfile';
 import CompanyProfile from '../Profile/CompanyProfile';
-
+import Offers from '../Offers/Offers';
 import {
   BrowserRouter as Router,
   Route,
@@ -21,13 +21,14 @@ import { connect } from 'react-redux';
 import { Notify } from 'react-redux-notify';
 
 
-const App = ({ username, type }) => {
+const App = ({ username, type, companyType }) => {
   return (
     <div className="app">
       <Router>
         <Header
           username={username}
           userType={type}
+          companyType={companyType}
         />
         <div className="main-content">
           <main>
@@ -56,6 +57,21 @@ const App = ({ username, type }) => {
               </Route>
               <Route path="/consumptions" exact>
                 {username ? <Consumptions /> : <Login />}
+              </Route>
+              <Route path="/offers" exact>
+                {username
+                  ?
+                  <>
+                    {companyType === 0
+                      ?
+                      <Offers />
+                      :
+                      <Redirect to="/" />
+                    }
+                  </>
+                  :
+                  <Login />
+                }
               </Route>
               <Route component={NoMatch} />
             </Switch>

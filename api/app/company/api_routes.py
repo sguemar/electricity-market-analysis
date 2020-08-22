@@ -1,10 +1,10 @@
-from flask import request
+from flask import request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 from . import company_bp
 from app.auth.models import User
-from .models import Company
+from .models import Company, Offers, OffersTypes, OffersFeatures
 from app.auth.schemas import ProfileUserSchema
 from .schemas import ProfileCompanySchema
 
@@ -60,6 +60,14 @@ def delete_account():
 	return "", 200
 
 
+@company_bp.route("/get-offers")
+@jwt_required
+def get_offers():
+	logged_user = User.get_by_username(get_jwt_identity())
+	logged_company = Company.get_by_user_id(logged_user.id)
+	offers = __get_offers(logged_company.cif)
+	return jsonify(offers)
+
 def validateUser(data):
 	user = {
 		"password": data["password"],
@@ -79,3 +87,20 @@ def validateCompany(data):
 	}
 	company = {k: v for k, v in company.items() if v}
 	return ProfileCompanySchema().validate(company)
+
+
+def __get_offers(cif):
+	offers = Offers.get_all_by_cif(cif)
+	result = []
+	for offer in offers:
+		offer_result = offer.to_dict()
+		offer_type = OffersTypes.get_by_id(offer.offer_type)
+		offer_result["rate"] = offer_type.rate
+		offer_result["name"] = offer_type.name
+		offer_features = OffersFeatures.get_all_by_offer_id(offer.id)
+		offer_features_text = []
+		for offer_feature in offer_features:
+			offer_features_text.append(offer_feature.text)
+		offer_result["features"] = offer_features_text
+		result.append(offer_result)
+	return result
