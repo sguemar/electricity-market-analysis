@@ -23,7 +23,11 @@ import {
   Grid,
   CircularProgress,
   Divider,
-  Paper
+  Paper,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import {
@@ -44,20 +48,28 @@ const useStyles = makeStyles((theme) => ({
   },
   headerTableCell: {
     fontWeight: 'bold',
-  }
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 100,
+  },
 }));
 
 
 const Offers = () => {
 
   const classes = useStyles();
-	const history = useHistory();
+  const history = useHistory();
 
   const [loading, setLoading] = useState(false);
   const [offers, setOffers] = useState([]);
   const [offersList, setOffersList] = useState([]);
   const [offersPage, setOffersPage] = useState(1);
   const [offersCount, setOffersCount] = useState(0);
+  const [offerRateFilter, setOfferRateFilter] = useState('');
+  const [offersTypes, setOffersTypes] = useState([]);
+
+  const handleChangeOfferRateFilter = (event) => setOfferRateFilter(event.target.value);
 
   const handleOffersPageChange = (event, value) => setOffersPage(value);
 
@@ -66,7 +78,7 @@ const Offers = () => {
   const getOffers = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('/api/company/get-offers');
+      let response = await axios.get('/api/company/get-offers');
       const offers = response.data;
       if (offers.length === 0) {
         setOffers([]);
@@ -76,6 +88,8 @@ const Offers = () => {
         setOffers(offers);
         setOffersCount(Math.ceil(offers.length / 2));
       }
+      response = await axios.get('/api/company/get-offers-types');
+      setOffersTypes(response.data);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -85,8 +99,14 @@ const Offers = () => {
 
   useEffect(() => {
     if (offers.length !== 0) {
+      let filteredOffers = offers;
+      if (offerRateFilter !== '')
+        filteredOffers = offers.filter(offer =>
+          offer.offer_type === offerRateFilter
+        );
+      setOffersCount(Math.ceil(filteredOffers.length / 2));
       const endIndex = offersPage * 2;
-      const paginatedOffers = offers.slice(endIndex - 2, endIndex);
+      const paginatedOffers = filteredOffers.slice(endIndex - 2, endIndex);
       const updatedOffersList = paginatedOffers.map(offer => {
         return (
           <Grid key={offer.id} item xs={12} md={12 / paginatedOffers.length}>
@@ -195,7 +215,8 @@ const Offers = () => {
     offersPage,
     classes.card,
     classes.checkIcon,
-    classes.headerTableCell
+    classes.headerTableCell,
+    offerRateFilter
   ]);
 
   useEffect(() => {
@@ -226,16 +247,40 @@ const Offers = () => {
               </>
               :
               <>
-                <Box my={4}>
-                  <Typography variant="h6" align="center">Actualmente no tienes ofertas</Typography>
-                </Box>
+                {offerRateFilter !== ''
+                  ?
+                  <Box my={4}>
+                    <Typography variant="h6" align="center">Actualmente no tienes ofertas de este tipo</Typography>
+                  </Box>
+                  :
+                  <Box my={4}>
+                    <Typography variant="h6" align="center">Actualmente no tienes ofertas</Typography>
+                  </Box>
+                }
               </>
             }
           </>
         }
       </Box >
       <Box display="flex" justifyContent="center" mt={2}>
-        <RBButton variant="success" size="lg" onClick={handleCreateOffer}>Crear oferta</RBButton>
+        <RBButton variant="success" onClick={handleCreateOffer}>Crear oferta</RBButton>
+        <FormControl variant="outlined" className={classes.formControl}>
+          <InputLabel id="offer-rate-filter">Tarifa</InputLabel>
+          <Select
+            labelId="offer-rate-filter"
+            id="offer-rate-filter"
+            value={offerRateFilter}
+            onChange={handleChangeOfferRateFilter}
+            label="rate-filter"
+          >
+            <MenuItem value=""><em>&nbsp;</em></MenuItem>
+            {offersTypes.map(offerType => {
+              return (
+                <MenuItem key={offerType.id} value={offerType.id}>{offerType.rate}</MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
       </Box>
     </Container>
   );
