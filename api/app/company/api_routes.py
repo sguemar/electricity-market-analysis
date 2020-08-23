@@ -146,6 +146,86 @@ def create_offer():
 	return "", 200
 
 
+@company_bp.route("/get-offer-data/<int:offer_id>")
+@jwt_required
+def get_offer_data(offer_id):
+	offer = Offer.get_by_id(offer_id)
+	offer_features = OfferFeature.get_all_by_offer_id(offer_id)
+	characteristics = ["", "", ""]
+	for i, offer_feature in enumerate(offer_features):
+		characteristics[i] = offer_feature.text
+	return {
+		"offerRate": offer.offer_type,
+		"fixedTerm": offer.fixed_term,
+		"variableTerm": offer.variable_term,
+		"tip": offer.tip,
+		"valley": offer.valley,
+		"superValley": offer.super_valley,
+		"characteristic1": characteristics[0],
+		"characteristic2": characteristics[1],
+		"characteristic3": characteristics[2],
+	}
+
+
+@company_bp.route("/edit-offer/<int:offer_id>", methods=["PUT"])
+@jwt_required
+def edit_offer(offer_id):
+	if not request.is_json:
+		return "Missing JSON in request", 400
+	offer_data = request.get_json()
+	errors = {}
+	errors.update(validateOffer(offer_data))
+	errors.update(validateFeatures(offer_data))
+	if errors:
+		return errors, 422
+	offer = Offer.get_by_id(offer_id)
+	offer_features = OfferFeature.get_all_by_offer_id(offer_id)
+	for offer_feature in offer_features:
+		offer_feature.delete()
+	offer_rate = int(offer_data["offerRate"])
+	if offer_rate % 3 == 1:
+		offer.offer_type = offer_rate,
+		offer.fixed_term = offer_data["fixedTerm"],
+		offer.variable_term = offer_data["variableTerm"],
+		offer.tip = 0,
+		offer.valley = 0,
+		offer.super_valley = 0,
+	elif offer_rate % 3 == 2:
+		offer.offer_type = offer_rate,
+		offer.fixed_term = offer_data["fixedTerm"],
+		offer.variable_term = 0,
+		offer.tip = offer_data["tip"],
+		offer.valley = offer_data["valley"],
+		offer.super_valley = 0,
+	else:
+		offer.offer_type = offer_rate,
+		offer.fixed_term = offer_data["fixedTerm"],
+		offer.variable_term = 0,
+		offer.tip = offer_data["tip"],
+		offer.valley = offer_data["valley"],
+		offer.super_valley = offer_data["superValley"],
+	offer.save()
+	if offer_data["characteristic1"]:
+		offer_feature = OfferFeature(
+			text=offer_data["characteristic1"],
+			offer_id=offer_id
+		)
+		offer_feature.save()
+	if offer_data["characteristic2"]:
+		offer_feature = OfferFeature(
+			text=offer_data["characteristic2"],
+			offer_id=offer_id
+		)
+		offer_feature.save()
+	if offer_data["characteristic3"]:
+		offer_feature = OfferFeature(
+			text=offer_data["characteristic3"],
+			offer_id=offer_id
+		)
+		offer_feature.save()
+	return "", 200
+
+
 def validateUser(data):
 	user = {
 		"password": data["password"],
@@ -168,11 +248,11 @@ def validateCompany(data):
 
 
 def validateOffer(data):
-	offer_rate = int(data["offerRate"])	
+	offer_rate = int(data["offerRate"]) 
 	if offer_rate % 3 == 1:
 		offer = {
 			"fixedTerm": data["fixedTerm"],
-			"variableTerm": data["fixedTerm"],
+			"variableTerm": data["variableTerm"],
 		}
 		offer = {k: v for k, v in offer.items() if v}
 		return GeneralOfferSchema().validate(offer)

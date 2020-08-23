@@ -99,3 +99,11 @@ export const successCreateOfferNotification = {
   canDismiss: true,
   icon: <CheckCircleSharpIcon />,
 }
+
+export const successEditOfferNotification = {
+  message: 'La oferta se ha modificado correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: true,
+  icon: <CheckCircleSharpIcon />,
+}

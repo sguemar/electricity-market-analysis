@@ -17,9 +17,6 @@ import {
 	MenuItem,
 	CircularProgress
 } from '@material-ui/core';
-import {
-	Button as RBButton
-} from 'react-bootstrap';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
 import { createNotification } from 'react-redux-notify';
@@ -35,7 +32,13 @@ const useStyles = makeStyles((theme) => ({
 	},
 	cardActions: {
 		justifyContent: 'center'
-	}
+	},
+  createOfferButton: {
+    backgroundColor: '#39b856',
+    "&:hover": {
+      backgroundColor: '#28a745'
+    }
+  },
 }));
 
 const CreateOffer = ({ createNotification }) => {
@@ -283,7 +286,7 @@ const CreateOffer = ({ createNotification }) => {
 						</form>
 					</CardContent>
 					<CardActions className={classes.cardActions}>
-						<RBButton variant="success" onClick={handleCreateOffer}>Crear oferta</RBButton>
+						<Button className={classes.createOfferButton} onClick={handleCreateOffer}>Crear oferta</Button>
 						<Button size="medium" variant="contained" disableElevation onClick={handleCancelCreateOffer}>Cancelar</Button>
 					</CardActions>
 				</Card>

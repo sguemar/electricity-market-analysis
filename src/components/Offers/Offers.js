@@ -33,9 +33,6 @@ import CheckIcon from '@material-ui/icons/Check';
 import {
   Pagination
 } from '@material-ui/lab';
-import {
-  Button as RBButton
-} from 'react-bootstrap';
 import axios from 'axios';
 
 
@@ -52,6 +49,18 @@ const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 100,
+  },
+  createOfferButton: {
+    backgroundColor: '#39b856',
+    "&:hover": {
+      backgroundColor: '#28a745'
+    }
+  },
+  editOfferButton: {
+    backgroundColor: '#ffc107',
+    "&:hover": {
+      backgroundColor: '#eeb006'
+    }
   },
 }));
 
@@ -74,6 +83,12 @@ const Offers = () => {
   const handleOffersPageChange = (event, value) => setOffersPage(value);
 
   const handleCreateOffer = () => history.push('/create-offer');
+
+  const handleEditOffer = (offerId) => history.push('/edit-offer/' + offerId);
+
+  const handleDeleteOffer = (offerId) => {
+    console.log(offerId);
+  }
 
   const getOffers = async () => {
     setLoading(true);
@@ -201,8 +216,22 @@ const Offers = () => {
                 </Grid>
               </CardContent>
               <CardActions>
-                <Button size="small">Editar</Button>
-                <Button size="small">Eliminar</Button>
+                <Button
+                  variant="contained"
+                  onClick={() => handleEditOffer(offer.id)}
+                  className={classes.editOfferButton}
+                  size="small"
+                >
+                  Editar
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => handleDeleteOffer(offer.id)}
+                  color="secondary"
+                  size="small"
+                >
+                  Eliminar
+                </Button>
               </CardActions>
             </Card>
           </Grid >
@@ -216,6 +245,7 @@ const Offers = () => {
     classes.card,
     classes.checkIcon,
     classes.headerTableCell,
+    classes.editOfferButton,
     offerRateFilter
   ]);
 
@@ -263,7 +293,7 @@ const Offers = () => {
         }
       </Box >
       <Box display="flex" justifyContent="center" mt={2}>
-        <RBButton variant="success" onClick={handleCreateOffer}>Crear oferta</RBButton>
+        <Button className={classes.createOfferButton} onClick={handleCreateOffer}>Crear oferta</Button>
         <FormControl variant="outlined" className={classes.formControl}>
           <InputLabel id="offer-rate-filter">Tarifa</InputLabel>
           <Select

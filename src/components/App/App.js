@@ -12,6 +12,7 @@ import CustomerProfile from '../Profile/CustomerProfile';
 import CompanyProfile from '../Profile/CompanyProfile';
 import Offers from '../Offers/Offers';
 import CreateOffer from '../Offers/CreateOffer';
+import EditOffer from '../Offers/EditOffer';
 import {
   BrowserRouter as Router,
   Route,
@@ -81,6 +82,21 @@ const App = ({ username, type, companyType }) => {
                     {companyType === 0
                       ?
                       <CreateOffer />
+                      :
+                      <Redirect to="/" />
+                    }
+                  </>
+                  :
+                  <Login />
+                }
+              </Route>
+              <Route path="/edit-offer/:offerId">
+                {username
+                  ?
+                  <>
+                    {companyType === 0
+                      ?
+                      <EditOffer />
                       :
                       <Redirect to="/" />
                     }
