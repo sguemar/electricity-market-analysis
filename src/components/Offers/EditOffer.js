@@ -15,7 +15,11 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  CircularProgress
+  CircularProgress,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogActions
 } from '@material-ui/core';
 import {
   Button as RBButton
@@ -49,6 +53,7 @@ const EditOffer = ({ createNotification }) => {
   const [loading, setLoading] = useState(false);
   const [offersTypes, setOffersTypes] = useState([]);
   const [offerRateName, setOfferRateName] = useState('');
+  const [editOfferDialogState, setEditOfferDialogState] = useState(false);
 
   const initialOfferData = {
     offerRate: 1,
@@ -72,7 +77,10 @@ const EditOffer = ({ createNotification }) => {
     initialOfferData
   );
 
+  const openEditOfferDialog = () => setEditOfferDialogState(true);
+  const closeEditOfferDialog = () => setEditOfferDialogState(false);
   const handleEditOffer = async () => {
+    setEditOfferDialogState(false);
     dispatchFormErrorState(initialOfferData);
     try {
       await axios.put(
@@ -148,164 +156,177 @@ const EditOffer = ({ createNotification }) => {
           <CircularProgress />
         </Box>
         :
-        <Card>
-          <CardContent>
-            <form noValidate>
-              <Grid container alignItems="center" spacing={4}>
-                <Grid item xs={12} sm={4}>
-                  <FormControl required fullWidth className={classes.formControl}>
-                    <InputLabel id="offer-select-rate">Tarifa</InputLabel>
-                    <Select
-                      labelId="offer-select-rate"
-                      id="offer-select-rate"
-                      value={offerData.offerRate}
-                      name="offerRate"
-                      onChange={handleChange}
-                      label="offer-rate"
-                    >
-                      {offersTypes.map(offerType => {
-                        return (
-                          <MenuItem key={offerType.id} value={offerType.id}>{offerType.rate}</MenuItem>
-                        );
-                      })}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={8}>
-                  <TextField
-                    id="rate-name"
-                    label="Nombre tarifa"
-                    value={offerRateName}
-                    disabled
-                    fullWidth
-                  />
-                </Grid>
-                <Grid
-                  item
-                  xs={12}
-                  sm={
-                    offerRateName.includes("general") || offerRateName.length === 0 ? 6 :
-                      offerRateName.includes("discriminación") ? 4 : 3
-                  }>
-                  <TextField
-                    fullWidth
-                    required
-                    id="fixed-term"
-                    name="fixedTerm"
-                    label="Término potencia"
-                    onChange={handleChange}
-                    value={offerData.fixedTerm || ''}
-                    error={formErrorState.fixedTerm ? true : false}
-                    helperText={formErrorState.fixedTerm || "€/kW día"}
-                  />
-                </Grid>
-                {offerRateName.includes("general") || offerRateName.length === 0 ?
-                  <Grid item xs={12} sm={6}>
+        <>
+          <Card>
+            <CardContent>
+              <form noValidate>
+                <Grid container alignItems="center" spacing={4}>
+                  <Grid item xs={12} sm={4}>
+                    <FormControl required fullWidth className={classes.formControl}>
+                      <InputLabel id="offer-select-rate">Tarifa</InputLabel>
+                      <Select
+                        labelId="offer-select-rate"
+                        id="offer-select-rate"
+                        value={offerData.offerRate}
+                        name="offerRate"
+                        onChange={handleChange}
+                        label="offer-rate"
+                      >
+                        {offersTypes.map(offerType => {
+                          return (
+                            <MenuItem key={offerType.id} value={offerType.id}>{offerType.rate}</MenuItem>
+                          );
+                        })}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12} sm={8}>
+                    <TextField
+                      id="rate-name"
+                      label="Nombre tarifa"
+                      value={offerRateName}
+                      disabled
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={
+                      offerRateName.includes("general") || offerRateName.length === 0 ? 6 :
+                        offerRateName.includes("discriminación") ? 4 : 3
+                    }>
                     <TextField
                       fullWidth
                       required
-                      id="variable-term"
-                      name="variableTerm"
-                      label="Término energía"
+                      id="fixed-term"
+                      name="fixedTerm"
+                      label="Término potencia"
                       onChange={handleChange}
-                      value={offerData.variableTerm || ''}
-                      error={formErrorState.variableTerm ? true : false}
-                      helperText={formErrorState.variableTerm || "€/kWh"}
+                      value={offerData.fixedTerm || ''}
+                      error={formErrorState.fixedTerm ? true : false}
+                      helperText={formErrorState.fixedTerm || "€/kW día"}
                     />
                   </Grid>
-                  :
-                  <>
-                    <Grid item xs={12} sm={
-                      offerRateName.includes("discriminación") ? 4 : 3
-                    }>
+                  {offerRateName.includes("general") || offerRateName.length === 0 ?
+                    <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
                         required
-                        id="tip"
-                        name="tip"
-                        label="Punta"
+                        id="variable-term"
+                        name="variableTerm"
+                        label="Término energía"
                         onChange={handleChange}
-                        value={offerData.tip || ''}
-                        error={formErrorState.tip ? true : false}
-                        helperText={formErrorState.tip || "€/kWh"}
+                        value={offerData.variableTerm || ''}
+                        error={formErrorState.variableTerm ? true : false}
+                        helperText={formErrorState.variableTerm || "€/kWh"}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={
-                      offerRateName.includes("discriminación") ? 4 : 3
-                    }>
-                      <TextField
-                        fullWidth
-                        required
-                        id="valley"
-                        name="valley"
-                        label="Valle"
-                        onChange={handleChange}
-                        value={offerData.valley || ''}
-                        error={formErrorState.valley ? true : false}
-                        helperText={formErrorState.valley || "€/kWh"}
-                      />
-                    </Grid>
-                    {offerRateName.includes("supervalle") &&
-                      <Grid item xs={12} sm={3}>
+                    :
+                    <>
+                      <Grid item xs={12} sm={
+                        offerRateName.includes("discriminación") ? 4 : 3
+                      }>
                         <TextField
                           fullWidth
                           required
-                          id="super-valley"
-                          name="superValley"
-                          label="Super valle"
+                          id="tip"
+                          name="tip"
+                          label="Punta"
                           onChange={handleChange}
-                          value={offerData.superValley || ''}
-                          error={formErrorState.superValley ? true : false}
-                          helperText={formErrorState.superValley || "€/kWh"}
+                          value={offerData.tip || ''}
+                          error={formErrorState.tip ? true : false}
+                          helperText={formErrorState.tip || "€/kWh"}
                         />
                       </Grid>
-                    }
-                  </>
-                }
-                <Grid item xs={12}>
-                  <TextField
-                    id="characteristic-1"
-                    label="Característica 1"
-                    name="characteristic1"
-                    onChange={handleChange}
-                    value={offerData.characteristic1}
-                    fullWidth
-                    error={formErrorState.characteristic1 ? true : false}
-                    helperText={formErrorState.characteristic1}
-                  />
+                      <Grid item xs={12} sm={
+                        offerRateName.includes("discriminación") ? 4 : 3
+                      }>
+                        <TextField
+                          fullWidth
+                          required
+                          id="valley"
+                          name="valley"
+                          label="Valle"
+                          onChange={handleChange}
+                          value={offerData.valley || ''}
+                          error={formErrorState.valley ? true : false}
+                          helperText={formErrorState.valley || "€/kWh"}
+                        />
+                      </Grid>
+                      {offerRateName.includes("supervalle") &&
+                        <Grid item xs={12} sm={3}>
+                          <TextField
+                            fullWidth
+                            required
+                            id="super-valley"
+                            name="superValley"
+                            label="Super valle"
+                            onChange={handleChange}
+                            value={offerData.superValley || ''}
+                            error={formErrorState.superValley ? true : false}
+                            helperText={formErrorState.superValley || "€/kWh"}
+                          />
+                        </Grid>
+                      }
+                    </>
+                  }
+                  <Grid item xs={12}>
+                    <TextField
+                      id="characteristic-1"
+                      label="Característica 1"
+                      name="characteristic1"
+                      onChange={handleChange}
+                      value={offerData.characteristic1}
+                      fullWidth
+                      error={formErrorState.characteristic1 ? true : false}
+                      helperText={formErrorState.characteristic1}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      id="characteristic-2"
+                      label="Característica 2"
+                      name="characteristic2"
+                      onChange={handleChange}
+                      value={offerData.characteristic2}
+                      fullWidth
+                      error={formErrorState.characteristic2 ? true : false}
+                      helperText={formErrorState.characteristic2}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      id="characteristic-3"
+                      label="Característica 3"
+                      name="characteristic3"
+                      onChange={handleChange}
+                      value={offerData.characteristic3}
+                      fullWidth
+                      error={formErrorState.characteristic3 ? true : false}
+                      helperText={formErrorState.characteristic3}
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    id="characteristic-2"
-                    label="Característica 2"
-                    name="characteristic2"
-                    onChange={handleChange}
-                    value={offerData.characteristic2}
-                    fullWidth
-                    error={formErrorState.characteristic2 ? true : false}
-                    helperText={formErrorState.characteristic2}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    id="characteristic-3"
-                    label="Característica 3"
-                    name="characteristic3"
-                    onChange={handleChange}
-                    value={offerData.characteristic3}
-                    fullWidth
-                    error={formErrorState.characteristic3 ? true : false}
-                    helperText={formErrorState.characteristic3}
-                  />
-                </Grid>
-              </Grid>
-            </form>
-          </CardContent>
-          <CardActions className={classes.cardActions}>
-            <RBButton variant="success" onClick={handleEditOffer}>Editar</RBButton>
-            <Button size="medium" variant="contained" disableElevation onClick={handleCancelEditOffer}>Cancelar</Button>
-          </CardActions>
-        </Card>
+              </form>
+            </CardContent>
+            <CardActions className={classes.cardActions}>
+              <RBButton variant="success" onClick={openEditOfferDialog}>Editar</RBButton>
+              <Button size="medium" variant="contained" disableElevation onClick={handleCancelEditOffer}>Cancelar</Button>
+            </CardActions>
+          </Card>
+          <Dialog open={editOfferDialogState}>
+            <DialogContent>
+              <DialogContentText>
+                ¿Seguro que quieres guardar los cambios de esta oferta?
+          </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <RBButton variant="success" onClick={handleEditOffer}>Confirmar</RBButton>
+              <Button variant="contained" onClick={closeEditOfferDialog}>Cancelar</Button>
+            </DialogActions>
+          </Dialog>
+        </>
       }
     </Container>
   );
