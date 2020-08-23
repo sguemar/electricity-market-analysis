@@ -107,3 +107,19 @@ export const successEditOfferNotification = {
   canDismiss: true,
   icon: <CheckCircleSharpIcon />,
 }
+
+export const successRemoveOfferNotification = {
+  message: 'La oferta se ha eliminado correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: true,
+  icon: <CheckCircleSharpIcon />,
+}
+
+export const errorRemoveOfferNotification = {
+  message: "Ha ocurrido un error, la oferta no se ha eliminado correctamente",
+  type: NOTIFICATION_TYPE_ERROR,
+  duration: 5000,
+  canDismiss: false,
+  icon: <ErrorOutlineOutlinedIcon />,
+}

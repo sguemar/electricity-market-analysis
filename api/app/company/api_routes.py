@@ -226,6 +226,13 @@ def edit_offer(offer_id):
 	return "", 200
 
 
+@company_bp.route("/delete-offer/<int:offer_id>", methods=["DELETE"])
+@jwt_required
+def delete_invoice(offer_id):
+	Offer.get_by_id(offer_id).delete()
+	return "", 200
+
+
 def validateUser(data):
 	user = {
 		"password": data["password"],

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { connect } from 'react-redux';
 import {
   makeStyles,
   Typography,
@@ -27,13 +28,23 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogActions
 } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import {
   Pagination
 } from '@material-ui/lab';
 import axios from 'axios';
+import Cookies from 'universal-cookie';
+import { createNotification } from 'react-redux-notify';
+import {
+  successRemoveOfferNotification,
+  errorRemoveOfferNotification
+} from '../../redux/constants/notifications';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -65,10 +76,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const Offers = () => {
+const Offers = ({ createNotification }) => {
 
   const classes = useStyles();
   const history = useHistory();
+  const cookies = new Cookies();
+  const csrfAccessToken = cookies.get('csrf_access_token');
 
   const [loading, setLoading] = useState(false);
   const [offers, setOffers] = useState([]);
@@ -77,6 +90,8 @@ const Offers = () => {
   const [offersCount, setOffersCount] = useState(0);
   const [offerRateFilter, setOfferRateFilter] = useState('');
   const [offersTypes, setOffersTypes] = useState([]);
+  const [deleteOfferDialogState, setDeleteOfferDialogState] = useState(false);
+  const [selectedOfferId, setSelectedOfferId] = useState(false);
 
   const handleChangeOfferRateFilter = (event) => setOfferRateFilter(event.target.value);
 
@@ -86,9 +101,31 @@ const Offers = () => {
 
   const handleEditOffer = (offerId) => history.push('/edit-offer/' + offerId);
 
-  const handleDeleteOffer = (offerId) => {
-    console.log(offerId);
+
+  const openDeleteOfferDialog = (offer_id) => {
+    setDeleteOfferDialogState(true);
+    setSelectedOfferId(offer_id);
+  } 
+  const closeDeleteOfferDialog = () => {
+    setDeleteOfferDialogState(false);
+    setSelectedOfferId(false);
+  } 
+  const handleDeleteOffer = async () => {
+    try {
+      await axios.delete(
+        '/api/company/delete-offer/' + selectedOfferId,
+        { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
+      );
+      createNotification(successRemoveOfferNotification);
+      setDeleteOfferDialogState(false);
+      setSelectedOfferId(false);
+      getOffers();
+    } catch (error) {
+      createNotification(errorRemoveOfferNotification);
+      console.log(error);
+    }
   }
+
 
   const getOffers = async () => {
     setLoading(true);
@@ -226,7 +263,7 @@ const Offers = () => {
                 </Button>
                 <Button
                   variant="contained"
-                  onClick={() => handleDeleteOffer(offer.id)}
+                  onClick={() => openDeleteOfferDialog(offer.id)}
                   color="secondary"
                   size="small"
                 >
@@ -311,10 +348,26 @@ const Offers = () => {
             })}
           </Select>
         </FormControl>
+        <Dialog open={deleteOfferDialogState}>
+          <DialogContent>
+            <DialogContentText>
+              ¿Seguro que quieres eliminar esta oferta?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" onClick={handleDeleteOffer} color="secondary">Confirmar</Button>
+            <Button variant="contained" onClick={closeDeleteOfferDialog}>Cancelar</Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </Container>
   );
 }
 
+const mapDispatchToProps = dispatch => ({
+  createNotification: (config) => {
+    dispatch(createNotification(config))
+  },
+});
 
-export default Offers;
+export default connect(null, mapDispatchToProps)(Offers);
