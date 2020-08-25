@@ -1,7 +1,9 @@
+from sqlalchemy_serializer import SerializerMixin
+
 from app import db
 
 
-class Customer(db.Model):
+class Customer(db.Model, SerializerMixin):
 
 	__tablename__ = "customers"
 

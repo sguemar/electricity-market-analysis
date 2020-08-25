@@ -4,6 +4,11 @@ import App from './components/App/App';
 import store from './redux/store';
 import { Provider } from 'react-redux';
 
+// Importing MDB
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import 'bootstrap-css-only/css/bootstrap.min.css';
+import 'mdbreact/dist/css/mdb.css';
+
 // Importing the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
 

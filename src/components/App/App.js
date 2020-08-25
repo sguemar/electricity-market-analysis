@@ -13,6 +13,7 @@ import CompanyProfile from '../Profile/CompanyProfile';
 import Offers from '../Offers/Offers';
 import CreateOffer from '../Offers/CreateOffer';
 import EditOffer from '../Offers/EditOffer';
+import MyCustomers from '../MyCustomers/MyCustomers';
 import {
   BrowserRouter as Router,
   Route,
@@ -97,6 +98,21 @@ const App = ({ username, type, companyType }) => {
                     {companyType === 0
                       ?
                       <EditOffer />
+                      :
+                      <Redirect to="/" />
+                    }
+                  </>
+                  :
+                  <Login />
+                }
+              </Route>
+              <Route path="/my-customers">
+                {username
+                  ?
+                  <>
+                    {companyType === 0
+                      ?
+                      <MyCustomers />
                       :
                       <Redirect to="/" />
                     }

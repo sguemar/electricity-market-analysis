@@ -33,6 +33,10 @@ class Contract(db.Model, SerializerMixin):
 	def get_by_contract_number(contract_number):
 		return Contract.query.get(contract_number)
 
+	@staticmethod
+	def get_all_by_cif(cif):
+		return Contract.query.filter_by(cif=cif).all()
+
 	def __repr__(self):
 		return 'Contrato {}, fecha de inicio: {}, fecha de fin {}'.format(
 			self.contract_number,
@@ -143,6 +147,12 @@ class Customer_Dwelling_Contract(db.Model):
 		return Customer_Dwelling_Contract.query.filter_by(
 			nif=nif
 		).all()
+
+	@staticmethod
+	def get_by_contract_number(contract_number):
+		return Customer_Dwelling_Contract.query.filter_by(
+			contract_number=contract_number
+		).first()
 
 	@staticmethod
 	def get_by_nif_and_contract_number(nif, contract_number):

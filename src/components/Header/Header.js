@@ -57,11 +57,18 @@ const Header = ({ username, userType, companyType, logout, createNotification })
 								<>
 									{companyType === 0
 										?
-										<Nav.Item>
-											<Link className="nav-link" to="/offers">
-												Ofertas
-											</Link>
-										</Nav.Item>
+										<>
+											<Nav.Item>
+												<Link className="nav-link" to="/offers">
+													Ofertas
+												</Link>
+											</Nav.Item>
+											<Nav.Item>
+												<Link className="nav-link" to="/my-customers">
+													Mis clientes
+												</Link>
+											</Nav.Item>
+										</>
 										:
 										<></>
 									}

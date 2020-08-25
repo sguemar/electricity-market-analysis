@@ -5,6 +5,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from . import company_bp
 from app.auth.models import User
 from .models import Company, Offer, OfferType, OfferFeature
+from app.models import Contract, Customer_Dwelling_Contract
+from app.customer.models import Customer
 from app.auth.schemas import ProfileUserSchema
 from .schemas import (
 	ProfileCompanySchema,
@@ -228,9 +230,33 @@ def edit_offer(offer_id):
 
 @company_bp.route("/delete-offer/<int:offer_id>", methods=["DELETE"])
 @jwt_required
-def delete_invoice(offer_id):
+def delete_offer(offer_id):
 	Offer.get_by_id(offer_id).delete()
 	return "", 200
+
+
+@company_bp.route("/get-customers")
+@jwt_required
+def get_customers():
+	logged_user = User.get_by_username(get_jwt_identity())
+	logged_company = Company.get_by_user_id(logged_user.id)
+	contracts = Contract.get_all_by_cif(logged_company.cif)
+	customers = {}
+	for contract in contracts:
+		c_d_c = Customer_Dwelling_Contract.get_by_contract_number(contract.contract_number)
+		if c_d_c.nif not in customers:
+			customers[c_d_c.nif] = Customer.get_by_nif(c_d_c.nif).to_dict()
+	result = []
+	for customer in customers.values():
+		if not customer["email"]:
+			customer["email"] = "-"
+		result.append({
+			"name": customer["name"],
+			"surname": customer["surname"],
+			"nif": customer["nif"],
+			"email": customer["email"],
+		})
+	return jsonify(result), 200
 
 
 def validateUser(data):
