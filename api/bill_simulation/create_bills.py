@@ -41,7 +41,12 @@ def create_customer():
                          (random.choice(surnames)).replace('\n',''))
    customer['nif'] = (str(random.randint(10**7, 10**8-1)) + 
                      random.choice(string.ascii_uppercase))
-   return customer
+   try:
+      user_id = insert_user(customer, 1)
+      insert_customer(customer, user_id)
+   except mysql.connector.errors.IntegrityError:
+      return create_customer()
+   return customer, user_id
 
 def insert_customer(customer, user_id):
    sql = """
@@ -370,9 +375,7 @@ if __name__ == '__main__':
 
    # Create customers
    for _ in range(CUSTOMERS_NUMBER):
-      customer = create_customer()
-      user_id = insert_user(customer, 1)
-      insert_customer(customer, user_id)
+      customer, user_id = create_customer()
       
       dwelling = create_dwelling()
       insert_dwelling(dwelling)
