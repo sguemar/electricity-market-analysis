@@ -17,7 +17,7 @@ class Contract(db.Model, SerializerMixin):
 	description = db.Column(db.Text())
 	conditions = db.Column(db.Text())
 	cif = db.Column(
-		db.String(255),
+		db.String(9),
 		db.ForeignKey('companies.cif'),
 	)
 
@@ -160,3 +160,32 @@ class Customer_Dwelling_Contract(db.Model):
 			nif=nif,
 			contract_number=contract_number
 		).first()
+
+
+class Potential_Customer_Notification(db.Model):
+
+	__tablename__ = "potentials_customers_notifications"
+
+	id = db.Column(db.Integer, primary_key=True)
+	nif = db.Column(
+		db.String(9),
+		db.ForeignKey('customers.nif', ondelete='CASCADE'),
+		nullable=False
+	)
+	cif = db.Column(
+		db.String(9),
+		db.ForeignKey('companies.cif'),
+	)
+
+	def delete(self):
+		db.session.delete(self)
+		db.session.commit()
+
+	def save(self):
+		db.session.add(self)
+		db.session.commit()
+
+	@staticmethod
+	def get_all_by_cif(cif):
+		return Potential_Customer_Notification.query.filter_by(cif=cif).all()
+

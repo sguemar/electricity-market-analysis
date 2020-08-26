@@ -5,7 +5,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from . import company_bp
 from app.auth.models import User
 from .models import Company, Offer, OfferType, OfferFeature
-from app.models import Contract, Customer_Dwelling_Contract
+from app.models import Contract, Customer_Dwelling_Contract, Potential_Customer_Notification
 from app.customer.models import Customer
 from app.auth.schemas import ProfileUserSchema
 from .schemas import (
@@ -257,6 +257,35 @@ def get_customers():
 			"email": customer["email"],
 		})
 	return jsonify(result), 200
+
+
+@company_bp.route("/get-potentials-customers-notifications-count")
+@jwt_required
+def get_potentials_customers_notifications_count():
+	logged_user = User.get_by_username(get_jwt_identity())
+	logged_company = Company.get_by_user_id(logged_user.id)
+	return str(len(Potential_Customer_Notification.get_all_by_cif(logged_company.cif)))
+
+
+@company_bp.route("/get-potentials-customers")
+@jwt_required
+def get_potentials_customers():
+	logged_user = User.get_by_username(get_jwt_identity())
+	logged_company = Company.get_by_user_id(logged_user.id)
+	p_c_ns = Potential_Customer_Notification.get_all_by_cif(logged_company.cif)
+	customers = []
+	for p_c_n in p_c_ns:
+		customer = Customer.get_by_nif(p_c_n.nif)
+		customer_email = customer.email
+		if not customer.email:
+			customer_email = "-"
+		customers.append({
+			"name": customer.name,
+			"surname": customer.surname,
+			"nif": customer.nif,
+			"email": customer_email,
+		})
+	return jsonify(customers)
 
 
 def validateUser(data):

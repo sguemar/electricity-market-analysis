@@ -1,5 +1,6 @@
 from sqlalchemy.dialects.mysql import TINYINT
 from sqlalchemy_serializer import SerializerMixin
+from sqlalchemy import func
 
 from app import db
 
@@ -40,6 +41,10 @@ class Company(db.Model):
 			Company.name.like(search) | Company.name.like(search_unicode),
 			Company.company_type == 0
 		).first()
+
+	@staticmethod
+	def get_random_companies(amount):
+		return Company.query.filter_by(company_type=0).order_by(func.random()).limit(amount).all()
 
 
 class Offer(db.Model, SerializerMixin):

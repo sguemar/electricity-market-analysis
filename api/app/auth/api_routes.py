@@ -1,3 +1,4 @@
+import random
 from flask import request, make_response
 from werkzeug.security import check_password_hash
 from flask_jwt_extended import (
@@ -9,6 +10,7 @@ from flask_jwt_extended import (
 
 from . import auth_bp
 from .models import User
+from app.models import Potential_Customer_Notification
 from app.customer.models import Customer
 from app.company.models import Company
 from .schemas import UserSchema
@@ -41,6 +43,13 @@ def signup_customer():
 		user_id=user.id
 	)
 	customer.save()
+	companies = Company.get_random_companies(random.randint(20, 40))
+	for company in companies:
+		p_c_n = Potential_Customer_Notification(
+			nif=customer.nif,
+			cif=company.cif
+		)
+		p_c_n.save()
 	return "", 200
 
 

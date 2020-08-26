@@ -192,3 +192,16 @@ cursor.execute(
 		);
 	"""
 )
+
+cursor.execute(
+    """
+		CREATE TABLE IF NOT EXISTS potentials_customers_notifications
+		(
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			nif VARCHAR(9) NOT NULL,
+			cif VARCHAR(9) NOT NULL,
+			FOREIGN KEY (nif) REFERENCES customers(nif) ON DELETE CASCADE,
+			FOREIGN KEY (cif) REFERENCES companies(cif) ON DELETE CASCADE
+		);
+	"""
+)
