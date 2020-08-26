@@ -189,3 +189,34 @@ class Potential_Customer_Notification(db.Model):
 	def get_all_by_cif(cif):
 		return Potential_Customer_Notification.query.filter_by(cif=cif).all()
 
+
+class Offer_Notification(db.Model):
+
+	__tablename__ = "offers_notifications"
+
+	id = db.Column(db.Integer, primary_key=True)
+	nif = db.Column(
+		db.String(9),
+		db.ForeignKey('customers.nif', ondelete='CASCADE'),
+		nullable=False
+	)
+	cif = db.Column(
+		db.String(9),
+		db.ForeignKey('companies.cif'),
+	)
+	offer_id = db.Column(
+		db.Integer,
+		db.ForeignKey('offers.id'),
+	)
+
+	def delete(self):
+		db.session.delete(self)
+		db.session.commit()
+
+	def save(self):
+		db.session.add(self)
+		db.session.commit()
+
+	@staticmethod
+	def get_by_nif_cif_offer_id(nif, cif, offer_id):
+		return Offer_Notification.query.filter_by(nif=nif, cif=cif, offer_id=offer_id).first()

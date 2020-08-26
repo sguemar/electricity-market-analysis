@@ -205,3 +205,19 @@ cursor.execute(
 		);
 	"""
 )
+
+cursor.execute(
+    """
+		CREATE TABLE IF NOT EXISTS offers_notifications
+		(
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			nif VARCHAR(9) NOT NULL,
+			cif VARCHAR(9) NOT NULL,
+			offer_id INT NOT NULL,
+			CONSTRAINT UC_Offers_Notifications UNIQUE (nif, cif, offer_id),
+			FOREIGN KEY (nif) REFERENCES customers(nif) ON DELETE CASCADE,
+			FOREIGN KEY (cif) REFERENCES companies(cif) ON DELETE CASCADE,
+			FOREIGN KEY (offer_id) REFERENCES offers(id) ON DELETE CASCADE
+		);
+	"""
+)

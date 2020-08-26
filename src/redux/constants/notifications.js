@@ -123,3 +123,28 @@ export const errorRemoveOfferNotification = {
   canDismiss: false,
   icon: <ErrorOutlineOutlinedIcon />,
 }
+
+export const errorNoCustomerSelectedNotification = {
+  message: "Debes seleccionar al menos un cliente para enviar ofertas",
+  type: NOTIFICATION_TYPE_ERROR,
+  duration: 5000,
+  canDismiss: false,
+  icon: <ErrorOutlineOutlinedIcon />,
+}
+
+export const successSendOfferNotification = {
+  message: 'La oferta se ha enviado a los clientes correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: true,
+  icon: <CheckCircleSharpIcon />,
+}
+
+export const errorRepeatedOfferNotification = (message) =>
+  ({
+    message: message,
+    type: NOTIFICATION_TYPE_ERROR,
+    duration: 5000,
+    canDismiss: false,
+    icon: <ErrorOutlineOutlinedIcon />,
+  })

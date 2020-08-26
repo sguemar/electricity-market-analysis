@@ -5,7 +5,12 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from . import company_bp
 from app.auth.models import User
 from .models import Company, Offer, OfferType, OfferFeature
-from app.models import Contract, Customer_Dwelling_Contract, Potential_Customer_Notification
+from app.models import (
+	Contract,
+	Customer_Dwelling_Contract,
+	Potential_Customer_Notification,
+	Offer_Notification
+)
 from app.customer.models import Customer
 from app.auth.schemas import ProfileUserSchema
 from .schemas import (
@@ -287,6 +292,29 @@ def get_potentials_customers():
 		})
 	return jsonify(customers)
 
+
+@company_bp.route("/send-offer", methods=["POST"])
+@jwt_required
+def send_offer():
+	if not request.is_json:
+		return "Missing JSON in request", 400
+	data = request.get_json()
+	logged_user = User.get_by_username(get_jwt_identity())
+	logged_company = Company.get_by_user_id(logged_user.id)
+	offers_notifications = []
+	for customer_nif in data["potentialCustomers"]:
+		if Offer_Notification.get_by_nif_cif_offer_id(customer_nif, logged_company.cif, data["offerId"]):
+			return customer_nif, 200
+		offers_notifications.append(
+			Offer_Notification(
+				offer_id=data["offerId"],
+				cif=logged_company.cif,
+				nif=customer_nif
+			)
+		)
+	for offer_notification in offers_notifications:
+		offer_notification.save()
+	return ""
 
 def validateUser(data):
 	user = {
