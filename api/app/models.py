@@ -189,6 +189,10 @@ class Potential_Customer_Notification(db.Model):
 	def get_all_by_cif(cif):
 		return Potential_Customer_Notification.query.filter_by(cif=cif).all()
 
+	@staticmethod
+	def get_by_cif_and_nif(cif, nif):
+		return Potential_Customer_Notification.query.filter_by(cif=cif, nif=nif).first()
+
 
 class Offer_Notification(db.Model):
 

@@ -316,6 +316,16 @@ def send_offer():
 		offer_notification.save()
 	return ""
 
+
+@company_bp.route("/delete-potential-customer/<string:nif>", methods=["DELETE"])
+@jwt_required
+def delete_potential_customer(nif):
+	logged_user = User.get_by_username(get_jwt_identity())
+	logged_company = Company.get_by_user_id(logged_user.id)
+	Potential_Customer_Notification.get_by_cif_and_nif(logged_company.cif, nif).delete()
+	return ""
+
+
 def validateUser(data):
 	user = {
 		"password": data["password"],

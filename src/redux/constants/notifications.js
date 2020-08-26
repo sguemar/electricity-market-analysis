@@ -148,3 +148,11 @@ export const errorRepeatedOfferNotification = (message) =>
     canDismiss: false,
     icon: <ErrorOutlineOutlinedIcon />,
   })
+
+export const successDeletePotentialCustomerNotification = {
+  message: 'El cliente potencial ha sido eliminado de la lista correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: true,
+  icon: <CheckCircleSharpIcon />,
+}

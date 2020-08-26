@@ -47,7 +47,8 @@ import { createNotification } from 'react-redux-notify';
 import {
   errorNoCustomerSelectedNotification,
   successSendOfferNotification,
-  errorRepeatedOfferNotification
+  errorRepeatedOfferNotification,
+  successDeletePotentialCustomerNotification
 } from '../../redux/constants/notifications';
 
 const useStyles = makeStyles((theme) => ({
@@ -103,6 +104,10 @@ const MyCustomers = ({ createNotification }) => {
         label: 'Email',
         field: 'email',
       },
+      {
+        label: 'Acciones',
+        field: 'actions',
+      },
     ],
     rows: [],
   });
@@ -157,7 +162,7 @@ const MyCustomers = ({ createNotification }) => {
       );
       if (response.data.length !== 0) {
         const repeatedOfferErrorMessage = "Esta oferta ya ha sido enviada al cliente con nif: " + response.data;
-        createNotification(errorRepeatedOfferNotification(repeatedOfferErrorMessage)); 
+        createNotification(errorRepeatedOfferNotification(repeatedOfferErrorMessage));
       } else {
         createNotification(successSendOfferNotification);
         setSelectOfferDialogState(false);
@@ -186,14 +191,40 @@ const MyCustomers = ({ createNotification }) => {
     try {
       const response = await axios.get('/api/company/get-potentials-customers');
       setPotentialCustomers(response.data);
+      const result = response.data.map((value) => {
+        return {
+          ...value,
+          actions:
+            <Button
+              color="secondary"
+              variant="contained"
+              onClick={() => handleDeletePotentialCustomer(value.nif)}
+            >
+              Eliminar
+            </Button>
+        }
+      });
       setPotentialCustomersDataTable({
         ...potentialCustomersDataTable,
-        rows: response.data
+        rows: result
       });
     } catch (error) {
       console.log(error);
     }
   };
+
+  const handleDeletePotentialCustomer = async (nif) => {
+    try {
+      await axios.delete(
+        '/api/company/delete-potential-customer/' + nif,
+        { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
+      );
+      createNotification(successDeletePotentialCustomerNotification);
+      getPotentialsCustomers();
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const updateSelectedPotentialCustomers = (e) => {
     if (Array.isArray(e)) {
