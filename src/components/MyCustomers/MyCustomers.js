@@ -33,7 +33,10 @@ import {
   TableBody,
   TableContainer,
   TableCell,
+  TablePagination,
+  TableSortLabel,
   Divider,
+  Checkbox,
 } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import {
@@ -42,7 +45,6 @@ import {
 import axios from 'axios';
 import {
   MDBDataTable,
-  MDBDataTableV5,
 } from 'mdbreact';
 import { createNotification } from 'react-redux-notify';
 import {
@@ -75,7 +77,103 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     minWidth: 100,
   },
+  root: {
+    width: '100%',
+  },
+  paper: {
+    width: '100%',
+    marginBottom: theme.spacing(2),
+  },
+  table: {
+    minWidth: 750,
+  },
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1,
+  },
 }));
+
+function descendingComparator(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) {
+    return -1;
+  }
+  if (b[orderBy] > a[orderBy]) {
+    return 1;
+  }
+  return 0;
+}
+
+function getComparator(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+function stableSort(array, comparator) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+  return stabilizedThis.map((el) => el[0]);
+}
+
+const headCells = [
+  { id: 'name', label: 'Nombre' },
+  { id: 'surname', label: 'Apellidos' },
+  { id: 'nif', label: 'NIF' },
+  { id: 'email', label: 'Email' },
+];
+
+function EnhancedTableHead(props) {
+  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const createSortHandler = (property) => (event) => {
+    onRequestSort(event, property);
+  };
+
+  return (
+    <TableHead>
+      <TableRow>
+        <TableCell padding="checkbox">
+          <Checkbox
+            indeterminate={numSelected > 0 && numSelected < rowCount}
+            checked={rowCount > 0 && numSelected === rowCount}
+            onChange={onSelectAllClick}
+            inputProps={{ 'aria-label': 'select all desserts' }}
+          />
+        </TableCell>
+        {headCells.map((headCell) => (
+          <TableCell
+            key={headCell.id}
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
+            <TableSortLabel
+              active={orderBy === headCell.id}
+              direction={orderBy === headCell.id ? order : 'asc'}
+              onClick={createSortHandler(headCell.id)}
+            >
+              {headCell.label}
+              {orderBy === headCell.id ? (
+                <span className={classes.visuallyHidden}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </span>
+              ) : null}
+            </TableSortLabel>
+          </TableCell>
+        ))}
+        <TableCell key="actions">Acciones</TableCell>
+      </TableRow>
+    </TableHead>
+  );
+}
 
 
 const MyCustomers = ({ createNotification }) => {
@@ -87,31 +185,6 @@ const MyCustomers = ({ createNotification }) => {
   const [loading, setLoading] = useState(false);
   const [customers, setCustomers] = useState([]);
   const [potentialCustomers, setPotentialCustomers] = useState([]);
-  const [potentialCustomersDataTable, setPotentialCustomersDataTable] = useState({
-    columns: [
-      {
-        label: 'NIF',
-        field: 'nif',
-      },
-      {
-        label: 'Nombre',
-        field: 'name',
-      },
-      {
-        label: 'Apellidos',
-        field: 'surname',
-      },
-      {
-        label: 'Email',
-        field: 'email',
-      },
-      {
-        label: 'Acciones',
-        field: 'actions',
-      },
-    ],
-    rows: [],
-  });
   const [customerDataTable, setCustomerDataTable] = useState({
     columns: [
       {
@@ -133,12 +206,6 @@ const MyCustomers = ({ createNotification }) => {
     ],
     rows: [],
   });
-  const [selectedPotentialCustomers, setSelectedPotentialCustomers] = useState({});
-  const [potentialCustomerSelected, setPotentialCustomerSelected] = useState();
-
-  const [selectOfferDialogState, setSelectOfferDialogState] = useState(false);
-  const [deletePotentialCustomerDialogState, setDeletePotentialCustomerDialogState] = useState(false);
-
 
   // OFFERS
   const [offersLoading, setOffersLoading] = useState(false);
@@ -148,6 +215,7 @@ const MyCustomers = ({ createNotification }) => {
   const [offersCount, setOffersCount] = useState(0);
   const [offerRateFilter, setOfferRateFilter] = useState('');
   const [offersTypes, setOffersTypes] = useState([]);
+  const [selectOfferDialogState, setSelectOfferDialogState] = useState(false);
 
   const handleChangeOfferRateFilter = (event) => setOfferRateFilter(event.target.value);
   const handleOffersPageChange = (event, value) => setOffersPage(value);
@@ -170,6 +238,7 @@ const MyCustomers = ({ createNotification }) => {
       } else {
         createNotification(successSendOfferNotification);
         setSelectOfferDialogState(false);
+        setSelectedPotentialCustomers([]);
       }
     } catch (error) {
       console.log(error);
@@ -180,11 +249,13 @@ const MyCustomers = ({ createNotification }) => {
     setLoading(true);
     try {
       const response = await axios.get('/api/company/get-customers');
-      setCustomers(response.data);
-      setCustomerDataTable({
-        ...customerDataTable,
-        rows: response.data
-      });
+      if (response.data.length !== 0) {
+        setCustomers(response.data);
+        setCustomerDataTable({
+          ...customerDataTable,
+          rows: response.data
+        });
+      }
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -194,79 +265,42 @@ const MyCustomers = ({ createNotification }) => {
   const getPotentialsCustomers = async () => {
     try {
       const response = await axios.get('/api/company/get-potentials-customers');
-      setPotentialCustomers(response.data);
-      const result = response.data.map((value) => {
-        return {
-          ...value,
-          actions:
-            <Button
-              color="secondary"
-              variant="contained"
-              onClick={() => openDeletePotentialCustomerDialog(value.nif)}
-            >
-              Eliminar
-            </Button>
-        }
-      });
-      setPotentialCustomersDataTable({
-        ...potentialCustomersDataTable,
-        rows: result
-      });
+      if (response.data.length !== 0)
+        setPotentialCustomers(response.data);
+      else
+        setPotentialCustomers([]);
     } catch (error) {
       console.log(error);
     }
   };
 
 
+  const [potentialCustomerNifToDeleteSelected, setPotentialCustomerNifToDeleteSelected] = useState("");
+  const [deletePotentialCustomerDialogState, setDeletePotentialCustomerDialogState] = useState(false);
+  
   const openDeletePotentialCustomerDialog = (nif) => {
     setDeletePotentialCustomerDialogState(true);
-    setPotentialCustomerSelected(nif);
+    setPotentialCustomerNifToDeleteSelected(nif);
   }
   const closeDeletePotentialCustomerDialog = () => setDeletePotentialCustomerDialogState(false);
   const handleDeletePotentialCustomer = async () => {
     try {
       await axios.delete(
-        '/api/company/delete-potential-customer/' + potentialCustomerSelected,
+        '/api/company/delete-potential-customer/' + potentialCustomerNifToDeleteSelected,
         { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
       );
       setDeletePotentialCustomerDialogState(false);
-      setPotentialCustomerSelected('');
+      setPotentialCustomerNifToDeleteSelected('');
       createNotification(successDeletePotentialCustomerNotification);
       getPotentialsCustomers();
+      setSelectedPotentialCustomers([]);
     } catch (error) {
       console.log(error);
     }
   }
 
-  const updateSelectedPotentialCustomers = (e) => {
-    if (Array.isArray(e)) {
-      let newSelectedPotentialCustomers = selectedPotentialCustomers;
-      e.forEach((value) => {
-        if (value.checked)
-          newSelectedPotentialCustomers = {
-            ...newSelectedPotentialCustomers,
-            [value.nif]: ''
-          };
-        else
-          delete newSelectedPotentialCustomers[value.nif];
-      });
-      setSelectedPotentialCustomers(newSelectedPotentialCustomers);
-    } else {
-      if (e.checked)
-        setSelectedPotentialCustomers({
-          ...selectedPotentialCustomers,
-          [e.nif]: '',
-        });
-      else {
-        let newSelectedPotentialCustomers = selectedPotentialCustomers;
-        delete newSelectedPotentialCustomers[e.nif];
-        setSelectedPotentialCustomers(newSelectedPotentialCustomers);
-      }
-    }
-  };
-
   const openSelectOfferDialog = () => {
-    if (Object.keys(selectedPotentialCustomers).length === 0)
+    if (selectedPotentialCustomers.length === 0)
       createNotification(errorNoCustomerSelectedNotification);
     else {
       setSelectOfferDialogState(true);
@@ -296,9 +330,65 @@ const MyCustomers = ({ createNotification }) => {
     }
   }
 
+  /******************************************************* ENHANCED TABLE *******************************************************/
+
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('calories');
+  const [selectedPotentialCustomers, setSelectedPotentialCustomers] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+  const handleSelectAllClick = (event) => {
+    if (event.target.checked) {
+      const newSelecteds = potentialCustomers.map((n) => n.nif);
+      setSelectedPotentialCustomers(newSelecteds);
+      return;
+    }
+    setSelectedPotentialCustomers([]);
+  };
+
+  const handleClick = (event, nif) => {
+    const selectedIndex = selectedPotentialCustomers.indexOf(nif);
+    let newSelected = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selectedPotentialCustomers, nif);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selectedPotentialCustomers.slice(1));
+    } else if (selectedIndex === selectedPotentialCustomers.length - 1) {
+      newSelected = newSelected.concat(selectedPotentialCustomers.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selectedPotentialCustomers.slice(0, selectedIndex),
+        selectedPotentialCustomers.slice(selectedIndex + 1),
+      );
+    }
+    setSelectedPotentialCustomers(newSelected);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const isSelected = (nif) => selectedPotentialCustomers.indexOf(nif) !== -1;
+
+  /******************************************************* ENHANCED TABLE *******************************************************/
+
   useEffect(() => {
     getCustomers();
     getPotentialsCustomers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -465,27 +555,84 @@ const MyCustomers = ({ createNotification }) => {
                   <Typography variant="h4" align="center">Clientes potenciales</Typography>
                   <Typography variant="h6" align="center">Selecciona los clientes a los que enviar tus ofertas</Typography>
                 </Box>
-                <MDBDataTableV5
-                  hover
-                  infoLabel={["Viendo", "-", "de", "clientes"]}
-                  searchLabel="Buscar"
-                  entriesOptions={[5, 10, 15]}
-                  entries={5}
-                  data={potentialCustomersDataTable}
-                  responsive
-                  paginationLabel={["Anterior", "Siguiente"]}
-                  entriesLabel="Clientes por página"
-                  checkbox
-                  headCheckboxID='potential-customers-head-id'
-                  bodyCheckboxID='potential-customers-body-id'
-                  multipleCheckboxes
-                  getValueCheckBox={(e) => {
-                    updateSelectedPotentialCustomers(e);
-                  }}
-                  getValueAllCheckBoxes={(e) => {
-                    updateSelectedPotentialCustomers(e);
-                  }}
-                />
+
+                {/* ******************************************************* ENHANCED TABLE ****************************************************** */}
+                <div className={classes.root}>
+                  <Paper className={classes.paper}>
+                    <TableContainer>
+                      <Table
+                        className={classes.table}
+                        aria-labelledby="tableTitle"
+                        aria-label="enhanced table"
+                      >
+                        <EnhancedTableHead
+                          classes={classes}
+                          numSelected={selectedPotentialCustomers.length}
+                          order={order}
+                          orderBy={orderBy}
+                          onSelectAllClick={handleSelectAllClick}
+                          onRequestSort={handleRequestSort}
+                          rowCount={potentialCustomers.length}
+                        />
+                        <TableBody>
+                          {stableSort(potentialCustomers, getComparator(order, orderBy))
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((row, index) => {
+                              const isItemSelected = isSelected(row.nif);
+                              const labelId = `enhanced-table-checkbox-${index}`;
+
+                              return (
+                                <TableRow
+                                  hover
+                                  onClick={(event) => handleClick(event, row.nif)}
+                                  role="checkbox"
+                                  aria-checked={isItemSelected}
+                                  tabIndex={-1}
+                                  key={row.nif}
+                                  selected={isItemSelected}
+                                >
+                                  <TableCell padding="checkbox">
+                                    <Checkbox
+                                      checked={isItemSelected}
+                                      inputProps={{ 'aria-labelledby': labelId }}
+                                    />
+                                  </TableCell>
+                                  <TableCell id={labelId} scope="row" padding="none">
+                                    {row.name}
+                                  </TableCell>
+                                  <TableCell>{row.surname}</TableCell>
+                                  <TableCell>{row.nif}</TableCell>
+                                  <TableCell>{row.email}</TableCell>
+                                  <TableCell>
+                                    <Button
+                                      color="secondary"
+                                      variant="contained"
+                                      onClick={() => openDeletePotentialCustomerDialog(row.nif)}
+                                    >
+                                      Eliminar
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                    <TablePagination
+                      rowsPerPageOptions={[5, 10, 25]}
+                      component="div"
+                      count={potentialCustomers.length}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      onChangePage={handleChangePage}
+                      onChangeRowsPerPage={handleChangeRowsPerPage}
+                      labelRowsPerPage="Clientes por página"
+                      labelDisplayedRows={({ from, to, count }) => '' + from + '-' + to + ' de ' + count}
+                    />
+                  </Paper>
+                </div>
+                {/* ******************************************************* ENHANCED TABLE ****************************************************** */}
+
                 <Box display="flex" justifyContent="center" mt={2}>
                   <Button className={classes.sendOfferButton} onClick={openSelectOfferDialog}>Enviar oferta</Button>
                 </Box>
@@ -557,7 +704,7 @@ const MyCustomers = ({ createNotification }) => {
                 <Dialog open={deletePotentialCustomerDialogState}>
                   <DialogContent>
                     <DialogContentText>
-                      ¿Seguro que quieres eliminar el cliente potencial con nif: {potentialCustomerSelected}?
+                      ¿Seguro que quieres eliminar el cliente potencial con nif: {potentialCustomerNifToDeleteSelected}?
                   </DialogContentText>
                   </DialogContent>
                   <DialogActions>
@@ -567,7 +714,11 @@ const MyCustomers = ({ createNotification }) => {
                 </Dialog>
               </>
               :
-              <></>
+              <>
+                <Box my={4}>
+                  <Typography variant="h6" align="center">Actualmente no tienes clientes potenciales</Typography>
+                </Box>
+              </>
             }
           </>
         }
