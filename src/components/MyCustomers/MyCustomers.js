@@ -11,6 +11,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  DialogContentText,
   DialogActions,
   Grid,
   MenuItem,
@@ -133,8 +134,11 @@ const MyCustomers = ({ createNotification }) => {
     rows: [],
   });
   const [selectedPotentialCustomers, setSelectedPotentialCustomers] = useState({});
+  const [potentialCustomerSelected, setPotentialCustomerSelected] = useState();
 
   const [selectOfferDialogState, setSelectOfferDialogState] = useState(false);
+  const [deletePotentialCustomerDialogState, setDeletePotentialCustomerDialogState] = useState(false);
+
 
   // OFFERS
   const [offersLoading, setOffersLoading] = useState(false);
@@ -198,7 +202,7 @@ const MyCustomers = ({ createNotification }) => {
             <Button
               color="secondary"
               variant="contained"
-              onClick={() => handleDeletePotentialCustomer(value.nif)}
+              onClick={() => openDeletePotentialCustomerDialog(value.nif)}
             >
               Eliminar
             </Button>
@@ -213,12 +217,20 @@ const MyCustomers = ({ createNotification }) => {
     }
   };
 
-  const handleDeletePotentialCustomer = async (nif) => {
+
+  const openDeletePotentialCustomerDialog = (nif) => {
+    setDeletePotentialCustomerDialogState(true);
+    setPotentialCustomerSelected(nif);
+  }
+  const closeDeletePotentialCustomerDialog = () => setDeletePotentialCustomerDialogState(false);
+  const handleDeletePotentialCustomer = async () => {
     try {
       await axios.delete(
-        '/api/company/delete-potential-customer/' + nif,
+        '/api/company/delete-potential-customer/' + potentialCustomerSelected,
         { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
       );
+      setDeletePotentialCustomerDialogState(false);
+      setPotentialCustomerSelected('');
       createNotification(successDeletePotentialCustomerNotification);
       getPotentialsCustomers();
     } catch (error) {
@@ -540,6 +552,17 @@ const MyCustomers = ({ createNotification }) => {
                   </DialogContent>
                   <DialogActions>
                     <Button variant="contained" onClick={closeSelectOfferDialog}>Cancelar</Button>
+                  </DialogActions>
+                </Dialog>
+                <Dialog open={deletePotentialCustomerDialogState}>
+                  <DialogContent>
+                    <DialogContentText>
+                      ¿Seguro que quieres eliminar el cliente potencial con nif: {potentialCustomerSelected}?
+                  </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button variant="contained" onClick={handleDeletePotentialCustomer} color="secondary">Eliminar</Button>
+                    <Button variant="contained" onClick={closeDeletePotentialCustomerDialog}>Cancelar</Button>
                   </DialogActions>
                 </Dialog>
               </>
