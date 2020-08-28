@@ -639,7 +639,7 @@ const MyCustomers = ({ createNotification }) => {
                 {/* ******************************************************* ENHANCED TABLE ****************************************************** */}
 
                 <Box display="flex" justifyContent="center" mt={2}>
-                  <Button style={{marginRight: 8}} color="primary" variant="contained" onClick={handleReloadPotentialsCustomersTable}>Refrescar tabla</Button>
+                  <Button style={{marginRight: 8}} color="primary" variant="contained" onClick={handleReloadPotentialsCustomersTable}>Actualizar tabla</Button>
                   <Button className={classes.sendOfferButton} onClick={openSelectOfferDialog}>Enviar oferta</Button>
                 </Box>
                 <Dialog open={selectOfferDialogState} maxWidth="xl">

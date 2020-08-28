@@ -224,3 +224,7 @@ class Offer_Notification(db.Model):
 	@staticmethod
 	def get_by_nif_cif_offer_id(nif, cif, offer_id):
 		return Offer_Notification.query.filter_by(nif=nif, cif=cif, offer_id=offer_id).first()
+
+	@staticmethod
+	def get_all_by_nif(nif):
+		return Offer_Notification.query.filter_by(nif=nif).all()

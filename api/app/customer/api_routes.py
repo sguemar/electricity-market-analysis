@@ -12,9 +12,10 @@ from app.models import (
 	Customer_Dwelling_Contract,
 	Contract,
 	Dwelling,
-	Invoice
+	Invoice,
+	Offer_Notification
 )
-from app.company.models import Company
+from app.company.models import Company, Offer, OfferType, OfferFeature
 from app.auth.schemas import ProfileUserSchema
 from app.customer.schemas import ProfileCustomerSchema	
 
@@ -291,6 +292,30 @@ def delete_account():
 	return "", 200
 
 
+@customer_bp.route("/get-offers-notifications-count")
+@jwt_required
+def get_offers_notifications_count():
+	logged_user = User.get_by_username(get_jwt_identity())
+	logged_customer = Customer.get_by_user_id(logged_user.id)
+	return str(len(Offer_Notification.get_all_by_nif(logged_customer.nif)))
+
+
+@customer_bp.route("/get-received-offers")
+@jwt_required
+def get_received_offers():
+	logged_user = User.get_by_username(get_jwt_identity())
+	logged_customer = Customer.get_by_user_id(logged_user.id)
+	offers_notifications = Offer_Notification.get_all_by_nif(logged_customer.nif)
+	result = []
+	for offer_notification in offers_notifications:
+		offer = Offer.get_by_id(offer_notification.offer_id)
+		company = Company.get_by_cif(offer_notification.cif).to_dict()
+		result.append({
+			"offerInfo": __get_offer_info(offer),
+			"companyInfo": company
+		})
+	return jsonify(result)
+
 def __allowed_file(filename):
   return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -413,3 +438,16 @@ def validateCustomer(data):
 	}
 	customer = {k: v for k, v in customer.items() if v}
 	return ProfileCustomerSchema().validate(customer)
+
+
+def __get_offer_info(offer):
+	result = offer.to_dict()
+	offer_type = OfferType.get_by_id(offer.offer_type)
+	result["rate"] = offer_type.rate
+	result["name"] = offer_type.name
+	offer_features = OfferFeature.get_all_by_offer_id(offer.id)
+	offer_features_text = []
+	for offer_feature in offer_features:
+		offer_features_text.append(offer_feature.text)
+	result["features"] = offer_features_text
+	return result

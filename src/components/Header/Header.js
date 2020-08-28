@@ -17,7 +17,8 @@ import { Badge } from '@material-ui/core';
 const Header = ({ username, userType, companyType, logout, createNotification }) => {
 
 	const history = useHistory();
-	const [potentialsCustomers, setPotentialsCustomers] = useState(0);
+	const [potentialsCustomersCount, setPotentialsCustomersCount] = useState(0);
+	const [offersNotificationsCount, setOffersNotificationsCount] = useState(0);
 
 	async function handleLogout() {
 		try {
@@ -32,7 +33,12 @@ const Header = ({ username, userType, companyType, logout, createNotification })
 
 	const getPotentialsCustomersNotificationsCount = async () => {
 		const request = await axios.get('/api/company/get-potentials-customers-notifications-count');
-		setPotentialsCustomers(request.data);
+		setPotentialsCustomersCount(request.data);
+	};
+
+	const getOffersNotificationsCount = async () => {
+		const request = await axios.get('/api/customer/get-offers-notifications-count');
+		setOffersNotificationsCount(request.data);
 	};
 
 	useEffect(() => {
@@ -43,7 +49,17 @@ const Header = ({ username, userType, companyType, logout, createNotification })
 			}, 5000);
 			return () => clearInterval(interval);
 		}
-	}, [companyType]);
+		if (userType === 1) {
+			getOffersNotificationsCount();
+			const interval = setInterval(() => {
+				getOffersNotificationsCount();
+			}, 5000);
+			return () => clearInterval(interval);
+		}
+	}, [
+		companyType,
+		userType
+	]);
 
 	return (
 		<header>
@@ -69,6 +85,13 @@ const Header = ({ username, userType, companyType, logout, createNotification })
 											Mis consumos
 										</Link>
 									</Nav.Item>
+									<Nav.Item>
+										<Link className="nav-link" to="/received-offers">
+											<Badge badgeContent={offersNotificationsCount} color="primary">
+												Ofertas recibidas
+											</Badge>
+										</Link>
+									</Nav.Item>
 								</>
 								:
 								<>
@@ -82,7 +105,7 @@ const Header = ({ username, userType, companyType, logout, createNotification })
 											</Nav.Item>
 											<Nav.Item>
 												<Link className="nav-link" to="/my-customers">
-													<Badge badgeContent={potentialsCustomers} color="primary">
+													<Badge badgeContent={potentialsCustomersCount} color="primary">
 														Mis clientes
 													</Badge>
 												</Link>

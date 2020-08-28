@@ -4,7 +4,7 @@ from sqlalchemy import func
 
 from app import db
 
-class Company(db.Model):
+class Company(db.Model, SerializerMixin):
 
 	__tablename__ = "companies"
 

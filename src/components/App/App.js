@@ -14,6 +14,7 @@ import Offers from '../Offers/Offers';
 import CreateOffer from '../Offers/CreateOffer';
 import EditOffer from '../Offers/EditOffer';
 import MyCustomers from '../MyCustomers/MyCustomers';
+import ReceivedOffers from '../Offers/ReceivedOffers';
 import {
   BrowserRouter as Router,
   Route,
@@ -60,6 +61,21 @@ const App = ({ username, type, companyType }) => {
               </Route>
               <Route path="/consumptions" exact>
                 {username ? <Consumptions /> : <Login />}
+              </Route>
+              <Route path="/received-offers" exact>
+                {username
+                  ?
+                  <>
+                    {type === 1
+                      ?
+                      <ReceivedOffers />
+                      :
+                      <Redirect to="/" />
+                    }
+                  </>
+                  :
+                  <Login />
+                }
               </Route>
               <Route path="/offers" exact>
                 {username
