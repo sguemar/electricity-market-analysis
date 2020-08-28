@@ -51,7 +51,8 @@ import {
   errorNoCustomerSelectedNotification,
   successSendOfferNotification,
   errorRepeatedOfferNotification,
-  successDeletePotentialCustomerNotification
+  successDeletePotentialCustomerNotification,
+  successReloadPotentialsCustomersTableNotification
 } from '../../redux/constants/notifications';
 
 const useStyles = makeStyles((theme) => ({
@@ -274,6 +275,10 @@ const MyCustomers = ({ createNotification }) => {
     }
   };
 
+  const handleReloadPotentialsCustomersTable = () => {
+    getPotentialsCustomers();
+    createNotification(successReloadPotentialsCustomersTableNotification);
+  }
 
   const [potentialCustomerNifToDeleteSelected, setPotentialCustomerNifToDeleteSelected] = useState("");
   const [deletePotentialCustomerDialogState, setDeletePotentialCustomerDialogState] = useState(false);
@@ -553,7 +558,7 @@ const MyCustomers = ({ createNotification }) => {
               <>
                 <Box my={4}>
                   <Typography variant="h4" align="center">Clientes potenciales</Typography>
-                  <Typography variant="h6" align="center">Selecciona los clientes a los que enviar tus ofertas</Typography>
+                  <Typography variant="h6" align="center">Selecciona los clientes a los que deseas enviar tus ofertas</Typography>
                 </Box>
 
                 {/* ******************************************************* ENHANCED TABLE ****************************************************** */}
@@ -634,6 +639,7 @@ const MyCustomers = ({ createNotification }) => {
                 {/* ******************************************************* ENHANCED TABLE ****************************************************** */}
 
                 <Box display="flex" justifyContent="center" mt={2}>
+                  <Button style={{marginRight: 8}} color="primary" variant="contained" onClick={handleReloadPotentialsCustomersTable}>Refrescar tabla</Button>
                   <Button className={classes.sendOfferButton} onClick={openSelectOfferDialog}>Enviar oferta</Button>
                 </Box>
                 <Dialog open={selectOfferDialogState} maxWidth="xl">
