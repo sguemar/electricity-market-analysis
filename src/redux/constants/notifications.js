@@ -156,3 +156,11 @@ export const successDeletePotentialCustomerNotification = {
   canDismiss: true,
   icon: <CheckCircleSharpIcon />,
 }
+
+export const successReloadPotentialsCustomersTableNotification = {
+  message: 'La tabla de clientes potenciales ha sido recargada correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: true,
+  icon: <CheckCircleSharpIcon />,
+}
