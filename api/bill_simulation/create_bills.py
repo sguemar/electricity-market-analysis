@@ -22,6 +22,8 @@ INVOICE_CYCLE = datetime.timedelta(days=28)
 
 kwh_base_price = 0.0398
 kwh_annual_increase = 0.01078
+user_names = set()
+nifs = set()
 
 def get_random_date(year):
    try:
@@ -36,17 +38,16 @@ def get_kwh_base_price(year):
 
 def create_customer():
    customer = {}
-   customer['name'] = (random.choice(names)).replace('\n','')
+   customer['name'] = (random.choice(names)).replace('\n','')   
    customer['surname'] = ((random.choice(surnames)).replace('\n','') + " " +
                          (random.choice(surnames)).replace('\n',''))
-   customer['nif'] = (str(random.randint(10**7, 10**8-1)) + 
-                     random.choice(string.ascii_uppercase))
-   try:
-      user_id = insert_user(customer, 1)
-      insert_customer(customer, user_id)
-   except mysql.connector.errors.IntegrityError:
-      return create_customer()
-   return customer, user_id
+   nif = (str(random.randint(10**7, 10**8-1)) + random.choice(string.ascii_uppercase))
+   while nif in nifs:
+      nif = (str(random.randint(10**7, 10**8-1)) + random.choice(string.ascii_uppercase))
+   customer['nif'] = nif
+   nifs.add(nif)
+
+   return customer
 
 def insert_customer(customer, user_id):
    sql = """
@@ -301,7 +302,7 @@ def insert_invoice(invoice):
    mydb.commit()
 
 
-def insert_user(user, user_type):
+def insert_user(user):
    sql = """
             INSERT INTO users
             (
@@ -312,57 +313,76 @@ def insert_user(user, user_type):
             VALUES (%s, %s, %s);
          """
 
-   if user_type == 0:
-      username = user["cif"]
-   else:
-      username = user["name"]
-   password = generate_password_hash(username)
+   random_num = str(random.randint(0, 1000))
+   username = user["name"] + random_num
+   while username in user_names:
+      random_num = str(random.randint(0, 1000))
+      username = user["name"] + random_num
+   user_names.add(username)
 
+   password = generate_password_hash(username)
    val = (
          username,
          password,
-         user_type,
+         1,
       )
    cursor.execute(sql, val)
    mydb.commit()
 
-   sql = """
-            SELECT id
-            FROM users
-            WHERE username = %s
-            AND password = %s
-            AND user_type = %s
-         """
-   cursor.execute(sql, val)
+   sql = "SELECT LAST_INSERT_ID()"
+   cursor.execute(sql)
 
    user = cursor.fetchone()
-
    return user[0]
 
 
 def get_trading_companies():
-	cursor.execute("SHOW columns from companies")
-	keys = [column[0] for column in cursor.fetchall()]
-	cursor.execute("SELECT * FROM companies WHERE company_type = 0")
-	trading_companies = cursor.fetchall()
-	result = []
-	[
-		result.append(dict(zip(keys, trading_company)))
-		for trading_company in trading_companies
-	]
-	return result
+   cursor.execute("SHOW columns from companies")
+   keys = [column[0] for column in cursor.fetchall()]
+   cursor.execute("SELECT * FROM companies WHERE company_type = 0")
+   trading_companies = cursor.fetchall()
+   result = []
+   [
+      result.append(dict(zip(keys, trading_company)))
+      for trading_company in trading_companies
+   ]
+   return result
 
 def get_distributors():
-	cursor.execute("SHOW columns from companies")
-	keys = [column[0] for column in cursor.fetchall()]
-	cursor.execute("SELECT * FROM companies WHERE company_type = 1")
-	distributors = cursor.fetchall()
-	result = []
-	[
-		result.append(dict(zip(keys, distributor)))
-		for distributor in distributors
-	]
-	return result
+   cursor.execute("SHOW columns from companies")
+   keys = [column[0] for column in cursor.fetchall()]
+   cursor.execute("SELECT * FROM companies WHERE company_type = 1")
+   distributors = cursor.fetchall()
+   result = []
+   [
+      result.append(dict(zip(keys, distributor)))
+      for distributor in distributors
+   ]
+   return result
+
+
+def insert_potential_customer_notification(nif, cif):
+   sql = """
+            INSERT INTO potentials_customers_notifications
+            (
+               nif,
+               cif
+            )
+            VALUES (%s, %s);
+         """
+   val = (
+         nif,
+         cif,
+      )
+   cursor.execute(sql, val)
+   mydb.commit()
+
+def create_potential_customers(cif):
+   for _ in range(random.randint(2, 6)):
+      customer = create_customer()
+      user_id = insert_user(customer)
+      insert_customer(customer, user_id)
+      insert_potential_customer_notification(customer["nif"], cif)
 
 if __name__ == '__main__':
 
@@ -375,7 +395,9 @@ if __name__ == '__main__':
 
    # Create customers
    for _ in range(CUSTOMERS_NUMBER):
-      customer, user_id = create_customer()
+      customer = create_customer()
+      user_id = insert_user(customer)
+      insert_customer(customer, user_id)
       
       dwelling = create_dwelling()
       insert_dwelling(dwelling)
@@ -453,6 +475,7 @@ if __name__ == '__main__':
          contract_year = current_date.year
          contract_init_date = current_date
          kwh_price += kwh_annual_increase
+         create_potential_customers(trading_company["cif"])
          
 
       
