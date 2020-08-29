@@ -63,7 +63,7 @@ const Header = ({ username, userType, companyType, logout, createNotification })
 
 	return (
 		<header>
-			<Navbar bg="dark" variant="dark" expand="sm">
+			<Navbar bg="dark" variant="dark" expand={userType === 1 ? "md" : "sm"}>
 				<Link className="navbar-brand" to="/">AME</Link>
 				<Navbar.Toggle aria-controls="navbar-collapse" />
 				<Navbar.Collapse id="navbar-collapse">
@@ -90,6 +90,11 @@ const Header = ({ username, userType, companyType, logout, createNotification })
 											<Badge badgeContent={offersNotificationsCount} color="primary">
 												Ofertas recibidas
 											</Badge>
+										</Link>
+									</Nav.Item>
+									<Nav.Item>
+										<Link className="nav-link" to="/analyze-offers">
+											Analizar ofertas
 										</Link>
 									</Nav.Item>
 								</>

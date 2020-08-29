@@ -81,7 +81,6 @@ def get_offers():
 	return jsonify(offers)
 
 @company_bp.route("/get-offers-types")
-@jwt_required
 def get_offers_types():
 	offers_types = OfferType.get_all()
 	return jsonify(__get_offers_types(offers_types))

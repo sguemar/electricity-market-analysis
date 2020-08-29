@@ -15,6 +15,7 @@ import CreateOffer from '../Offers/CreateOffer';
 import EditOffer from '../Offers/EditOffer';
 import MyCustomers from '../MyCustomers/MyCustomers';
 import ReceivedOffers from '../Offers/ReceivedOffers';
+import AnalyzeOffers from '../Offers/AnalyzeOffers';
 import {
   BrowserRouter as Router,
   Route,
@@ -25,13 +26,13 @@ import { connect } from 'react-redux';
 import { Notify } from 'react-redux-notify';
 
 
-const App = ({ username, type, companyType }) => {
+const App = ({ username, userType, companyType }) => {
   return (
     <div className="app">
       <Router>
         <Header
           username={username}
-          userType={type}
+          userType={userType}
           companyType={companyType}
         />
         <div className="main-content">
@@ -53,7 +54,7 @@ const App = ({ username, type, companyType }) => {
               <Route path="/profile" exact>
                 {username ?
                   <>
-                    {type === 1 ? <CustomerProfile /> : <CompanyProfile />}
+                    {userType === 1 ? <CustomerProfile /> : <CompanyProfile />}
                   </>
                   :
                   <Login />
@@ -66,7 +67,7 @@ const App = ({ username, type, companyType }) => {
                 {username
                   ?
                   <>
-                    {type === 1
+                    {userType === 1
                       ?
                       <ReceivedOffers />
                       :
@@ -75,6 +76,14 @@ const App = ({ username, type, companyType }) => {
                   </>
                   :
                   <Login />
+                }
+              </Route>
+              <Route path="/analyze-offers" exact>
+                {userType === 1
+                  ?
+                  <AnalyzeOffers />
+                  :
+                  <Redirect to="/" />
                 }
               </Route>
               <Route path="/offers" exact>

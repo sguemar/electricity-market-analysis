@@ -3,7 +3,7 @@ import { LOGIN_CUSTOMER, LOGIN_COMPANY, LOGOUT_USER } from "../constants/authent
 const initialState = {
   loggedUser: {
     username: false,
-    type: false,
+    userType: false,
     companyType: false
   },
 };
@@ -11,21 +11,21 @@ const initialState = {
 export default function (state = initialState, action) {
   switch (action.type) {
     case LOGIN_CUSTOMER: {
-      const { username, type } = action.payload;
+      const { username, userType } = action.payload;
       return {
         loggedUser: {
           username: username,
-          type: type,
+          userType: userType,
           companyType: false
         }
       };
     }
     case LOGIN_COMPANY: {
-      const { username, type, companyType } = action.payload;
+      const { username, userType, companyType } = action.payload;
       return {
         loggedUser: {
           username: username,
-          type: type,
+          userType: userType,
           companyType: companyType
         }
       };

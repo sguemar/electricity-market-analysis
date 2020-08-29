@@ -46,6 +46,9 @@ class Company(db.Model, SerializerMixin):
 	def get_random_companies(amount):
 		return Company.query.filter_by(company_type=0).order_by(func.random()).limit(amount).all()
 
+	@staticmethod
+	def get_all_trading_companies():
+		return Company.query.filter_by(company_type=0).all()
 
 class Offer(db.Model, SerializerMixin):
 
@@ -80,6 +83,10 @@ class Offer(db.Model, SerializerMixin):
 	@staticmethod
 	def get_all_by_cif(cif):
 		return Offer.query.filter_by(cif=cif).all()
+
+	@staticmethod
+	def get_all():
+		return Offer.query.all()
 
 
 class OfferType(db.Model, SerializerMixin):

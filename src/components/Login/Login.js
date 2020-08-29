@@ -50,12 +50,12 @@ const Login = ({ loginCustomer, loginCompany, createNotification }) => {
       if (response.data.company_type === undefined)
         loginCustomer({
           username: state.username,
-          type: response.data.user_type,
+          userType: response.data.user_type,
         });
       else
         loginCompany({
           username: state.username,
-          type: response.data.user_type,
+          userType: response.data.user_type,
           companyType: response.data.company_type
         });
       createNotification(successLogInNotification);
