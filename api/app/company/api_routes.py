@@ -325,6 +325,14 @@ def delete_potential_customer(nif):
 	return ""
 
 
+@company_bp.route("/get-compentency-trading-companies")
+@jwt_required
+def get_compentency_trading_companies():
+	logged_user = User.get_by_username(get_jwt_identity())
+	logged_company = Company.get_by_user_id(logged_user.id)
+	companies = get_compentency_trading_companies(logged_company.cif)
+	return jsonify(companies)
+
 def validateUser(data):
 	user = {
 		"password": data["password"],
@@ -383,6 +391,7 @@ def validateFeatures(data):
 	offer_features = {k: v for k, v in offer_features.items() if v}
 	return OfferFeaturesSchema().validate(offer_features)
 
+
 def __get_offers(cif):
 	offers = Offer.get_all_by_cif(cif)
 	result = []
@@ -399,9 +408,16 @@ def __get_offers(cif):
 		result.append(offer_result)
 	return result
 
-
 def __get_offers_types(offers_types):
 	result = []
 	for offer_type in offers_types:
 		result.append(offer_type.to_dict())
+	return result
+
+def get_compentency_trading_companies(cif):
+	result = []
+	companies = Company.get_all_trading_companies()
+	for company in companies:
+		if company.cif != cif:
+			result.append(company.to_dict())
 	return result

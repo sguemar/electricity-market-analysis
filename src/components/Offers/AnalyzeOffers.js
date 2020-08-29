@@ -8,7 +8,6 @@ import {
   CardContent,
   CardHeader,
   List,
-  ListSubheader,
   ListItem,
   ListItemIcon,
   ListItemText,
@@ -50,10 +49,15 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     minWidth: 100,
   },
+  horizontalList: {
+    display: 'flex',
+    flexDirection: 'row',
+    padding: 0,
+  },
 }));
 
 
-const AnalyzeOffers = () => {
+const AnalyzeOffers = ({ companyType }) => {
 
   const classes = useStyles();
 
@@ -90,6 +94,7 @@ const AnalyzeOffers = () => {
     rows: [],
   });
   const [selectedTradingCompanyCif, setSelectedTradingCompanyCif] = useState('');
+  const [selectedTradingCompany, setSelectedTradingCompany] = useState({});
 
 
   // OFFERS
@@ -106,13 +111,14 @@ const AnalyzeOffers = () => {
 
   const handleOffersPageChange = (event, value) => setOffersPage(value);
 
-  const handleTradingCompanyClick = (cif) => getSelectedTradingCompanyOffers(cif);
+  const handleTradingCompanyClick = (tradingCompany) => getSelectedTradingCompanyOffers(tradingCompany);
 
-  const getSelectedTradingCompanyOffers = async (cif) => {
+  const getSelectedTradingCompanyOffers = async (tradingCompany) => {
     setOffersLoading(true);
-    setSelectedTradingCompanyCif(cif);
+    setSelectedTradingCompanyCif(tradingCompany.cif);
+    setSelectedTradingCompany(tradingCompany);
     try {
-      let response = await axios.get('/api/public/get-trading-company-offers/' + cif);
+      let response = await axios.get('/api/public/get-trading-company-offers/' + tradingCompany.cif);
       const offers = response.data;
       if (offers.length === 0) {
         setOffers([]);
@@ -131,12 +137,16 @@ const AnalyzeOffers = () => {
   const getAllTradingCompanies = async () => {
     setCompaniesLoading(true);
     try {
-      const response = await axios.get('/api/public/get-all-trading-companies');
+      let response = []
+      if (companyType === 0)
+        response = await axios.get('/api/company/get-compentency-trading-companies');
+      else
+        response = await axios.get('/api/public/get-all-trading-companies');
       if (response.data.length !== 0) {
         const tradingCompanies = response.data.map(tradingCompany => {
           return {
             ...tradingCompany,
-            clickEvent: () => handleTradingCompanyClick(tradingCompany.cif)
+            clickEvent: () => handleTradingCompanyClick(tradingCompany)
           }
         });
         setTradingCompanies(tradingCompanies);
@@ -262,56 +272,6 @@ const AnalyzeOffers = () => {
                       </Card>
                     </Grid>
                   }
-                  <Grid item xs={12}>
-                    <Card className={classes.card}>
-                      <CardContent>
-                        <Grid container spacing={4}>
-                          <Grid item xs={12} sm={6}>
-                            <List
-                              subheader={
-                                <ListSubheader>
-                                  Datos de la empresa
-                              </ListSubheader>
-                              }
-                            >
-                              <ListItem>
-                                <ListItemText primary="CIF" secondary={offer.companyInfo.cif || "-"} />
-                              </ListItem>
-                              <Divider />
-                              <ListItem>
-                                <ListItemText primary="Nombre" secondary={offer.companyInfo.name || "-"} />
-                              </ListItem>
-                              <Divider />
-                              <ListItem>
-                                <ListItemText primary="Dirección" secondary={offer.companyInfo.address || "-"} />
-                              </ListItem>
-                            </List>
-                          </Grid>
-                          <Grid item xs={12} sm={6}>
-                            <List
-                              subheader={
-                                <ListSubheader>
-                                  Datos de contacto
-                              </ListSubheader>
-                              }
-                            >
-                              <ListItem>
-                                <ListItemText primary="Email" secondary={offer.companyInfo.email || "-"} />
-                              </ListItem>
-                              <Divider />
-                              <ListItem>
-                                <ListItemText primary="URL" secondary={offer.companyInfo.url || "-"} />
-                              </ListItem>
-                              <Divider />
-                              <ListItem>
-                                <ListItemText primary="Teléfono" secondary={offer.companyInfo.phone || "-"} />
-                              </ListItem>
-                            </List>
-                          </Grid>
-                        </Grid>
-                      </CardContent>
-                    </Card>
-                  </Grid>
                 </Grid>
               </CardContent>
             </Card>
@@ -371,6 +331,53 @@ const AnalyzeOffers = () => {
           </Box>
           :
           <>
+            {selectedTradingCompanyCif !== ''
+              ?
+              <>
+                <Box my={4}>
+                  <Typography variant="h5" align="center">Comercializadora seleccionada</Typography>
+                </Box>
+                <Card>
+                  <List className={classes.horizontalList}>
+                    <Grid container spacing={2}>
+                      <Grid item>
+                        <ListItem>
+                          <ListItemText primary="CIF" secondary={selectedTradingCompany.cif || "-"} />
+                        </ListItem>
+                        <Divider orientation="vertical" />
+                      </Grid>
+                      <Grid item>
+                        <ListItem>
+                          <ListItemText primary="Nombre" secondary={selectedTradingCompany.name || "-"} />
+                        </ListItem>
+                      </Grid>
+                      <Grid item>
+                        <ListItem>
+                          <ListItemText primary="Dirección" secondary={selectedTradingCompany.address || "-"} />
+                        </ListItem>
+                      </Grid>
+                      <Grid item>
+                        <ListItem>
+                          <ListItemText primary="Email" secondary={selectedTradingCompany.email || "-"} />
+                        </ListItem>
+                      </Grid>
+                      <Grid item>
+                        <ListItem>
+                          <ListItemText primary="URL" secondary={selectedTradingCompany.url || "-"} />
+                        </ListItem>
+                      </Grid>
+                      <Grid item>
+                        <ListItem>
+                          <ListItemText primary="Teléfono" secondary={selectedTradingCompany.phone || "-"} />
+                        </ListItem>
+                      </Grid>
+                    </Grid>
+                  </List>
+                </Card>
+              </>
+              :
+              <></>
+            }
             {offersList.length !== 0
               ?
               <>
@@ -386,10 +393,10 @@ const AnalyzeOffers = () => {
               </>
               :
               <>
-                {offerRateFilter !== '' && selectedTradingCompanyCif
+                {offerRateFilter !== '' && selectedTradingCompanyCif !== ''
                   ?
                   <Box my={4}>
-                    <Typography variant="h6" align="center">Actualmente la comercializadora seleccionada no tiene publicada ninguna factura de este tipo</Typography>
+                    <Typography variant="h6" align="center">Actualmente la comercializadora seleccionada no tiene publicada ninguna oferta de este tipo</Typography>
                   </Box>
                   :
                   <Box my={4}>

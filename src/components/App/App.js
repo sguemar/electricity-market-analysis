@@ -79,12 +79,7 @@ const App = ({ username, userType, companyType }) => {
                 }
               </Route>
               <Route path="/analyze-offers" exact>
-                {userType === 1
-                  ?
-                  <AnalyzeOffers />
-                  :
-                  <Redirect to="/" />
-                }
+                <AnalyzeOffers companyType={companyType}/>
               </Route>
               <Route path="/offers" exact>
                 {username

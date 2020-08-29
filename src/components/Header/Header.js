@@ -115,9 +115,20 @@ const Header = ({ username, userType, companyType, logout, createNotification })
 													</Badge>
 												</Link>
 											</Nav.Item>
+											<Nav.Item>
+												<Link className="nav-link" to="/analyze-offers">
+													Precios competencia
+												</Link>
+											</Nav.Item>
 										</>
 										:
-										<></>
+										<>
+											<Nav.Item>
+												<Link className="nav-link" to="/analyze-offers">
+													Precios comercializadoras
+												</Link>
+											</Nav.Item>
+										</>
 									}
 								</>
 							}
