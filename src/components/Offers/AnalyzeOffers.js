@@ -74,22 +74,6 @@ const AnalyzeOffers = ({ companyType }) => {
         label: 'Nombre',
         field: 'name',
       },
-      {
-        label: 'Dirección',
-        field: 'address',
-      },
-      {
-        label: 'URL',
-        field: 'url',
-      },
-      {
-        label: 'Email',
-        field: 'email',
-      },
-      {
-        label: 'Teléfono',
-        field: 'phone',
-      },
     ],
     rows: [],
   });
