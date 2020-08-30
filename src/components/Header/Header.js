@@ -63,7 +63,7 @@ const Header = ({ username, userType, companyType, logout, createNotification })
 
 	return (
 		<header>
-			<Navbar bg="dark" variant="dark" expand={userType === 1 ? "md" : "sm"}>
+			<Navbar bg="dark" variant="dark" expand={userType === 1 ? "lg" : "sm"}>
 				<Link className="navbar-brand" to="/">AME</Link>
 				<Navbar.Toggle aria-controls="navbar-collapse" />
 				<Navbar.Collapse id="navbar-collapse">
@@ -95,6 +95,11 @@ const Header = ({ username, userType, companyType, logout, createNotification })
 									<Nav.Item>
 										<Link className="nav-link" to="/analyze-offers">
 											Analizar ofertas
+										</Link>
+									</Nav.Item>
+									<Nav.Item>
+										<Link className="nav-link" to="/compare-prices">
+											Comparar precios
 										</Link>
 									</Nav.Item>
 								</>

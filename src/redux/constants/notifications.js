@@ -172,3 +172,12 @@ export const successReloadReceivedOffersNotification = {
   canDismiss: true,
   icon: <CheckCircleSharpIcon />,
 }
+
+export const errorRepeatedCompanySelectedNotification = (message) =>
+  ({
+    message: message,
+    type: NOTIFICATION_TYPE_ERROR,
+    duration: 5000,
+    canDismiss: false,
+    icon: <ErrorOutlineOutlinedIcon />,
+  })

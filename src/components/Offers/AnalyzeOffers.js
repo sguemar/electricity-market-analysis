@@ -328,7 +328,6 @@ const AnalyzeOffers = ({ companyType }) => {
                         <ListItem>
                           <ListItemText primary="CIF" secondary={selectedTradingCompany.cif || "-"} />
                         </ListItem>
-                        <Divider orientation="vertical" />
                       </Grid>
                       <Grid item>
                         <ListItem>
