@@ -244,6 +244,11 @@ const CustomerComparePrices = ({ createNotification }) => {
       setOfferSelected1({});
       setOffersPage1(1);
       setOffersCount1(0);
+      setFixedTermClassName2("");
+      setVariableTermClassName2("");
+      setTipClassName2("");
+      setValleyClassName2("");
+      setSuperValleyClassName2("");
     } else {
       getSelectedTradingCompanyOffers(selectedTradingCompany1, 1);
     }
@@ -265,14 +270,20 @@ const CustomerComparePrices = ({ createNotification }) => {
       setOfferSelected2({});
       setOffersPage2(1);
       setOffersCount2(0);
+      setFixedTermClassName1("");
+      setVariableTermClassName1("");
+      setTipClassName1("");
+      setValleyClassName1("");
+      setSuperValleyClassName1("");
     } else {
       getSelectedTradingCompanyOffers(selectedTradingCompany2, 2);
     }
   }, [selectedTradingCompanyCif2]);
 
   useEffect(() => {
+    let filteredOffers1 = [];
     if (offers1.length !== 0 && Object.keys(offerSelected2).length !== 0) {
-      let filteredOffers1 = offers1;
+      filteredOffers1 = offers1;
       if (offerRateFilter !== '')
         filteredOffers1 = offers1.filter(offer =>
           offer.offerInfo.offer_type === offerRateFilter
@@ -281,7 +292,7 @@ const CustomerComparePrices = ({ createNotification }) => {
         setOffersCount1(filteredOffers1.length);
         setOfferSelected1(filteredOffers1[offersPage1 - 1]);
         let offer = filteredOffers1[offersPage1 - 1];
-        if (typeof(offer) === 'undefined') {
+        if (typeof (offer) === 'undefined') {
           offer = filteredOffers1[0];
           setOfferSelected1(filteredOffers1[0]);
           setOffersPage1(1);
@@ -292,40 +303,30 @@ const CustomerComparePrices = ({ createNotification }) => {
           setFixedTermClassName1(classes.expensiveValue);
         else if (offer.offerInfo.fixed_term < offerSelected2.offerInfo.fixed_term)
           setFixedTermClassName1(classes.cheapestValue);
-        else
-          setFixedTermClassName1("");
 
         // VARIABLE TERM
         if (offer.offerInfo.variable_term > offerSelected2.offerInfo.variable_term)
           setVariableTermClassName1(classes.expensiveValue);
         else if (offer.offerInfo.variable_term < offerSelected2.offerInfo.variable_term)
           setVariableTermClassName1(classes.cheapestValue);
-        else
-          setVariableTermClassName1("");
 
         // TIP
         if (offer.offerInfo.tip > offerSelected2.offerInfo.tip)
           setTipClassName1(classes.expensiveValue);
         else if (offer.offerInfo.tip < offerSelected2.offerInfo.tip)
           setTipClassName1(classes.cheapestValue);
-        else
-          setTipClassName1("");
 
         // VALLEY
         if (offer.offerInfo.valley > offerSelected2.offerInfo.valley)
           setValleyClassName1(classes.expensiveValue);
         else if (offer.offerInfo.valley < offerSelected2.offerInfo.valley)
           setValleyClassName1(classes.cheapestValue);
-        else
-          setValleyClassName1("");
 
         // SUPERVALLEY
         if (offer.offerInfo.super_valley > offerSelected2.offerInfo.super_valley)
           setSuperValleyClassName1(classes.expensiveValue);
         else if (offer.offerInfo.super_valley < offerSelected2.offerInfo.super_valley)
           setSuperValleyClassName1(classes.cheapestValue);
-        else
-          setSuperValleyClassName1("");
 
         setOffersList1(
           <Grid key={offer.offerInfo.id} item xs={12}>
@@ -426,31 +427,14 @@ const CustomerComparePrices = ({ createNotification }) => {
         );
       } else {
         setOffersCount1(0);
-        setOfferSelected1({});
         setOffersList1([]);
+        setFixedTermClassName2("");
+        setVariableTermClassName2("");
+        setTipClassName2("");
+        setValleyClassName2("");
+        setSuperValleyClassName2("");
       }
     }
-  }, [
-    offers1,
-    offers2,
-    offersPage1,
-    offersPage2,
-    offerSelected2,
-    offerSelected1,
-    classes.card,
-    classes.checkIcon,
-    classes.headerTableCell,
-    classes.expensiveValue,
-    classes.cheapestValue,
-    fixedTermClassName1,
-    variableTermClassName1,
-    tipClassName1,
-    valleyClassName1,
-    superValleyClassName1,
-    offerRateFilter
-  ]);
-
-  useEffect(() => {
     if (offers2.length !== 0 && Object.keys(offerSelected1).length !== 0) {
       let filteredOffers2 = offers2;
       if (offerRateFilter !== '')
@@ -461,50 +445,43 @@ const CustomerComparePrices = ({ createNotification }) => {
         setOffersCount2(filteredOffers2.length);
         setOfferSelected2(filteredOffers2[offersPage2 - 1]);
         let offer = filteredOffers2[offersPage2 - 1];
-        if (typeof(offer) === 'undefined') {
+        if (typeof (offer) === 'undefined') {
           offer = filteredOffers2[0];
           setOfferSelected2(filteredOffers2[0]);
           setOffersPage2(1);
         }
-        // FIXED TERM
-        if (offer.offerInfo.fixed_term > offerSelected1.offerInfo.fixed_term)
-          setFixedTermClassName2(classes.expensiveValue);
-        else if (offer.offerInfo.fixed_term < offerSelected1.offerInfo.fixed_term)
-          setFixedTermClassName2(classes.cheapestValue);
-        else
-          setFixedTermClassName2("");
 
-        // VARIABLE TERM
-        if (offer.offerInfo.variable_term > offerSelected1.offerInfo.variable_term)
-          setVariableTermClassName2(classes.expensiveValue);
-        else if (offer.offerInfo.variable_term < offerSelected1.offerInfo.variable_term)
-          setVariableTermClassName2(classes.cheapestValue);
-        else
-          setVariableTermClassName2("");
+        if (filteredOffers1.length !== 0) {
+          // FIXED TERM
+          if (offer.offerInfo.fixed_term > offerSelected1.offerInfo.fixed_term)
+            setFixedTermClassName2(classes.expensiveValue);
+          else if (offer.offerInfo.fixed_term < offerSelected1.offerInfo.fixed_term)
+            setFixedTermClassName2(classes.cheapestValue);
 
-        // TIP
-        if (offer.offerInfo.tip > offerSelected1.offerInfo.tip)
-          setTipClassName2(classes.expensiveValue);
-        else if (offer.offerInfo.tip < offerSelected1.offerInfo.tip)
-          setTipClassName2(classes.cheapestValue);
-        else
-          setTipClassName2("");
+          // VARIABLE TERM
+          if (offer.offerInfo.variable_term > offerSelected1.offerInfo.variable_term)
+            setVariableTermClassName2(classes.expensiveValue);
+          else if (offer.offerInfo.variable_term < offerSelected1.offerInfo.variable_term)
+            setVariableTermClassName2(classes.cheapestValue);
 
-        // VALLEY
-        if (offer.offerInfo.valley > offerSelected1.offerInfo.valley)
-          setValleyClassName2(classes.expensiveValue);
-        else if (offer.offerInfo.valley < offerSelected1.offerInfo.valley)
-          setValleyClassName2(classes.cheapestValue);
-        else
-          setValleyClassName2("");
+          // TIP
+          if (offer.offerInfo.tip > offerSelected1.offerInfo.tip)
+            setTipClassName2(classes.expensiveValue);
+          else if (offer.offerInfo.tip < offerSelected1.offerInfo.tip)
+            setTipClassName2(classes.cheapestValue);
 
-        // SUPERVALLEY
-        if (offer.offerInfo.super_valley > offerSelected1.offerInfo.super_valley)
-          setSuperValleyClassName2(classes.expensiveValue);
-        else if (offer.offerInfo.super_valley < offerSelected1.offerInfo.super_valley)
-          setSuperValleyClassName2(classes.cheapestValue);
-        else
-          setSuperValleyClassName2("");
+          // VALLEY
+          if (offer.offerInfo.valley > offerSelected1.offerInfo.valley)
+            setValleyClassName2(classes.expensiveValue);
+          else if (offer.offerInfo.valley < offerSelected1.offerInfo.valley)
+            setValleyClassName2(classes.cheapestValue);
+
+          // SUPERVALLEY
+          if (offer.offerInfo.super_valley > offerSelected1.offerInfo.super_valley)
+            setSuperValleyClassName2(classes.expensiveValue);
+          else if (offer.offerInfo.super_valley < offerSelected1.offerInfo.super_valley)
+            setSuperValleyClassName2(classes.cheapestValue);
+        }
 
         setOffersList2(
           <Grid key={offer.offerInfo.id} item xs={12}>
@@ -605,28 +582,33 @@ const CustomerComparePrices = ({ createNotification }) => {
         );
       } else {
         setOffersCount2(0);
-        setOfferSelected2({});
         setOffersList2([]);
+        setFixedTermClassName1("");
+        setVariableTermClassName1("");
+        setTipClassName1("");
+        setValleyClassName1("");
+        setSuperValleyClassName1("");
       }
     }
   }, [
-    offers1,
-    offers2,
-    offersPage2,
+    offerRateFilter,
+    selectedTradingCompany1,
     offersPage1,
+    offersPage2,
     offerSelected1,
     offerSelected2,
-    classes.card,
-    classes.checkIcon,
-    classes.headerTableCell,
-    classes.expensiveValue,
-    classes.cheapestValue,
+    offersCount1,
+    offersCount2,
+    fixedTermClassName1,
+    variableTermClassName1,
+    tipClassName1,
+    valleyClassName1,
+    superValleyClassName1,
     fixedTermClassName2,
     variableTermClassName2,
     tipClassName2,
     valleyClassName2,
     superValleyClassName2,
-    offerRateFilter
   ]);
 
   return (
