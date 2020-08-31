@@ -31,7 +31,7 @@ def create_app():
 
 	### BLUEPRINTS REGISTRATION ###
 	from .public import public_bp
-	app.register_blueprint(public_bp)
+	app.register_blueprint(public_bp, url_prefix='/api/public')
 
 	from .auth import auth_bp
 	app.register_blueprint(auth_bp, url_prefix='/api/auth')

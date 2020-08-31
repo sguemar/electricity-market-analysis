@@ -6,13 +6,14 @@ import string, random, mysql.connector
 from werkzeug.security import generate_password_hash
 
 mydb = mysql.connector.connect(
-  host = "localhost",
-  user = "root",
-  passwd = "",
-  database = "electricity_market_analysis"
+	host = "localhost",
+	user = "root",
+	passwd = "",
+	database = "electricity_market_analysis"
 )
 cursor = mydb.cursor()
 
+streets = open("bill_simulation/text_data/streets.txt", encoding='utf8').readlines()
 
 def create_trading_company(trading_company_info):
 	trading_company = {}
@@ -91,32 +92,117 @@ def insert_user(user, user_type):
 	cursor.execute(sql, val)
 	mydb.commit()
 
-	sql = """
-					SELECT id
-					FROM users
-					WHERE username = %s
-					AND password = %s
-					AND user_type = %s
-				"""
-	cursor.execute(sql, val)
+	sql = "SELECT LAST_INSERT_ID()"
+	cursor.execute(sql)
 
 	user = cursor.fetchone()
 
 	return user[0]
 
 
-if __name__ == '__main__':
-	streets = open("bill_simulation/streets.txt", encoding='utf8').readlines()
+def create_offer(offer_type, cif):
+	offer = {}
+	offer['offer_type'] = offer_type
+	if offer_type % 3 == 1:
+		offer['fixed_term'] = round(random.random() * random.randint(2, 3), 6)
+		offer['variable_term'] = round(random.random(), 6)
+		offer['tip'] = 0
+		offer['valley'] = 0
+		offer['super_valley'] = 0
+		offer['cif'] = cif
+	elif offer_type % 3 == 2:
+		offer['fixed_term'] = round(random.random() * random.randint(2, 3), 6)
+		offer['variable_term'] = 0
+		offer['tip'] = round(random.random() * 1.9, 6)
+		offer['valley'] = round(offer['tip'] * 0.4, 6)
+		offer['super_valley'] = 0
+		offer['cif'] = cif
+	else:
+		offer['fixed_term'] = round(random.random() * random.randint(2, 3), 6)
+		offer['variable_term'] = 0
+		offer['tip'] = round(random.random() * 1.9, 6)
+		offer['valley'] = round(offer['tip'] * 0.4, 6)
+		offer['super_valley'] = round(offer['valley'] * 0.9, 6)
+		offer['cif'] = cif
+	return offer
 
+def insert_offer(offer):
+	sql = """
+					INSERT INTO offers
+					(
+						offer_type,
+						fixed_term,
+						variable_term,
+						tip,
+						valley,
+						super_valley,
+						cif
+					)
+					VALUES (%s, %s, %s, %s, %s, %s, %s);
+				"""
+	val = (
+		offer['offer_type'],
+		offer['fixed_term'],
+		offer['variable_term'],
+		offer['tip'],
+		offer['valley'],
+		offer['super_valley'],
+		offer['cif'],
+	)
+	cursor.execute(sql, val)
+	mydb.commit()
+
+	sql = """
+					SELECT LAST_INSERT_ID()
+				"""
+	cursor.execute(sql)
+
+	offer = cursor.fetchone()
+	return offer[0]
+
+
+def create_offer_feature(offer_id, offers_features_text):
+	offer_feature = {}
+	offer_feature['text'] = (random.choice(offers_features_text)).replace('\n','')
+	offer_feature['offer_id'] = offer_id
+	return offer_feature
+
+def insert_offer_feature(offer_feature):
+	sql = """
+					INSERT INTO offers_features
+					(
+						text,
+						offer_id
+					)
+					VALUES (%s, %s);
+				"""
+	val = (
+		offer_feature['text'],
+		offer_feature['offer_id'],
+	)
+	cursor.execute(sql, val)
+	mydb.commit()
+
+def create_companies():
+
+	offers_features_text = open("bill_simulation/text_data/offers_features.txt", encoding='utf8').readlines()
+	
 	# Create trading companies
-	with open('bill_simulation/trading_companies.txt', encoding='utf8') as trading_companies_file:
+	with open('bill_simulation/text_data/trading_companies.txt', encoding='utf8') as trading_companies_file:
 		for trading_company in trading_companies_file:
 			company = create_trading_company(trading_company.split(";"))
 			user_id = insert_user(company, 0)
 			insert_company(company, user_id)
+			for i in range(9):
+				offer = create_offer(i + 1, company["cif"])
+				offer_id = insert_offer(offer)
+				for _ in range(random.randint(1, 3)):
+					offer_feature = create_offer_feature(offer_id, offers_features_text)
+					insert_offer_feature(offer_feature)
+
 
 	# Create distributors
-	with open('bill_simulation/distributors.txt', encoding='utf8') as distributors_file:
+	with open('bill_simulation/text_data/distributors.txt', encoding='utf8') as distributors_file:
 		for distributor in distributors_file:
 			company = create_distributor(distributor.split(";"))
 			user_id = insert_user(company, 0)

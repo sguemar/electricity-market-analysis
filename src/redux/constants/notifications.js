@@ -91,3 +91,93 @@ export const successDeleteAccountNotification = {
   canDismiss: true,
   icon: <CheckCircleSharpIcon />,
 }
+
+export const successCreateOfferNotification = {
+  message: 'La oferta se ha guardado correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: true,
+  icon: <CheckCircleSharpIcon />,
+}
+
+export const successEditOfferNotification = {
+  message: 'La oferta se ha modificado correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: true,
+  icon: <CheckCircleSharpIcon />,
+}
+
+export const successRemoveOfferNotification = {
+  message: 'La oferta se ha eliminado correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: true,
+  icon: <CheckCircleSharpIcon />,
+}
+
+export const errorRemoveOfferNotification = {
+  message: "Ha ocurrido un error, la oferta no se ha eliminado correctamente",
+  type: NOTIFICATION_TYPE_ERROR,
+  duration: 5000,
+  canDismiss: false,
+  icon: <ErrorOutlineOutlinedIcon />,
+}
+
+export const errorNoCustomerSelectedNotification = {
+  message: "Debes seleccionar al menos un cliente para enviar ofertas",
+  type: NOTIFICATION_TYPE_ERROR,
+  duration: 5000,
+  canDismiss: false,
+  icon: <ErrorOutlineOutlinedIcon />,
+}
+
+export const successSendOfferNotification = {
+  message: 'La oferta se ha enviado a los clientes correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: true,
+  icon: <CheckCircleSharpIcon />,
+}
+
+export const errorRepeatedOfferNotification = (message) =>
+  ({
+    message: message,
+    type: NOTIFICATION_TYPE_ERROR,
+    duration: 5000,
+    canDismiss: false,
+    icon: <ErrorOutlineOutlinedIcon />,
+  })
+
+export const successDeletePotentialCustomerNotification = {
+  message: 'El cliente potencial ha sido eliminado de la lista correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: true,
+  icon: <CheckCircleSharpIcon />,
+}
+
+export const successReloadPotentialsCustomersTableNotification = {
+  message: 'La tabla de clientes potenciales ha sido actualizada correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: true,
+  icon: <CheckCircleSharpIcon />,
+}
+
+export const successReloadReceivedOffersNotification = {
+  message: 'Las ofertas recibidas han sido actualizadas correctamente',
+  type: NOTIFICATION_TYPE_SUCCESS,
+  duration: 5000,
+  canDismiss: true,
+  icon: <CheckCircleSharpIcon />,
+}
+
+export const errorRepeatedCompanySelectedNotification = (message) =>
+  ({
+    message: message,
+    type: NOTIFICATION_TYPE_ERROR,
+    duration: 5000,
+    canDismiss: false,
+    icon: <ErrorOutlineOutlinedIcon />,
+  })

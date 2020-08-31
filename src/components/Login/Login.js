@@ -14,7 +14,7 @@ import {
 import { Alert } from '@material-ui/lab';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import axios from 'axios';
-import { login } from '../../redux/actions/authentication';
+import { loginCustomer, loginCompany } from '../../redux/actions/authentication';
 import { createNotification } from 'react-redux-notify';
 import {
   successLogInNotification,
@@ -22,7 +22,7 @@ import {
 
 
 
-const Login = ({ login, createNotification }) => {
+const Login = ({ loginCustomer, loginCompany, createNotification }) => {
 
   const initialState = {
     username: '',
@@ -47,11 +47,17 @@ const Login = ({ login, createNotification }) => {
     };
     try {
       const response = await axios.post('/api/auth/login', data);
-      let user = {
-        username: state.username,
-        type: response.data.user_type
-      };
-      login(user);
+      if (response.data.company_type === undefined)
+        loginCustomer({
+          username: state.username,
+          userType: response.data.user_type,
+        });
+      else
+        loginCompany({
+          username: state.username,
+          userType: response.data.user_type,
+          companyType: response.data.company_type
+        });
       createNotification(successLogInNotification);
       history.push('/');
     } catch (error) {
@@ -150,7 +156,8 @@ const mapDispatchToProps = dispatch => ({
   createNotification: (config) => {
     dispatch(createNotification(config))
   },
-  login: (config) => dispatch(login(config))
+  loginCustomer: (config) => dispatch(loginCustomer(config)),
+  loginCompany: (config) => dispatch(loginCompany(config))
 })
 
 export default connect(

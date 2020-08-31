@@ -93,3 +93,102 @@ class ProfileCompanySchema(Schema):
 			)
 		]
   )
+
+
+class GeneralOfferSchema(Schema):
+	fixedTerm = fields.Float(
+		required=True,
+		error_messages={
+			"required": "Debes introducir un valor numérico",
+			"invalid": "Debes introducir un valor numérico"
+		},
+	)
+	variableTerm = fields.Float(
+		required=True,
+		error_messages={
+			"required": "Debes introducir un valor numérico",
+			"invalid": "Debes introducir un valor numérico"
+		},
+	)
+
+
+class HourlyOfferSchema(Schema):
+	fixedTerm = fields.Float(
+		required=True,
+		error_messages={
+			"required": "Debes introducir un valor numérico",
+			"invalid": "Debes introducir un valor numérico"
+		},
+	)
+	tip = fields.Float(
+		required=True,
+		error_messages={
+			"required": "Debes introducir un valor numérico",
+			"invalid": "Debes introducir un valor numérico"
+		},
+	)
+	valley = fields.Float(
+		required=True,
+		error_messages={
+			"required": "Debes introducir un valor numérico",
+			"invalid": "Debes introducir un valor numérico"
+		},
+	)
+
+
+class SuperValleyOfferSchema(Schema):
+	fixedTerm = fields.Float(
+		required=True,
+		error_messages={
+			"required": "Debes introducir un valor numérico",
+			"invalid": "Debes introducir un valor numérico"
+		},
+	)
+	tip = fields.Float(
+		required=True,
+		error_messages={
+			"required": "Debes introducir un valor numérico",
+			"invalid": "Debes introducir un valor numérico"
+		},
+	)
+	valley = fields.Float(
+		required=True,
+		error_messages={
+			"required": "Debes introducir un valor numérico",
+			"invalid": "Debes introducir un valor numérico"
+		},
+	)
+	superValley = fields.Float(
+		required=True,
+		error_messages={
+			"required": "Debes introducir un valor numérico",
+			"invalid": "Debes introducir un valor numérico"
+		},
+	)
+
+
+class OfferFeaturesSchema(Schema):
+	characteristic1 = fields.Str(
+		validate=[
+			validate.Length(
+				max=255,
+				error="Campo demasiado largo"
+			)
+		]
+	)
+	characteristic2 = fields.Str(
+		validate=[
+			validate.Length(
+				max=255,
+				error="Campo demasiado largo"
+			)
+		]
+	)
+	characteristic3 = fields.Str(
+		validate=[
+			validate.Length(
+				max=255,
+				error="Campo demasiado largo"
+			)
+		]
+	)

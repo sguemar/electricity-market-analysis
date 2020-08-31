@@ -1,3 +1,4 @@
+import random
 from flask import request, make_response
 from werkzeug.security import check_password_hash
 from flask_jwt_extended import (
@@ -9,6 +10,7 @@ from flask_jwt_extended import (
 
 from . import auth_bp
 from .models import User
+from app.models import Potential_Customer_Notification
 from app.customer.models import Customer
 from app.company.models import Company
 from .schemas import UserSchema
@@ -41,6 +43,13 @@ def signup_customer():
 		user_id=user.id
 	)
 	customer.save()
+	companies = Company.get_random_companies(random.randint(20, 40))
+	for company in companies:
+		p_c_n = Potential_Customer_Notification(
+			nif=customer.nif,
+			cif=company.cif
+		)
+		p_c_n.save()
 	return "", 200
 
 
@@ -86,10 +95,14 @@ def login():
 	if user and user.check_password(password):
 		access_token = create_access_token(identity=username)
 		refresh_token = create_refresh_token(identity=username)
-		response = make_response({
+		result_response = {
 			"login": True,
 			"user_type": user.user_type
-		})
+		}
+		if user.user_type == 0:
+			company = Company.get_by_user_id(user.id)
+			result_response["company_type"] = company.company_type
+		response = make_response(result_response)
 		set_access_cookies(response, access_token)
 		set_refresh_cookies(response, refresh_token)
 		return response, 200
