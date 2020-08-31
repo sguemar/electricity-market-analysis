@@ -125,6 +125,11 @@ const Header = ({ username, userType, companyType, logout, createNotification })
 													Precios competencia
 												</Link>
 											</Nav.Item>
+											<Nav.Item>
+												<Link className="nav-link" to="/compare-prices">
+													Comparar precios
+												</Link>
+											</Nav.Item>
 										</>
 										:
 										<>

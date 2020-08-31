@@ -17,6 +17,7 @@ import MyCustomers from '../MyCustomers/MyCustomers';
 import ReceivedOffers from '../Offers/ReceivedOffers';
 import AnalyzeOffers from '../Offers/AnalyzeOffers';
 import CustomerComparePrices from '../Offers/CustomerComparePrices';
+import TradingCompanyComparePrices from '../Offers/TradingCompanyComparePrices';
 import {
   BrowserRouter as Router,
   Route,
@@ -80,7 +81,7 @@ const App = ({ username, userType, companyType }) => {
                 }
               </Route>
               <Route path="/analyze-offers" exact>
-                <AnalyzeOffers companyType={companyType}/>
+                <AnalyzeOffers companyType={companyType} />
               </Route>
               <Route path="/compare-prices" exact>
                 {username
@@ -90,7 +91,14 @@ const App = ({ username, userType, companyType }) => {
                       ?
                       <CustomerComparePrices />
                       :
-                      <Redirect to="/" />
+                      <>
+                        {companyType === 0
+                          ?
+                          <TradingCompanyComparePrices />
+                          :
+                          <Redirect to="/" />
+                        }
+                      </>
                     }
                   </>
                   :
