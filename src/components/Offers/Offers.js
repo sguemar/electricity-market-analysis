@@ -119,6 +119,7 @@ const Offers = ({ createNotification }) => {
       createNotification(successRemoveOfferNotification);
       setDeleteOfferDialogState(false);
       setSelectedOfferId(false);
+      setOffersPage(1);
       getOffers();
     } catch (error) {
       createNotification(errorRemoveOfferNotification);
@@ -126,11 +127,10 @@ const Offers = ({ createNotification }) => {
     }
   }
 
-
   const getOffers = async () => {
     setLoading(true);
     try {
-      let response = await axios.get('/api/company/get-offers');
+      const response = await axios.get('/api/company/get-offers');
       const offers = response.data;
       if (offers.length === 0) {
         setOffers([]);
@@ -140,14 +140,21 @@ const Offers = ({ createNotification }) => {
         setOffers(offers);
         setOffersCount(Math.ceil(offers.length / 2));
       }
-      response = await axios.get('/api/company/get-offers-types');
-      setOffersTypes(response.data);
       setLoading(false);
     } catch (error) {
       console.log(error);
     }
   }
 
+  const getOffersTypes = async () => {
+    const response = await axios.get('/api/company/get-offers-types');
+    setOffersTypes(response.data);
+  };
+
+  useEffect(() => {
+    getOffers();
+    getOffersTypes()
+  }, []);
 
   useEffect(() => {
     if (offers.length !== 0) {
@@ -285,10 +292,6 @@ const Offers = ({ createNotification }) => {
     classes.editOfferButton,
     offerRateFilter
   ]);
-
-  useEffect(() => {
-    getOffers();
-  }, []);
 
   return (
     <Container maxWidth="lg">
