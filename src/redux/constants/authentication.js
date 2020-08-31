@@ -1,2 +1,3 @@
-export const LOGIN_USER = 'LOGIN_USER';
+export const LOGIN_CUSTOMER = 'LOGIN_CUSTOMER';
+export const LOGIN_COMPANY = 'LOGIN_COMPANY';
 export const LOGOUT_USER = 'LOGOUT_USER';

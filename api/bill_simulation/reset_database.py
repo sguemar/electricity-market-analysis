@@ -12,7 +12,8 @@ def get_database_connector(host, user, passwd, database):
 
 conector = get_database_connector("localhost", "root", "", "")
 cursor = conector.cursor()
-cursor.execute("CREATE DATABASE IF NOT EXISTS electricity_market_analysis")
+cursor.execute("DROP DATABASE IF EXISTS electricity_market_analysis")
+cursor.execute("CREATE DATABASE electricity_market_analysis")
 
 conector = get_database_connector(
     "localhost", "root", "", "electricity_market_analysis")
@@ -40,7 +41,7 @@ cursor.execute(
 			surname VARCHAR(255) NOT NULL,
 			email VARCHAR(255),
 			user_id INT,
-			FOREIGN KEY (user_id) REFERENCES users(id)
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 		);
 	"""
 )
@@ -71,7 +72,7 @@ cursor.execute(
 			company_type TINYINT NOT NULL,
 			phone INT NOT NULL,
 			user_id INT,
-			FOREIGN KEY (user_id) REFERENCES users(id)
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 		);
 	"""
 )
@@ -91,7 +92,7 @@ cursor.execute(
 			conditions LONGTEXT,
 			cif VARCHAR(9),
 			file LONGBLOB,
-			FOREIGN KEY (cif) REFERENCES companies(cif)
+			FOREIGN KEY (cif) REFERENCES companies(cif) ON DELETE SET NULL
 		);
 	"""
 )
@@ -114,7 +115,7 @@ cursor.execute(
 			contract_reference VARCHAR(255) DEFAULT '',
 			contract_number VARCHAR(255) DEFAULT '',
 			document LONGBLOB,
-			FOREIGN KEY (contract_number) REFERENCES contracts(contract_number)
+			FOREIGN KEY (contract_number) REFERENCES contracts(contract_number) ON DELETE CASCADE
 		);
 	"""
 )
@@ -129,9 +130,9 @@ cursor.execute(
 			init_date DATE,
 			end_date DATE,
 			CONSTRAINT PK_customer_dwelling_contract PRIMARY KEY (nif, cups, contract_number),
-			FOREIGN KEY (nif) REFERENCES customers(nif),
-			FOREIGN KEY (cups) REFERENCES dwellings(cups),
-			FOREIGN KEY (contract_number) REFERENCES contracts(contract_number)
+			FOREIGN KEY (nif) REFERENCES customers(nif) ON DELETE CASCADE,
+			FOREIGN KEY (cups) REFERENCES dwellings(cups) ON DELETE CASCADE,
+			FOREIGN KEY (contract_number) REFERENCES contracts(contract_number) ON DELETE CASCADE
 		);
 	"""
 )
@@ -145,8 +146,78 @@ cursor.execute(
 			init_date DATE,
 			end_date DATE,
 			CONSTRAINT PK_distributor_dwelling PRIMARY KEY (cif, cups, init_date),
-			FOREIGN KEY (cif) REFERENCES companies(cif),
+			FOREIGN KEY (cif) REFERENCES companies(cif) ON DELETE CASCADE,
 			FOREIGN KEY (cups) REFERENCES dwellings(cups)
+		);
+	"""
+)
+
+cursor.execute(
+    """
+		CREATE TABLE IF NOT EXISTS offers_types
+		(
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			rate VARCHAR(6) NOT NULL,
+			name VARCHAR(255) NOT NULL
+		);
+	"""
+)
+
+cursor.execute(
+    """
+		CREATE TABLE IF NOT EXISTS offers
+		(
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			offer_type INT DEFAULT 0 NOT NULL,
+			fixed_term FLOAT DEFAULT 0 NOT NULL,
+			variable_term FLOAT DEFAULT 0,
+			tip FLOAT DEFAULT 0,
+			valley FLOAT DEFAULT 0,
+			super_valley FLOAT DEFAULT 0,
+			cif VARCHAR(9) NOT NULL,
+			FOREIGN KEY (cif) REFERENCES companies(cif) ON DELETE CASCADE,
+			FOREIGN KEY (offer_type) REFERENCES offers_types(id) ON DELETE CASCADE
+		);
+	"""
+)
+
+cursor.execute(
+    """
+		CREATE TABLE IF NOT EXISTS offers_features
+		(
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			text VARCHAR(255) NOT NULL,
+			offer_id INT NOT NULL,
+			FOREIGN KEY (offer_id) REFERENCES offers(id) ON DELETE CASCADE
+		);
+	"""
+)
+
+cursor.execute(
+    """
+		CREATE TABLE IF NOT EXISTS potentials_customers_notifications
+		(
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			nif VARCHAR(9) NOT NULL,
+			cif VARCHAR(9) NOT NULL,
+			FOREIGN KEY (nif) REFERENCES customers(nif) ON DELETE CASCADE,
+			FOREIGN KEY (cif) REFERENCES companies(cif) ON DELETE CASCADE
+		);
+	"""
+)
+
+cursor.execute(
+    """
+		CREATE TABLE IF NOT EXISTS offers_notifications
+		(
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			nif VARCHAR(9) NOT NULL,
+			cif VARCHAR(9) NOT NULL,
+			offer_id INT NOT NULL,
+			CONSTRAINT UC_Offers_Notifications UNIQUE (nif, cif, offer_id),
+			FOREIGN KEY (nif) REFERENCES customers(nif) ON DELETE CASCADE,
+			FOREIGN KEY (cif) REFERENCES companies(cif) ON DELETE CASCADE,
+			FOREIGN KEY (offer_id) REFERENCES offers(id) ON DELETE CASCADE
 		);
 	"""
 )

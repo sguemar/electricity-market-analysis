@@ -33,3 +33,27 @@ class CustomerSchema(Schema):
 		]
   )
 	email = fields.Email(error_messages={"invalid": "Introduce un email válido"})
+
+
+class ProfileCustomerSchema(Schema):
+	name = fields.Str(
+		required=True,
+		error_messages={"required": "Introduce tu nombre"},
+		validate=[
+			validate.Length(
+				max=255,
+				error="Campo demasiado largo"
+			)
+		]
+	)
+	surname = fields.Str(
+		required=True,
+		error_messages={"required": "Introduce tus apellidos"},
+		validate=[
+			validate.Length(
+				max=255,
+				error="Campo demasiado largo"
+			)
+		]
+	)
+	email = fields.Email(error_messages={"invalid": "Introduce un email válido"})

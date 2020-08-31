@@ -1,8 +1,15 @@
-import { LOGIN_USER, LOGOUT_USER } from '../constants/authentication';
+import { LOGIN_CUSTOMER, LOGIN_COMPANY, LOGOUT_USER } from '../constants/authentication';
 
-export const login = (user) => {
+export const loginCustomer = (user) => {
   return {
-    type: LOGIN_USER,
+    type: LOGIN_CUSTOMER,
+    payload: user
+  };
+}
+
+export const loginCompany = (user) => {
+  return {
+    type: LOGIN_COMPANY,
     payload: user
   };
 }
