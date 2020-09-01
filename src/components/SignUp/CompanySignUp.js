@@ -38,7 +38,65 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  formControl: {
+    minWidth: 100,
+  },
 }));
+
+const regions = [
+  "Almería",
+  "Baleares",
+  "Valladolid",
+  "León",
+  "Melilla",
+  "Palencia",
+  "Cantabria",
+  "Navarra",
+  "Ceuta",
+  "Cuenca",
+  "Álava",
+  "Gipuzkoa",
+  "Granada",
+  "Murcia",
+  "Burgos",
+  "Salamanca",
+  "Zamora",
+  "Huesca",
+  "Madrid",
+  "Guadalajara",
+  "Segovia",
+  "Sevilla",
+  "Tarragona",
+  "Teruel",
+  "Valencia",
+  "Bizkaia",
+  "Ourense",
+  "Lleida",
+  "Zaragoza",
+  "Girona",
+  "Albacete",
+  "Alicante",
+  "Ávila",
+  "Cáceres",
+  "Toledo",
+  "Badajoz",
+  "Córdoba",
+  "Huelva",
+  "A Coruña",
+  "Málaga",
+  "Pontevedra",
+  "La Rioja",
+  "Soria",
+  "Barcelona",
+  "Cádiz",
+  "Asturias",
+  "Castellón",
+  "Ciudad Real",
+  "Jaén",
+  "Lugo",
+  "Santa Cruz de Tenerife",
+  "Las Palmas",
+]
 
 const CompanySignUp = ({ createNotification }) => {
   const classes = useStyles();
@@ -54,7 +112,7 @@ const CompanySignUp = ({ createNotification }) => {
     url: '',
     email: '',
     phone: '',
-    address: ''
+    address: 'Almería'
   };
 
   const [formState, dispatchFormState] = useReducer(
@@ -224,17 +282,25 @@ const CompanySignUp = ({ createNotification }) => {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="address"
-                label="Dirección"
-                name="address"
-                onChange={handleChange}
-                error={formErrorState.address ? true : false}
-                helperText={formErrorState.address}
-              />
+              <FormControl fullWidth variant="outlined" className={classes.formControl}>
+                <InputLabel id="select-company-address">Dirección</InputLabel>
+                <Select
+                  required
+                  labelId="select-company-address"
+                  id="address"
+                  name="address"
+                  defaultValue="Almería"
+                  value={formState.address}
+                  onChange={handleChange}
+                  label="Dirección"
+                >
+                  {regions.map((region, index) => {
+                    return (
+                      <MenuItem key={index} value={region}>{region}</MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
             </Grid>
           </Grid>
           <Button

@@ -41,16 +41,6 @@ class CompanySchema(Schema):
 			)
 		]
   )
-	address = fields.Str(
-    required=True,
-		error_messages={"required": "Introduce la dirección de la empresa"},
-		validate=[
-			validate.Length(
-				max=255,
-				error="Campo demasiado largo"
-			)
-		]
-  )
 
 
 class ProfileCompanySchema(Schema):
