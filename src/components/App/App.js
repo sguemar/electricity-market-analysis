@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Header from '../Header/Header';
 import Footer from '../Footer/Footer';
 import Home from '../Home/Home';
@@ -25,10 +25,17 @@ import {
   Redirect
 } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Notify } from 'react-redux-notify';
+import { Notify, removeAllNotifications } from 'react-redux-notify';
 
 
-const App = ({ username, userType, companyType }) => {
+const App = ({ username, userType, companyType, removeAllNotifications }) => {
+
+  useEffect(() => {
+    window.onunload = () => {
+      removeAllNotifications();
+    }
+  });
+
   return (
     <div className="app">
       <Router>
@@ -181,4 +188,10 @@ const mapStateToProps = state => {
   return authentication.loggedUser;
 };
 
-export default connect(mapStateToProps)(App);
+const mapDispatchToProps = dispatch => ({
+	removeAllNotifications: (config) => {
+		dispatch(removeAllNotifications(config))
+	},
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
