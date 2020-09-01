@@ -13,13 +13,22 @@ mydb = mysql.connector.connect(
 )
 cursor = mydb.cursor()
 
+cifs = set()
+
 streets = open("bill_simulation/text_data/streets.txt", encoding='utf8').readlines()
+populations = open("bill_simulation/text_data/populations.txt", encoding='utf8').readlines()
 
 def create_trading_company(trading_company_info):
 	trading_company = {}
-	trading_company['cif'] = random.choice(string.ascii_uppercase) + str(random.randint(10**7, 10**8-1))
+	population = random.choice(populations).split(";")
+
+	cif = random.choice(string.ascii_uppercase) + str(random.randint(10**7, 10**8-1))
+	while cif in cifs:
+		cif = (str(random.randint(10**7, 10**8-1)) + random.choice(string.ascii_uppercase))
+	trading_company['cif'] = cif
+	cifs.add(cif)
 	trading_company['name'] = trading_company_info[1]
-	trading_company['address'] = trading_company_info[4]
+	trading_company['address'] = population[0].replace('"','')
 	domain = trading_company['name'].split(',')[0].replace(' ', '').replace('.', '').lower()
 	trading_company['url'] = "www." + domain + ".es"
 	trading_company['email'] = domain + "@gmail.com"
@@ -29,9 +38,16 @@ def create_trading_company(trading_company_info):
 
 def create_distributor(distributor_info):
 	distributor = {}
-	distributor['cif'] = random.choice(string.ascii_uppercase) + str(random.randint(10**7, 10**8-1))
+	population = random.choice(populations).split(";")
+
+	cif = random.choice(string.ascii_uppercase) + str(random.randint(10**7, 10**8-1))
+	while cif in cifs:
+		cif = (str(random.randint(10**7, 10**8-1)) + random.choice(string.ascii_uppercase))
+	distributor['cif'] = cif
+	cifs.add(cif)
+
 	distributor['name'] = distributor_info[2]
-	distributor['address'] = (random.choice(streets)).replace('\n','')
+	distributor['address'] = population[0].replace('"','')
 	domain = distributor['name'].split(',')[0].replace(' ', '').replace('.', '').lower()
 	distributor['url'] = "www." + domain + ".es"
 	distributor['email'] = domain + "@gmail.com"
@@ -184,7 +200,6 @@ def insert_offer_feature(offer_feature):
 	mydb.commit()
 
 def create_companies():
-
 	offers_features_text = open("bill_simulation/text_data/offers_features.txt", encoding='utf8').readlines()
 	
 	# Create trading companies
