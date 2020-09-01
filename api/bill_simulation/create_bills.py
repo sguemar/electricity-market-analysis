@@ -15,15 +15,16 @@ mydb = mysql.connector.connect(
 cursor = mydb.cursor()
 
 
-CUSTOMERS_NUMBER = 1
+CUSTOMERS_NUMBER = 5
 INVOICES_NUMBER = 12
-INIT_CONTRACTS_YEAR = 2000
+INIT_CONTRACTS_YEAR = 2015
 INVOICE_CYCLE = datetime.timedelta(days=28)
 
 kwh_base_price = 0.0398
 kwh_annual_increase = 0.01078
 user_names = set()
 nifs = set()
+selected_trading_companies_cifs = set()
 
 def get_random_date(year):
    try:
@@ -377,12 +378,11 @@ def insert_potential_customer_notification(nif, cif):
    cursor.execute(sql, val)
    mydb.commit()
 
-def create_potential_customers(cif):
-   for _ in range(random.randint(2, 6)):
-      customer = create_customer()
-      user_id = insert_user(customer)
-      insert_customer(customer, user_id)
-      insert_potential_customer_notification(customer["nif"], cif)
+def create_potential_customer(cif):
+   customer = create_customer()
+   user_id = insert_user(customer)
+   insert_customer(customer, user_id)
+   insert_potential_customer_notification(customer["nif"], cif)
 
 if __name__ == '__main__':
 
@@ -415,6 +415,15 @@ if __name__ == '__main__':
       )
 
       trading_company = random.choice(trading_companies)
+      if len(selected_trading_companies_cifs) > 0:
+         if random.random() < 0.5:
+            cif = random.choice(tuple(selected_trading_companies_cifs))
+            for item_trading_company in trading_companies:
+               if item_trading_company["cif"] == cif:
+                  trading_company = item_trading_company
+                  break
+
+      selected_trading_companies_cifs.add(trading_company["cif"])
 
       kwh_price = get_kwh_base_price(contract_year)
 
@@ -430,6 +439,7 @@ if __name__ == '__main__':
          # The customer changes trading company
          if random.random() < 0.2:
             trading_company = random.choice(trading_companies)
+            selected_trading_companies_cifs.add(trading_company["cif"])
 
          # The customer changes dwelling
          if random.random() < 0.1:
@@ -475,7 +485,7 @@ if __name__ == '__main__':
          contract_year = current_date.year
          contract_init_date = current_date
          kwh_price += kwh_annual_increase
-         create_potential_customers(trading_company["cif"])
+         create_potential_customer(trading_company["cif"])
          
 
       
