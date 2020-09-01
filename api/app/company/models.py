@@ -49,6 +49,10 @@ class Company(db.Model, SerializerMixin):
 	@staticmethod
 	def get_all_trading_companies():
 		return Company.query.filter_by(company_type=0).all()
+		
+	@staticmethod
+	def get_all():
+		return Company.query.all()
 
 class Offer(db.Model, SerializerMixin):
 

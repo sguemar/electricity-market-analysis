@@ -138,6 +138,11 @@ const Header = ({ username, userType, companyType, logout, createNotification })
 													Precios comercializadoras
 												</Link>
 											</Nav.Item>
+											<Nav.Item>
+												<Link className="nav-link" to="/companies-per-region">
+													Empresas por región
+												</Link>
+											</Nav.Item>
 										</>
 									}
 								</>

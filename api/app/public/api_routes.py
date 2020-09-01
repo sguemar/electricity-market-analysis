@@ -3,11 +3,74 @@ from flask import jsonify
 from . import public_bp
 from app.company.models import Company, Offer, OfferType, OfferFeature
 
+regions = {
+	"Almería": "es-al",
+	"Baleares": "es-pm",
+	"Valladolid": "es-va",
+	"León": "es-le",
+	"Melilla": "es-me",
+	"Palencia": "es-p",
+	"Cantabria": "es-s",
+	"Navarra": "es-na",
+	"Ceuta": "es-ce",
+	"Cuenca": "es-cu",
+	"Álava": "es-vi",
+	"Gipuzkoa": "es-ss",
+	"Granada": "es-gr",
+	"Murcia": "es-mu",
+	"Burgos": "es-bu",
+	"Salamanca": "es-sa",
+	"Zamora": "es-za",
+	"Huesca": "es-hu",
+	"Madrid": "es-m",
+	"Guadalajara": "es-gu",
+	"Segovia": "es-sg",
+	"Sevilla": "es-se",
+	"Tarragona": "es-t",
+	"Teruel": "es-te",
+	"Valencia": "es-v",
+	"Bizkaia": "es-bi",
+	"Ourense": "es-or",
+	"Lleida": "es-l",
+	"Zaragoza": "es-z",
+	"Girona": "es-gi",
+	"Albacete": "es-ab",
+	"Alicante": "es-a",
+	"Ávila": "es-av",
+	"Cáceres": "es-cc",
+	"Toledo": "es-to",
+	"Badajoz": "es-ba",
+	"Córdoba": "es-co",
+	"Huelva": "es-h",
+	"A Coruña": "es-c",
+	"Málaga": "es-ma",
+	"Pontevedra": "es-po",
+	"La Rioja": "es-lo",
+	"Soria": "es-so",
+	"Barcelona": "es-b",
+	"Cádiz": "es-ca",
+	"Asturias": "es-o",
+	"Castellón": "es-cs",
+	"Ciudad Real": "es-cr",
+	"Jaén": "es-j",
+	"Lugo": "es-lu",
+	"Santa Cruz de Tenerife": "es-tf",
+	"Las Palmas": "es-gc",
+}
 
 @public_bp.route("/get-all-trading-companies")
 def get_all_trading_companies():
 	companies = __get_all_trading_companies()
 	return jsonify(companies)
+
+
+@public_bp.route("/get-all-companies")
+def get_all_companies():
+	regions_result, companies_result = __get_all_companies()
+	return jsonify({
+		"regions_result": regions_result,
+		"companies_result": companies_result
+	})
 
 
 @public_bp.route("/get-trading-company-offers/<string:cif>")
@@ -41,3 +104,22 @@ def __get_all_trading_companies():
 	for company in companies:
 		result.append(company.to_dict())
 	return result
+
+
+def __get_all_companies():
+	regions_result = []
+	_regions = {}
+	companies_result = []
+	companies = Company.get_all()
+	for company in companies:
+		companies_result.append(company.to_dict())
+		if company.address in _regions:
+			_regions[company.address] = _regions[company.address] + 1
+		else:
+			_regions[company.address] = 1
+	for key, value in _regions.items():
+		regions_result.append({
+			"hc-key": regions[key],
+			"value": value
+		})
+	return regions_result, companies_result

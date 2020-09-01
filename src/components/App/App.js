@@ -18,6 +18,7 @@ import ReceivedOffers from '../Offers/ReceivedOffers';
 import AnalyzeOffers from '../Offers/AnalyzeOffers';
 import CustomerComparePrices from '../Offers/CustomerComparePrices';
 import TradingCompanyComparePrices from '../Offers/TradingCompanyComparePrices';
+import CompaniesPerRegion from '../CompaniesPerRegion/CompaniesPerRegion';
 import {
   BrowserRouter as Router,
   Route,
@@ -59,6 +60,9 @@ const App = ({ username, userType, companyType, removeAllNotifications }) => {
               </Route>
               <Route path="/signup-company" exact>
                 {username ? <Redirect to="/" /> : <CompanySignUp />}
+              </Route>
+              <Route path="/companies-per-region" exact>
+                {username ? <Redirect to="/" /> : <CompaniesPerRegion />}
               </Route>
               <Route path="/profile" exact>
                 {username ?
