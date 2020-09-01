@@ -91,7 +91,10 @@ const AnalyzeOffers = ({ companyType }) => {
   const [offersTypes, setOffersTypes] = useState([]);
 
 
-  const handleChangeOfferRateFilter = (event) => setOfferRateFilter(event.target.value);
+  const handleChangeOfferRateFilter = (event) => {
+    setOfferRateFilter(event.target.value);
+    setOffersPage(1);
+  } 
 
   const handleOffersPageChange = (event, value) => setOffersPage(value);
 
