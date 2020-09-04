@@ -54,6 +54,7 @@ class Company(db.Model, SerializerMixin):
 	def get_all():
 		return Company.query.all()
 
+
 class Offer(db.Model, SerializerMixin):
 
 	__tablename__ = "offers"

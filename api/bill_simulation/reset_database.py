@@ -221,3 +221,16 @@ cursor.execute(
 		);
 	"""
 )
+
+cursor.execute(
+    """
+		CREATE TABLE IF NOT EXISTS trading_company_prices
+		(
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			year INT NOT NULL,
+			price FLOAT DEFAULT 0,
+			cif VARCHAR(9) NOT NULL,
+			FOREIGN KEY (cif) REFERENCES companies(cif) ON DELETE CASCADE
+		);
+	"""
+)

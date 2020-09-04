@@ -20,6 +20,30 @@ import {
 // Load Highcharts modules
 require('highcharts/modules/map')(Highcharts);
 
+const initialHistoricalGraphOptions = {
+  series: [],
+  xAxis: {
+    title: {
+      style: {
+        fontSize: '14px',
+      },
+    },
+  },
+  yAxis: {
+    title: {
+      style: {
+        fontSize: '14px',
+      },
+      text: 'Precio (€)'
+    }
+  },
+  tooltip: {
+    borderRadius: 10,
+    formatter: function () {
+      return '<b>' + this.y + '</b> €';
+    }
+  }
+};
 
 const CompaniesPerRegion = () => {
 
@@ -85,6 +109,8 @@ const CompaniesPerRegion = () => {
     ]
   });
   const [selectedRegion, setSelectedRegion] = useState('');
+  const [historicalPrices, setHistoricalPrices] = useState({});
+  const [historicalGraphOptions, setHistoricalGraphOptions] = useState(initialHistoricalGraphOptions);
   const [companies, setCompanies] = useState([]);
   const [companiesPage, setCompaniesPage] = useState(1);
   const [companiesCount, setCompaniesCount] = useState(0);
@@ -107,8 +133,19 @@ const CompaniesPerRegion = () => {
     }
   };
 
+  const getHistocalPrices = async () => {
+    try {
+      const response = await axios.get('/api/public/get-historical-prices');
+      setHistoricalPrices(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getAllCompanies();
+    getHistocalPrices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -174,6 +211,31 @@ const CompaniesPerRegion = () => {
     companiesPage
   ]);
 
+  useEffect(() => {
+    if (selectedRegion !== '') {
+      let seriesData = historicalGraphOptions.series;
+      if (seriesData.length === 3)
+        seriesData.shift();
+      seriesData.push({
+        type: 'line',
+        name: selectedRegion,
+        data: Object.values(historicalPrices[selectedRegion])
+      });
+      setHistoricalGraphOptions({
+        ...historicalGraphOptions,
+        title: {
+          text: "Media de precios anuales"
+        },
+        series: seriesData,
+        xAxis: {
+          categories: Object.keys(historicalPrices[selectedRegion])
+        }
+      });
+    }
+  }, [
+    selectedRegion
+  ]);
+
   return (
     <Container maxWidth="xl">
       <Box my={4}>
@@ -210,6 +272,17 @@ const CompaniesPerRegion = () => {
               <Typography variant="h5" align="center">Elige una región para ver sus empresas</Typography>
             }
           </Box>
+        </Grid>
+        <Grid item xs={12}>
+          {historicalGraphOptions.series.length !== 0
+            ?
+            <HighchartsReact
+              highcharts={Highcharts}
+              options={historicalGraphOptions}
+            />
+            :
+            <Typography variant="h6" align="center">Elige una o varias regiones para visualizar sus precios en el tiempo.</Typography>
+          }
         </Grid>
       </Grid>
     </Container>

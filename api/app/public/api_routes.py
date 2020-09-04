@@ -2,6 +2,7 @@ from flask import jsonify
 
 from . import public_bp
 from app.company.models import Company, Offer, OfferType, OfferFeature
+from .models import	TradingCompanyPrices
 
 regions = {
 	"Almería": "es-al",
@@ -85,6 +86,28 @@ def get_trading_company_offers(cif):
 		})
 	return jsonify(result)
 
+
+@public_bp.route("/get-historical-prices")
+def get_historical_prices():
+	historical_prices = TradingCompanyPrices.get_all()
+	result = {}
+	for historical_price in historical_prices:
+		company = Company.get_by_cif(historical_price.cif)
+		if company.address in result:
+			year = historical_price.year
+			if year in result[company.address]:
+				year_prices = result[company.address][year]
+				year_prices.append(historical_price.price)
+			else:
+				result[company.address][year] = [historical_price.price]
+		else:
+			result[company.address] = {
+				historical_price.year: [historical_price.price]
+			}
+	for address in result:
+		for year in result[address]:
+			result[address][year] = round(sum(result[address][year]) / len(result[address][year]), 4)
+	return result
 
 def __get_offer_info(offer):
 	result = offer.to_dict()
