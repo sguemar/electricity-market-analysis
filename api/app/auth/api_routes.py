@@ -144,7 +144,6 @@ def validateCompany(data):
 		"url": data["url"],
 		"email": data["email"],
 		"phone": data["phone"],
-		"address": data["address"],
 	}
 	company = {k: v for k, v in company.items() if v}
 	return CompanySchema().validate(company)

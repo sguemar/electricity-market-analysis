@@ -133,11 +133,29 @@ const Header = ({ username, userType, companyType, logout, createNotification })
 										</>
 										:
 										<>
-											<Nav.Item>
-												<Link className="nav-link" to="/analyze-offers">
-													Precios comercializadoras
-												</Link>
-											</Nav.Item>
+											{companyType === 1
+												?
+												<>
+													<Nav.Item>
+														<Link className="nav-link" to="/analyze-offers">
+															Precios comercializadoras
+														</Link>
+													</Nav.Item>
+												</>
+												:
+												<>
+													<Nav.Item>
+														<Link className="nav-link" to="/analyze-offers">
+															Precios comercializadoras
+														</Link>
+													</Nav.Item>
+													<Nav.Item>
+														<Link className="nav-link" to="/companies-per-region">
+															Empresas por región
+														</Link>
+													</Nav.Item>
+												</>
+											}
 										</>
 									}
 								</>

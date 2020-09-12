@@ -13,13 +13,22 @@ mydb = mysql.connector.connect(
 )
 cursor = mydb.cursor()
 
+cifs = set()
+
 streets = open("bill_simulation/text_data/streets.txt", encoding='utf8').readlines()
+populations = open("bill_simulation/text_data/populations.txt", encoding='utf8').readlines()
 
 def create_trading_company(trading_company_info):
 	trading_company = {}
-	trading_company['cif'] = random.choice(string.ascii_uppercase) + str(random.randint(10**7, 10**8-1))
+	population = random.choice(populations).split(";")
+
+	cif = random.choice(string.ascii_uppercase) + str(random.randint(10**7, 10**8-1))
+	while cif in cifs:
+		cif = (str(random.randint(10**7, 10**8-1)) + random.choice(string.ascii_uppercase))
+	trading_company['cif'] = cif
+	cifs.add(cif)
 	trading_company['name'] = trading_company_info[1]
-	trading_company['address'] = trading_company_info[4]
+	trading_company['address'] = population[0].replace('"','')
 	domain = trading_company['name'].split(',')[0].replace(' ', '').replace('.', '').lower()
 	trading_company['url'] = "www." + domain + ".es"
 	trading_company['email'] = domain + "@gmail.com"
@@ -29,9 +38,16 @@ def create_trading_company(trading_company_info):
 
 def create_distributor(distributor_info):
 	distributor = {}
-	distributor['cif'] = random.choice(string.ascii_uppercase) + str(random.randint(10**7, 10**8-1))
+	population = random.choice(populations).split(";")
+
+	cif = random.choice(string.ascii_uppercase) + str(random.randint(10**7, 10**8-1))
+	while cif in cifs:
+		cif = (str(random.randint(10**7, 10**8-1)) + random.choice(string.ascii_uppercase))
+	distributor['cif'] = cif
+	cifs.add(cif)
+
 	distributor['name'] = distributor_info[2]
-	distributor['address'] = (random.choice(streets)).replace('\n','')
+	distributor['address'] = population[0].replace('"','')
 	domain = distributor['name'].split(',')[0].replace(' ', '').replace('.', '').lower()
 	distributor['url'] = "www." + domain + ".es"
 	distributor['email'] = domain + "@gmail.com"
@@ -183,27 +199,62 @@ def insert_offer_feature(offer_feature):
 	cursor.execute(sql, val)
 	mydb.commit()
 
-def create_companies():
+def create_trading_company_prices(price, year, cif):
+   sql = """
+            INSERT INTO trading_company_prices
+            (
+               year,
+               price,
+               cif
+            )
+            VALUES (%s, %s, %s);
+         """
+   val = (
+         year,
+         price,
+         cif,
+      )
+   cursor.execute(sql, val)
+   mydb.commit()
 
+def create_companies():
 	offers_features_text = open("bill_simulation/text_data/offers_features.txt", encoding='utf8').readlines()
-	
-	# Create trading companies
+
+	# CREATE TRADING COMPANIES
 	with open('bill_simulation/text_data/trading_companies.txt', encoding='utf8') as trading_companies_file:
 		for trading_company in trading_companies_file:
+			# CREATE TRADING COMPANY
 			company = create_trading_company(trading_company.split(";"))
 			user_id = insert_user(company, 0)
 			insert_company(company, user_id)
+
+			# CREATE SIMULATED PRICES
+			year = 2000
+			kwh_price = random.uniform(0.0243, 0.0538)
+			while year < 2020:
+				kwh_annual_increase = random.uniform(0.00495, 0.02028)
+				create_trading_company_prices(
+					kwh_price,
+					year,
+					company["cif"]
+				)
+				kwh_price += kwh_annual_increase
+				year += 1
+
+			# CREATE OFFERS
 			for i in range(9):
 				offer = create_offer(i + 1, company["cif"])
 				offer_id = insert_offer(offer)
+				# CREATE OFFERS FEATURES
 				for _ in range(random.randint(1, 3)):
 					offer_feature = create_offer_feature(offer_id, offers_features_text)
 					insert_offer_feature(offer_feature)
 
 
-	# Create distributors
+	# CREATE DISTRIBUTORS
 	with open('bill_simulation/text_data/distributors.txt', encoding='utf8') as distributors_file:
 		for distributor in distributors_file:
+			# CREATE DISTRIBUTOR
 			company = create_distributor(distributor.split(";"))
 			user_id = insert_user(company, 0)
 			insert_company(company, user_id)
