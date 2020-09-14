@@ -298,17 +298,17 @@ const Invoices = ({ createNotification }) => {
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={4}>
                   <ListItem>
-                    <ListItemText primary="Dirección" secondary={contract.contract_data.address} />
+                    <ListItemText primary="Dirección" secondary={contract.contract_data.address || "-"} />
                   </ListItem>
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <ListItem>
-                    <ListItemText primary="Nº contrato" secondary={contractNumber} />
+                    <ListItemText primary="Nº contrato" secondary={contractNumber || "-"} />
                   </ListItem>
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <ListItem>
-                    <ListItemText primary="Fecha inicio" secondary={contract.contract_data.init_date} />
+                    <ListItemText primary="Fecha inicio" secondary={contract.contract_data.init_date || "-"} />
                   </ListItem>
                 </Grid>
               </Grid>
@@ -317,27 +317,27 @@ const Invoices = ({ createNotification }) => {
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={4}>
                   <ListItem>
-                    <ListItemText primary="Potencia contratada" secondary={contract.contract_data.contracted_power + " kWh"} />
+                    <ListItemText primary="Potencia contratada" secondary={contract.contract_data.contracted_power + " kWh" || "-"} />
                   </ListItem>
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <ListItem>
-                    <ListItemText primary="Peaje acceso" secondary={contract.contract_data.toll_access} />
+                    <ListItemText primary="Peaje acceso" secondary={contract.contract_data.toll_access || "-"} />
                   </ListItem>
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <ListItem>
-                    <ListItemText primary="Fecha fin" secondary={contract.contract_data.end_date} />
+                    <ListItemText primary="Fecha fin" secondary={contract.contract_data.end_date || "-"} />
                   </ListItem>
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <ListItem>
-                    <ListItemText primary="CNAE" secondary={contract.contract_data.CNAE} />
+                    <ListItemText primary="CNAE" secondary={contract.contract_data.CNAE || "-"} />
                   </ListItem>
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <ListItem>
-                    <ListItemText primary="Descripción" secondary={contract.contract_data.description ? contract.contract_data.description : "-"} />
+                    <ListItemText primary="Descripción" secondary={contract.contract_data.description || "-"} />
                   </ListItem>
                 </Grid>
               </Grid>
@@ -383,12 +383,12 @@ const Invoices = ({ createNotification }) => {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={4}>
                 <ListItem>
-                  <ListItemText primary="Nº de factura" secondary={invoice.invoice_number} />
+                  <ListItemText primary="Nº de factura" secondary={invoice.invoice_number || "-"} />
                 </ListItem>
               </Grid>
               <Grid item xs={12} sm={4}>
                 <ListItem>
-                  <ListItemText primary="Fecha de inicio" secondary={invoice.init_date} />
+                  <ListItemText primary="Fecha de inicio" secondary={invoice.init_date || "-"} />
                 </ListItem>
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -412,22 +412,22 @@ const Invoices = ({ createNotification }) => {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <ListItem>
-                  <ListItemText primary="Energía consumida" secondary={invoice.consumed_energy + " kWs"} />
+                  <ListItemText primary="Energía consumida" secondary={invoice.consumed_energy + " kWs" || "-"} />
                 </ListItem>
               </Grid>
               <Grid item xs={12} sm={4}>
                 <ListItem>
-                  <ListItemText primary="Fecha de emisión" secondary={invoice.issue_date} />
+                  <ListItemText primary="Fecha de emisión" secondary={invoice.issue_date || "-"} />
                 </ListItem>
               </Grid>
               <Grid item xs={12} sm={4}>
                 <ListItem>
-                  <ListItemText primary="Fecha de cargo" secondary={invoice.charge_date} />
+                  <ListItemText primary="Fecha de cargo" secondary={invoice.charge_date || "-"} />
                 </ListItem>
               </Grid>
               <Grid item xs={12} sm={4}>
                 <ListItem>
-                  <ListItemText primary="Fecha de fin" secondary={invoice.end_date} />
+                  <ListItemText primary="Fecha de fin" secondary={invoice.end_date || "-"} />
                 </ListItem>
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -437,7 +437,7 @@ const Invoices = ({ createNotification }) => {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <ListItem>
-                  <ListItemText primary="Referencia contrato" secondary={invoice.contract_reference} />
+                  <ListItemText primary="Referencia contrato" secondary={invoice.contract_reference || "-"} />
                 </ListItem>
               </Grid>
               <Grid item xs={12}>
