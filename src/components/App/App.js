@@ -74,7 +74,13 @@ const App = ({ username, userType, companyType, removeAllNotifications }) => {
                 }
               </Route>
               <Route path="/consumptions" exact>
-                {username ? <Consumptions /> : <Login />}
+                {username ?
+                  <>
+                    {userType === 1 ? <Consumptions /> : <Redirect to="/" />}
+                  </>
+                  :
+                  <Login />
+                }
               </Route>
               <Route path="/received-offers" exact>
                 {username
@@ -193,9 +199,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-	removeAllNotifications: (config) => {
-		dispatch(removeAllNotifications(config))
-	},
+  removeAllNotifications: (config) => {
+    dispatch(removeAllNotifications(config))
+  },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
