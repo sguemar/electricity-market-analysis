@@ -2,7 +2,7 @@
 Program for simulating electricity bills
 '''
 
-import random, string, datetime, mysql.connector
+import random, string, datetime, mysql.connector, sys
 from werkzeug.security import generate_password_hash
 
 
@@ -15,8 +15,6 @@ mydb = mysql.connector.connect(
 cursor = mydb.cursor()
 
 
-CUSTOMERS_NUMBER = 20
-INVOICES_NUMBER = 12
 INIT_CONTRACTS_YEAR = 2012
 INVOICE_CYCLE = datetime.timedelta(days=28)
 
@@ -400,6 +398,15 @@ def create_trading_company_prices(price, year, cif):
    mydb.commit()
 
 if __name__ == '__main__':
+   if len(sys.argv) < 2:
+      sys.exit("Debes añadir un parámetro indicando el número de clientes con facturas simuladas que deseas crear.")
+   
+   try:
+      CUSTOMERS_NUMBER = int(sys.argv[1])
+   except:
+      sys.exit("El parámetro a introducir debe ser un número mayor que cero")
+
+   INVOICES_NUMBER = 12
 
    names = open("bill_simulation/text_data/names.txt", encoding='utf8').readlines()
    surnames = open("bill_simulation/text_data/surnames.txt", encoding='utf8').readlines()
