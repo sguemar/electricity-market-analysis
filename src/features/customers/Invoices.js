@@ -317,7 +317,7 @@ const Invoices = ({ createNotification }) => {
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={4}>
                   <ListItem>
-                    <ListItemText primary="Potencia contratada" secondary={contract.contract_data.contracted_power + " kWh" || "-"} />
+                    <ListItemText primary="Potencia contratada" secondary={contract.contract_data.contracted_power ? contract.contract_data.contracted_power + " kWh" : "-"} />
                   </ListItem>
                 </Grid>
                 <Grid item xs={12} sm={4}>
@@ -393,7 +393,7 @@ const Invoices = ({ createNotification }) => {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <ListItem>
-                  <ListItemText primary="Cuantía total" secondary={Math.round(invoice.total_amount * 100) / 100 + " €" || "-"} />
+                  <ListItemText primary="Cuantía total" secondary={invoice.total_amount ? Math.round(invoice.total_amount * 100) / 100 + " €" : "-"} />
                 </ListItem>
               </Grid>
             </Grid>
@@ -402,17 +402,17 @@ const Invoices = ({ createNotification }) => {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={4}>
                 <ListItem>
-                  <ListItemText primary="Por potencia contratada" secondary={Math.round(invoice.contracted_power_amount * 100) / 100 + " €" || "-"} />
+                  <ListItemText primary="Por potencia contratada" secondary={invoice.contracted_power_amount ? Math.round(invoice.contracted_power_amount * 100) / 100 + " €" : "-"} />
                 </ListItem>
               </Grid>
               <Grid item xs={12} sm={4}>
                 <ListItem>
-                  <ListItemText primary="Por potencia consumida" secondary={Math.round(invoice.consumed_energy_amount * 100) / 100 + " €" || "-"} />
+                  <ListItemText primary="Por potencia consumida" secondary={invoice.consumed_energy_amount ? Math.round(invoice.consumed_energy_amount * 100) / 100 + " €" : "-"} />
                 </ListItem>
               </Grid>
               <Grid item xs={12} sm={4}>
                 <ListItem>
-                  <ListItemText primary="Energía consumida" secondary={invoice.consumed_energy + " kWs" || "-"} />
+                  <ListItemText primary="Energía consumida" secondary={invoice.consumed_energy ? invoice.consumed_energy + " kWs" : "-"} />
                 </ListItem>
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -432,7 +432,7 @@ const Invoices = ({ createNotification }) => {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <ListItem>
-                  <ListItemText primary="Impuestos" secondary={Math.round(invoice.tax_amount * 100) / 100 + " €" || "-"} />
+                  <ListItemText primary="Impuestos" secondary={invoice.tax_amount ? Math.round(invoice.tax_amount * 100) / 100 + " €" : "-"} />
                 </ListItem>
               </Grid>
               <Grid item xs={12} sm={4}>
