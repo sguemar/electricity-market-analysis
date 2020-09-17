@@ -7,8 +7,14 @@ login_manager = LoginManager()
 db = SQLAlchemy()
 jwt = JWTManager()
 
-def create_app():
-	app = Flask(__name__)
+def create_app(settings_module):
+	app = Flask(__name__, instance_relative_config=True)
+	app.config.from_object(settings_module)
+	if app.config.get('TESTING', False):
+		app.config.from_pyfile('config-testing.py', silent=True)
+	else:
+		app.config.from_pyfile('config.py', silent=True)
+
 	login_manager.init_app(app)
 
 	### CONFIGURATION ###
@@ -18,7 +24,7 @@ def create_app():
 	app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 	# SQLALCHEMY
-	app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@127.0.0.1/electricity_market_analysis'
+	# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@127.0.0.1/electricity_market_analysis'
 	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 	db.init_app(app)
 

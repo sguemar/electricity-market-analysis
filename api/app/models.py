@@ -62,7 +62,7 @@ class Invoice(db.Model, SerializerMixin):
 	tax_amount = db.Column(db.Float)
 	contract_reference = db.Column(db.String(255))
 	contract_number = db.Column(
-		db.Integer,
+		db.String(255),
 		db.ForeignKey('contracts.contract_number', ondelete='CASCADE')
 	)
 	document = db.Column(db.LargeBinary)
@@ -127,7 +127,7 @@ class Customer_Dwelling_Contract(db.Model):
 		primary_key=True
 	)
 	contract_number = db.Column(
-		db.Integer(),
+		db.String(255),
 		db.ForeignKey('contracts.contract_number', ondelete='CASCADE'),
 	 	primary_key=True
 	)
