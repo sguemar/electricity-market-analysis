@@ -93,7 +93,10 @@ const Offers = ({ createNotification }) => {
   const [deleteOfferDialogState, setDeleteOfferDialogState] = useState(false);
   const [selectedOfferId, setSelectedOfferId] = useState(false);
 
-  const handleChangeOfferRateFilter = (event) => setOfferRateFilter(event.target.value);
+  const handleChangeOfferRateFilter = (event) => {
+    setOfferRateFilter(event.target.value);
+    setOffersPage(1);
+  }
 
   const handleOffersPageChange = (event, value) => setOffersPage(value);
 
