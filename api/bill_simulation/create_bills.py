@@ -415,8 +415,11 @@ if __name__ == '__main__':
    trading_companies = get_trading_companies()
    distributors = get_distributors()
 
+   print("Creando clientes simulados...")
    # CREATE CUSTOMERS
-   for _ in range(CUSTOMERS_NUMBER):
+   for i in range(CUSTOMERS_NUMBER):
+      print('Creando cliente {}'.format(i + 1))
+
       # CREATE CUSTOMER AND USER
       customer = create_customer()
       user_id = insert_user(customer)
@@ -527,5 +530,5 @@ if __name__ == '__main__':
          kwh_price += kwh_annual_increase
          create_potential_customer(trading_company["cif"])
          
-
+   print("Clientes simulados creados con éxito.")
       

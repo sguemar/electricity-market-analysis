@@ -220,6 +220,7 @@ def create_trading_company_prices(price, year, cif):
 def create_companies():
 	offers_features_text = open("bill_simulation/text_data/offers_features.txt", encoding='utf8').readlines()
 
+	print("Insertando comercializadoras simuladas...")
 	# CREATE TRADING COMPANIES
 	with open('bill_simulation/text_data/trading_companies.txt', encoding='utf8') as trading_companies_file:
 		for trading_company in trading_companies_file:
@@ -251,6 +252,7 @@ def create_companies():
 					insert_offer_feature(offer_feature)
 
 
+	print("Insertando distribuidoras simuladas...")
 	# CREATE DISTRIBUTORS
 	with open('bill_simulation/text_data/distributors.txt', encoding='utf8') as distributors_file:
 		for distributor in distributors_file:
