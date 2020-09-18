@@ -24,7 +24,7 @@ def create_app(settings_module):
 	app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 	# SQLALCHEMY
-	# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@127.0.0.1/electricity_market_analysis'
+	app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@127.0.0.1/electricity_market_analysis'
 	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 	db.init_app(app)
 
