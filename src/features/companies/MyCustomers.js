@@ -130,7 +130,6 @@ function stableSort(array, comparator) {
 const headCells = [
   { id: 'name', label: 'Nombre' },
   { id: 'surname', label: 'Apellidos' },
-  { id: 'nif', label: 'NIF' },
   { id: 'email', label: 'Email' },
 ];
 
@@ -188,10 +187,6 @@ const MyCustomers = ({ createNotification }) => {
   const [potentialCustomers, setPotentialCustomers] = useState([]);
   const [customerDataTable, setCustomerDataTable] = useState({
     columns: [
-      {
-        label: 'NIF',
-        field: 'nif',
-      },
       {
         label: 'Nombre',
         field: 'name',
@@ -606,7 +601,6 @@ const MyCustomers = ({ createNotification }) => {
                                     {row.name}
                                   </TableCell>
                                   <TableCell>{row.surname}</TableCell>
-                                  <TableCell>{row.nif}</TableCell>
                                   <TableCell>{row.email}</TableCell>
                                   <TableCell>
                                     <Button
