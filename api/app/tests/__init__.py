@@ -32,18 +32,17 @@ class BaseTestClass(unittest.TestCase):
         user = User(username=username, user_type=1)
         user.set_password(password)
         user.save()
-        customer = Customer()
         customer = Customer(
             nif=nif,
             name=name,
             surname=surname,
             email=email,
-            user_id=1
+            user_id=user.id
         )
         customer.save()
 
     def login(self, username, password):
-        return self.client.post('/api/auth/login', data=dict(
-            username=username,
-            password=password
-        ), follow_redirects=True)
+        return self.client.post('/api/auth/login', json={
+            "username": username,
+            "password": password
+        })
