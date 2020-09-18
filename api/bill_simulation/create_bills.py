@@ -2,7 +2,7 @@
 Program for simulating electricity bills
 '''
 
-import random, string, datetime, mysql.connector
+import random, string, datetime, mysql.connector, sys
 from werkzeug.security import generate_password_hash
 
 
@@ -15,25 +15,18 @@ mydb = mysql.connector.connect(
 cursor = mydb.cursor()
 
 
-CUSTOMERS_NUMBER = 1
-INVOICES_NUMBER = 12
-INIT_CONTRACTS_YEAR = 2000
+INIT_CONTRACTS_YEAR = 2012
 INVOICE_CYCLE = datetime.timedelta(days=28)
 
-kwh_base_price = 0.0398
-kwh_annual_increase = 0.01078
 user_names = set()
 nifs = set()
+selected_trading_companies_cifs = set()
 
 def get_random_date(year):
    try:
       return datetime.datetime.strptime('{} {}'.format(random.randint(1, 366), year), '%j %Y')
    except ValueError:
       return get_random_date(year)
-
-def get_kwh_base_price(year):
-   year_difference = year - INIT_CONTRACTS_YEAR - 1
-   return kwh_base_price + kwh_annual_increase * year_difference
 
 
 def create_customer():
@@ -110,7 +103,7 @@ def insert_dwelling(dwelling):
 
 def create_contract(trading_company, init_date):
    contract = {}
-   contract["contracted_power"] = random.choice([2.00, 2.50, 3.00, 3.50, 4.00, 4.50, 5.00, 5.50])
+   contract["contracted_power"] = random.choice([2.00, 2.50, 3.00, 3.50, 4.00, 4.50, 5.00, 5.50]) #kW
    contract["toll_access"] = random.choice(['2.0A', '2.0DHA', '2.1A', '2.1DHA'])
    contract["init_date"] = init_date
    contract["CNAE"] = "D35351351" + str(random.randint(2, 9))
@@ -241,8 +234,10 @@ def create_invoice(contract_number, contracted_power, init_date, end_date, kwh_p
    charge_date = end_date + datetime.timedelta(days=random.randint(2, 5))
    consumption_period = end_date - init_date
    invoice["contracted_power_amount"] = contracted_power * consumption_period.days * kwh_price
+   # LESS ENERGY SUMMER MONTHS
    if init_date.month in [4, 5, 6, 7, 8, 9]:
       invoice["consumed_energy"] = random.randint(100, 250)
+   # MORE ENERGY WINTER MONTHS
    else:
       invoice["consumed_energy"] = random.randint(200, 350)
    invoice["consumed_energy_amount"] = invoice["consumed_energy"] * kwh_price
@@ -377,14 +372,41 @@ def insert_potential_customer_notification(nif, cif):
    cursor.execute(sql, val)
    mydb.commit()
 
-def create_potential_customers(cif):
-   for _ in range(random.randint(2, 6)):
-      customer = create_customer()
-      user_id = insert_user(customer)
-      insert_customer(customer, user_id)
-      insert_potential_customer_notification(customer["nif"], cif)
+def create_potential_customer(cif):
+   customer = create_customer()
+   user_id = insert_user(customer)
+   insert_customer(customer, user_id)
+   insert_potential_customer_notification(customer["nif"], cif)
+
+
+def create_trading_company_prices(price, year, cif):
+   sql = """
+            INSERT INTO trading_company_prices
+            (
+               year,
+               price,
+               cif
+            )
+            VALUES (%s, %s, %s);
+         """
+   val = (
+         year,
+         price,
+         cif,
+      )
+   cursor.execute(sql, val)
+   mydb.commit()
 
 if __name__ == '__main__':
+   if len(sys.argv) < 2:
+      sys.exit("Debes añadir un parámetro indicando el número de clientes con facturas simuladas que deseas crear.")
+   
+   try:
+      CUSTOMERS_NUMBER = int(sys.argv[1])
+   except:
+      sys.exit("El parámetro a introducir debe ser un número mayor que cero")
+
+   INVOICES_NUMBER = 12
 
    names = open("bill_simulation/text_data/names.txt", encoding='utf8').readlines()
    surnames = open("bill_simulation/text_data/surnames.txt", encoding='utf8').readlines()
@@ -393,20 +415,27 @@ if __name__ == '__main__':
    trading_companies = get_trading_companies()
    distributors = get_distributors()
 
-   # Create customers
-   for _ in range(CUSTOMERS_NUMBER):
+   print("Creando clientes simulados...")
+   # CREATE CUSTOMERS
+   for i in range(CUSTOMERS_NUMBER):
+      print('Creando cliente {}'.format(i + 1))
+
+      # CREATE CUSTOMER AND USER
       customer = create_customer()
       user_id = insert_user(customer)
       insert_customer(customer, user_id)
       
+      # CREATE DWELLING
       dwelling = create_dwelling()
       insert_dwelling(dwelling)
 
+      # CONTRACTS DATA
       current_date = get_random_date(INIT_CONTRACTS_YEAR)
       contract_init_date = current_date
       contract_year = contract_init_date.year
-      distributor_dwelling_init_date = current_date.strftime("%Y-%m-%d")
       
+      # CREATE RELATIONSHIP DISTRIBUTOR_DWELLING
+      distributor_dwelling_init_date = current_date.strftime("%Y-%m-%d")
       distributor = random.choice(distributors)
       insert_distributor_dwelling(
          distributor,
@@ -414,24 +443,45 @@ if __name__ == '__main__':
          distributor_dwelling_init_date
       )
 
+      # CHOOSE NEW OR USED TRADING COMPANY
       trading_company = random.choice(trading_companies)
+      if len(selected_trading_companies_cifs) > 0:
+         if random.random() < 0.5:
+            cif = random.choice(tuple(selected_trading_companies_cifs))
+            for item_trading_company in trading_companies:
+               if item_trading_company["cif"] == cif:
+                  trading_company = item_trading_company
+                  break
+      selected_trading_companies_cifs.add(trading_company["cif"])
 
-      kwh_price = get_kwh_base_price(contract_year)
+      # RANDOM START PRICES
+      kwh_price = random.uniform(0.0243, 0.0538)
 
-      # Create contracts
+      # CREATE CUSTOMER CONTRACTS
       while contract_year < 2020:
+         # CREATE CONTRACT
          contract = create_contract(
             trading_company,
             contract_init_date.strftime("%Y-%m-%d"),
          )
          contract_number = insert_contract(contract)
+
+         # CREATE RELATIONSHIP CUSTOMER_DWELLING_CONTRACT
          insert_customer_dwelling_contract(customer, dwelling, contract, contract_number)
 
-         # The customer changes trading company
-         if random.random() < 0.2:
-            trading_company = random.choice(trading_companies)
+         # CREATE TRADING COMPANY PRICES
+         trading_company_prices = create_trading_company_prices(
+            kwh_price,
+            contract_year,
+            trading_company["cif"]
+         )
 
-         # The customer changes dwelling
+         # THE CUSTOMER CHANGES TRADING COMPANY
+         if random.random() < 0.1:
+            trading_company = random.choice(trading_companies)
+            selected_trading_companies_cifs.add(trading_company["cif"])
+
+         # THE CUSTOMER CHANGES DWELLING
          if random.random() < 0.1:
             set_end_date_last_relation_distributor_dwelling(
                distributor,
@@ -444,16 +494,18 @@ if __name__ == '__main__':
             dwelling = create_dwelling()
             insert_dwelling(dwelling)
 
-            # The customer changes distributor
+            # THE CUSTOMER CHANGES DISTRIBUTOR
             if random.random() < 0.3:
                distributor = random.choice(distributors)
 
+            # CREATE NEW RELATIONSHIP DISTRIBUTOR_DWELLING
             insert_distributor_dwelling(
                distributor,
                dwelling,
                distributor_dwelling_init_date.strftime("%Y-%m-%d"),
             )
 
+         # CREATE CONTRACT INVOICES
          for _ in range(INVOICES_NUMBER):
             end_date = current_date + INVOICE_CYCLE
             while end_date.month == current_date.month:
@@ -474,8 +526,9 @@ if __name__ == '__main__':
          customer_dwelling_contract_set_end_date(customer['nif'], dwelling['cups'], contract_number, end_date)
          contract_year = current_date.year
          contract_init_date = current_date
+         kwh_annual_increase = random.uniform(0.00495, 0.02028)
          kwh_price += kwh_annual_increase
-         create_potential_customers(trading_company["cif"])
+         create_potential_customer(trading_company["cif"])
          
-
+   print("Clientes simulados creados con éxito.")
       

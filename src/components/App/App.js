@@ -1,23 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Header from '../Header/Header';
 import Footer from '../Footer/Footer';
 import Home from '../Home/Home';
-import Login from '../Login/Login';
-import CustomerSignUp from '../SignUp/CustomerSignUp';
-import CompanySignUp from '../SignUp/CompanySignUp';
+import Login from '../../features/authentication/Login';
+import CustomerSignUp from '../../features/authentication/CustomerSignUp';
+import CompanySignUp from '../../features/authentication/CompanySignUp';
 import NoMatch from '../NoMatch/NoMatch';
-import Invoices from '../Invoices/Invoices';
-import Consumptions from '../Consumptions/Consumptions';
-import CustomerProfile from '../Profile/CustomerProfile';
-import CompanyProfile from '../Profile/CompanyProfile';
-import Offers from '../Offers/Offers';
-import CreateOffer from '../Offers/CreateOffer';
-import EditOffer from '../Offers/EditOffer';
-import MyCustomers from '../MyCustomers/MyCustomers';
-import ReceivedOffers from '../Offers/ReceivedOffers';
-import AnalyzeOffers from '../Offers/AnalyzeOffers';
-import CustomerComparePrices from '../Offers/CustomerComparePrices';
-import TradingCompanyComparePrices from '../Offers/TradingCompanyComparePrices';
+import Invoices from '../../features/customers/Invoices';
+import Consumptions from '../../features/customers/Consumptions';
+import CustomerProfile from '../../features/customers/Profile';
+import CompanyProfile from '../../features/companies/Profile';
+import Offers from '../../features/companies/Offers';
+import CreateOffer from '../../features/companies/CreateOffer';
+import EditOffer from '../../features/companies/EditOffer';
+import MyCustomers from '../../features/companies/MyCustomers';
+import ReceivedOffers from '../../features/customers/ReceivedOffers';
+import AnalyzeOffers from '../../features/public/AnalyzeOffers';
+import CustomerComparePrices from '../../features/customers/ComparePrices';
+import TradingCompanyComparePrices from '../../features/companies/TradingCompanyComparePrices';
+import CompaniesPerRegion from '../../features/public/CompaniesPerRegion';
 import {
   BrowserRouter as Router,
   Route,
@@ -25,10 +26,17 @@ import {
   Redirect
 } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Notify } from 'react-redux-notify';
+import { Notify, removeAllNotifications } from 'react-redux-notify';
 
 
-const App = ({ username, userType, companyType }) => {
+const App = ({ username, userType, companyType, removeAllNotifications }) => {
+
+  useEffect(() => {
+    window.onunload = () => {
+      removeAllNotifications();
+    }
+  });
+
   return (
     <div className="app">
       <Router>
@@ -53,6 +61,9 @@ const App = ({ username, userType, companyType }) => {
               <Route path="/signup-company" exact>
                 {username ? <Redirect to="/" /> : <CompanySignUp />}
               </Route>
+              <Route path="/companies-per-region" exact>
+                {username ? <Redirect to="/" /> : <CompaniesPerRegion />}
+              </Route>
               <Route path="/profile" exact>
                 {username ?
                   <>
@@ -63,7 +74,13 @@ const App = ({ username, userType, companyType }) => {
                 }
               </Route>
               <Route path="/consumptions" exact>
-                {username ? <Consumptions /> : <Login />}
+                {username ?
+                  <>
+                    {userType === 1 ? <Consumptions /> : <Redirect to="/" />}
+                  </>
+                  :
+                  <Login />
+                }
               </Route>
               <Route path="/received-offers" exact>
                 {username
@@ -181,4 +198,10 @@ const mapStateToProps = state => {
   return authentication.loggedUser;
 };
 
-export default connect(mapStateToProps)(App);
+const mapDispatchToProps = dispatch => ({
+  removeAllNotifications: (config) => {
+    dispatch(removeAllNotifications(config))
+  },
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

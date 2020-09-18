@@ -80,7 +80,10 @@ const ReceivedOffers = ({ createNotification }) => {
   const [offerRateFilter, setOfferRateFilter] = useState('');
   const [offersTypes, setOffersTypes] = useState([]);
 
-  const handleChangeOfferRateFilter = (event) => setOfferRateFilter(event.target.value);
+  const handleChangeOfferRateFilter = (event) => {
+    setOfferRateFilter(event.target.value);
+    setOffersPage(1);
+  }
 
   const handleReloadReceivedOffersTable = () => {
     getReceiveOffers();

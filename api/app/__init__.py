@@ -7,8 +7,14 @@ login_manager = LoginManager()
 db = SQLAlchemy()
 jwt = JWTManager()
 
-def create_app():
-	app = Flask(__name__)
+def create_app(settings_module):
+	app = Flask(__name__, instance_relative_config=True)
+	app.config.from_object(settings_module)
+	if app.config.get('TESTING', False):
+		app.config.from_pyfile('config-testing.py', silent=True)
+	else:
+		app.config.from_pyfile('config.py', silent=True)
+
 	login_manager.init_app(app)
 
 	### CONFIGURATION ###
@@ -27,6 +33,7 @@ def create_app():
 	app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 	app.config['JWT_COOKIE_SECURE'] = False
 	app.config['JWT_COOKIE_CSRF_PROTECT'] = True
+	app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False
 	jwt.init_app(app)
 
 	### BLUEPRINTS REGISTRATION ###

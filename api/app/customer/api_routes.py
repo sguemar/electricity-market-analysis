@@ -224,11 +224,31 @@ def get_consumption_data():
 					consumed_energy_amount_list = contract_invoices[year]["consumed_energy_amount_list"]
 					tax_amount_list = contract_invoices[year]["tax_amount_list"]
 				month = int(invoice.init_date.strftime("%m")) - 1
-				total_amount_list[month] = round(invoice.total_amount, 2)
-				consumed_energy_list[month] = invoice.consumed_energy
-				contracted_power_amount_list[month] = round(invoice.contracted_power_amount, 2)
-				consumed_energy_amount_list[month] = round(invoice.consumed_energy_amount, 2)
-				tax_amount_list[month] = round(invoice.tax_amount, 2)
+				
+				if invoice.total_amount:
+					total_amount_list[month] = round(invoice.total_amount, 2)
+				else:
+					total_amount_list[month] = 0
+				
+				if invoice.consumed_energy:
+					consumed_energy_list[month] = invoice.consumed_energy
+				else:
+					consumed_energy_list[month] = 0
+				
+				if invoice.contracted_power_amount:
+					contracted_power_amount_list[month] = round(invoice.contracted_power_amount, 2)
+				else:
+					contracted_power_amount_list[month] = 0
+				
+				if invoice.consumed_energy_amount:
+					consumed_energy_amount_list[month] = round(invoice.consumed_energy_amount, 2)
+				else:
+					consumed_energy_amount_list[month] = 0
+					
+				if invoice.tax_amount:
+					tax_amount_list[month] = round(invoice.tax_amount, 2)
+				else:
+					tax_amount_list[month] = 0
 				contract_invoices[year] = {
 					"total_amount_list": total_amount_list,
 					"consumed_energy_list": consumed_energy_list,

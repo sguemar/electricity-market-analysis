@@ -345,7 +345,6 @@ def validateUser(data):
 def validateCompany(data):
 	company = {
 		"name": data["name"],
-		"address": data["address"],
 		"url": data["url"],
 		"email": data["email"],
 		"phone": data["phone"],

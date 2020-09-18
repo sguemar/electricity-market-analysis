@@ -240,7 +240,7 @@ const Consumptions = () => {
     setExpenseGraphOptions({
       ...expenseGraphOptions,
       title: {
-        text: 'Gasto anual'
+        text: 'Gasto medio anual'
       },
       series: [
         {
@@ -297,7 +297,7 @@ const Consumptions = () => {
     setConsumptionsGraphOptions({
       ...consumptionsGraphOptions,
       title: {
-        text: 'Consumo anual'
+        text: 'Consumo medio anual'
       },
       series: [
         {

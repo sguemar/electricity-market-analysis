@@ -13,6 +13,10 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Cookies from 'universal-cookie';
@@ -40,7 +44,65 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     marginTop: theme.spacing(3),
   },
+  formControl: {
+    minWidth: 100,
+  },
 }));
+
+const regions = [
+  "Almería",
+  "Baleares",
+  "Valladolid",
+  "León",
+  "Melilla",
+  "Palencia",
+  "Cantabria",
+  "Navarra",
+  "Ceuta",
+  "Cuenca",
+  "Álava",
+  "Gipuzkoa",
+  "Granada",
+  "Murcia",
+  "Burgos",
+  "Salamanca",
+  "Zamora",
+  "Huesca",
+  "Madrid",
+  "Guadalajara",
+  "Segovia",
+  "Sevilla",
+  "Tarragona",
+  "Teruel",
+  "Valencia",
+  "Bizkaia",
+  "Ourense",
+  "Lleida",
+  "Zaragoza",
+  "Girona",
+  "Albacete",
+  "Alicante",
+  "Ávila",
+  "Cáceres",
+  "Toledo",
+  "Badajoz",
+  "Córdoba",
+  "Huelva",
+  "A Coruña",
+  "Málaga",
+  "Pontevedra",
+  "La Rioja",
+  "Soria",
+  "Barcelona",
+  "Cádiz",
+  "Asturias",
+  "Castellón",
+  "Ciudad Real",
+  "Jaén",
+  "Lugo",
+  "Santa Cruz de Tenerife",
+  "Las Palmas",
+]
 
 const CompanyProfile = ({ type, createNotification, logout }) => {
   const classes = useStyles();
@@ -58,7 +120,7 @@ const CompanyProfile = ({ type, createNotification, logout }) => {
     email: '',
     phone: '',
     url: '',
-    address: ''
+    address: 'Almeria'
   };
 
   const [userData, dispatchUserData] = useReducer(
@@ -215,18 +277,25 @@ const CompanyProfile = ({ type, createNotification, logout }) => {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="address"
-                label="Dirección"
-                name="address"
-                value={userData.address || ''}
-                onChange={handleChange}
-                error={formErrorState.address ? true : false}
-                helperText={formErrorState.address}
-              />
+              <FormControl fullWidth variant="outlined" className={classes.formControl}>
+                <InputLabel id="select-company-address">Dirección</InputLabel>
+                <Select
+                  required
+                  labelId="select-company-address"
+                  id="address"
+                  name="address"
+                  defaultValue="Almería"
+                  value={userData.address}
+                  onChange={handleChange}
+                  label="Dirección"
+                >
+                  {regions.map((region, index) => {
+                    return (
+                      <MenuItem key={index} value={region}>{region}</MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
               <Button

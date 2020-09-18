@@ -21,7 +21,9 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  TextField
+  TextField,
+  ListItem,
+  ListItemText,
 } from '@material-ui/core';
 import {
   Pagination
@@ -112,16 +114,24 @@ const Invoices = ({ createNotification }) => {
   const handleContractsSelectedChange = (contractNumber) => (event, isExpanded) =>
     setContractExpanded(isExpanded ? contractNumber : false);
 
-  const handleChangeContractMonth = (event) => setContractMonth(event.target.value);
+  const handleChangeContractMonth = (event) => {
+    setContractMonth(event.target.value);
+    setContractsPage(1);
+  }
   const handleChangeContractYear = (event) => {
     let year = parseInt(event.target.value);
     Number.isInteger(year) ? setContractYear(year) : setContractYear("");
+    setContractsPage(1);
   }
 
-  const handleChangeInvoiceMonth = (event) => setInvoiceMonth(event.target.value);
+  const handleChangeInvoiceMonth = (event) => {
+    setInvoiceMonth(event.target.value);
+    setInvoicesPage(1);
+  }
   const handleChangeInvoiceYear = (event) => {
     let year = parseInt(event.target.value);
     Number.isInteger(year) ? setInvoiceYear(year) : setInvoiceYear("");
+    setInvoicesPage(1);
   }
 
   // PAGINATION
@@ -273,9 +283,9 @@ const Invoices = ({ createNotification }) => {
           new Date(contract.contract_data.init_date).getFullYear() === contractYear
         );
       }
-      setContractsCount(Math.ceil(contractsToShow.length / 3));
-      const endIndex = contractsPage * 3;
-      const paginatedContracts = contractsToShow.slice(endIndex - 3, endIndex);
+      setContractsCount(Math.ceil(contractsToShow.length / 2));
+      const endIndex = contractsPage * 2;
+      const paginatedContracts = contractsToShow.slice(endIndex - 2, endIndex);
       const updatedContractsList = paginatedContracts.map(contract => {
         const contractNumber = contract.contract_data.contract_number;
         return (
@@ -285,20 +295,51 @@ const Invoices = ({ createNotification }) => {
             onChange={handleContractsSelectedChange(contractNumber)}
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Grid container direction="column">
-                <Typography>Dirección: {contract.contract_data.address}</Typography>
-                <Typography>Nº contrato: {contractNumber}</Typography>
-                <Typography>Fecha inicio: {contract.contract_data.init_date}</Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={4}>
+                  <ListItem>
+                    <ListItemText primary="Dirección" secondary={contract.contract_data.address || "-"} />
+                  </ListItem>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <ListItem>
+                    <ListItemText primary="Nº contrato" secondary={contractNumber || "-"} />
+                  </ListItem>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <ListItem>
+                    <ListItemText primary="Fecha inicio" secondary={contract.contract_data.init_date || "-"} />
+                  </ListItem>
+                </Grid>
               </Grid>
             </AccordionSummary>
             <AccordionDetails>
-              <Grid container direction="column">
-                <Typography>Potencia contratada: {contract.contract_data.contracted_power} kWh</Typography>
-                <Typography>Peaje acceso: {contract.contract_data.toll_access}</Typography>
-                <Typography>Fecha fin: {contract.contract_data.end_date}</Typography>
-                <Typography>CNAE: {contract.contract_data.CNAE}</Typography>
-                <Typography>Tarifa acceso: {contract.contract_data.tariff_access ? contract.contract_data.tariff_access : "-"}</Typography>
-                <Typography>Descripción: {contract.contract_data.description ? contract.contract_data.description : "-"}</Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={4}>
+                  <ListItem>
+                    <ListItemText primary="Potencia contratada" secondary={contract.contract_data.contracted_power ? contract.contract_data.contracted_power + " kWh" : "-"} />
+                  </ListItem>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <ListItem>
+                    <ListItemText primary="Peaje acceso" secondary={contract.contract_data.toll_access || "-"} />
+                  </ListItem>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <ListItem>
+                    <ListItemText primary="Fecha fin" secondary={contract.contract_data.end_date || "-"} />
+                  </ListItem>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <ListItem>
+                    <ListItemText primary="CNAE" secondary={contract.contract_data.CNAE || "-"} />
+                  </ListItem>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <ListItem>
+                    <ListItemText primary="Descripción" secondary={contract.contract_data.description || "-"} />
+                  </ListItem>
+                </Grid>
               </Grid>
             </AccordionDetails>
           </Accordion>
@@ -328,51 +369,97 @@ const Invoices = ({ createNotification }) => {
           new Date(invoice.init_date).getFullYear() === invoiceYear
         );
       }
-      setInvoicesCount(Math.ceil(invoicesList.length / 5));
+      setInvoicesCount(Math.ceil(invoicesList.length / 3));
       invoicesList.sort((a, b) =>
         new Date(a.init_date) - new Date(b.init_date)
       );
-      const endIndex = invoicesPage * 5;
-      invoicesList = invoicesList.slice(endIndex - 5, endIndex);
+      const endIndex = invoicesPage * 3;
+      invoicesList = invoicesList.slice(endIndex - 3, endIndex);
       const updatedInvoicesList = invoicesList.map(invoice =>
         <Accordion
           key={invoice.invoice_number}
         >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Grid container direction="column">
-              <Typography>Nº de factura: {invoice.invoice_number}</Typography>
-              <Typography>Fecha de inicio: {invoice.init_date}</Typography>
-              <Typography>Cuantía total: {Math.round(invoice.total_amount * 100) / 100} €</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
+                <ListItem>
+                  <ListItemText primary="Nº de factura" secondary={invoice.invoice_number || "-"} />
+                </ListItem>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <ListItem>
+                  <ListItemText primary="Fecha de inicio" secondary={invoice.init_date || "-"} />
+                </ListItem>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <ListItem>
+                  <ListItemText primary="Cuantía total" secondary={invoice.total_amount ? Math.round(invoice.total_amount * 100) / 100 + " €" : "-"} />
+                </ListItem>
+              </Grid>
             </Grid>
           </AccordionSummary>
           <AccordionDetails>
-            <Grid container direction="column">
-              <Typography>Por potencia contratada: {Math.round(invoice.contracted_power_amount * 100) / 100} €</Typography>
-              <Typography>Por potencia consumida: {Math.round(invoice.consumed_energy_amount * 100) / 100} €</Typography>
-              <Typography>Energía consumida: {invoice.consumed_energy} kWs</Typography>
-              <Typography>Fecha de emisión: {invoice.issue_date}</Typography>
-              <Typography>Fecha de cargo: {invoice.charge_date}</Typography>
-              <Typography>Fecha de fin: {invoice.end_date}</Typography>
-              <Typography>Impuestos: {Math.round(invoice.tax_amount * 100) / 100} €</Typography>
-              <Typography>Referencia contrato: {invoice.contract_reference}</Typography>
-              <Box my={2}>
-                <Grid container justify="space-evenly">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => openChangeInvoiceDialog(invoice.invoice_number)}
-                  >
-                    Cambiar
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
+                <ListItem>
+                  <ListItemText primary="Por potencia contratada" secondary={invoice.contracted_power_amount ? Math.round(invoice.contracted_power_amount * 100) / 100 + " €" : "-"} />
+                </ListItem>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <ListItem>
+                  <ListItemText primary="Por potencia consumida" secondary={invoice.consumed_energy_amount ? Math.round(invoice.consumed_energy_amount * 100) / 100 + " €" : "-"} />
+                </ListItem>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <ListItem>
+                  <ListItemText primary="Energía consumida" secondary={invoice.consumed_energy ? invoice.consumed_energy + " kWs" : "-"} />
+                </ListItem>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <ListItem>
+                  <ListItemText primary="Fecha de emisión" secondary={invoice.issue_date || "-"} />
+                </ListItem>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <ListItem>
+                  <ListItemText primary="Fecha de cargo" secondary={invoice.charge_date || "-"} />
+                </ListItem>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <ListItem>
+                  <ListItemText primary="Fecha de fin" secondary={invoice.end_date || "-"} />
+                </ListItem>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <ListItem>
+                  <ListItemText primary="Impuestos" secondary={invoice.tax_amount ? Math.round(invoice.tax_amount * 100) / 100 + " €" : "-"} />
+                </ListItem>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <ListItem>
+                  <ListItemText primary="Referencia contrato" secondary={invoice.contract_reference || "-"} />
+                </ListItem>
+              </Grid>
+              <Grid item xs={12}>
+                <Box my={2}>
+                  <Grid container justify="space-evenly">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => openChangeInvoiceDialog(invoice.invoice_number)}
+                    >
+                      Cambiar
                   </Button>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => openDeleteInvoiceDialog(invoice.invoice_number)}
-                  >
-                    Eliminar
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => openDeleteInvoiceDialog(invoice.invoice_number)}
+                    >
+                      Eliminar
                   </Button>
-                </Grid>
-              </Box>
+                  </Grid>
+                </Box>
+              </Grid>
             </Grid>
           </AccordionDetails>
         </Accordion>

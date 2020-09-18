@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { connect } from 'react-redux';
 import {
   makeStyles,
   Typography,
   Container,
   Box,
   Card,
+  CardActions,
   CardContent,
+  Button,
   CardHeader,
   List,
   ListItem,
@@ -25,15 +29,23 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogActions
 } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import {
   Pagination
 } from '@material-ui/lab';
 import axios from 'axios';
+import Cookies from 'universal-cookie';
+import { createNotification } from 'react-redux-notify';
 import {
-  MDBDataTable,
-} from 'mdbreact';
+  successRemoveOfferNotification,
+  errorRemoveOfferNotification
+} from '../../redux/constants/notifications';
+
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -49,60 +61,76 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     minWidth: 100,
   },
-  horizontalList: {
-    display: 'flex',
-    flexDirection: 'row',
-    padding: 0,
+  createOfferButton: {
+    backgroundColor: '#39b856',
+    "&:hover": {
+      backgroundColor: '#28a745'
+    }
+  },
+  editOfferButton: {
+    backgroundColor: '#ffc107',
+    "&:hover": {
+      backgroundColor: '#eeb006'
+    }
   },
 }));
 
 
-const AnalyzeOffers = ({ companyType }) => {
+const Offers = ({ createNotification }) => {
 
   const classes = useStyles();
+  const history = useHistory();
+  const cookies = new Cookies();
+  const csrfAccessToken = cookies.get('csrf_access_token');
 
-  // COMPANIES
-  const [companiesLoading, setCompaniesLoading] = useState(false);
-  const [tradingCompanies, setTradingCompanies] = useState([]);
-  const [tradingCompaniesDataTable, setTradingCompaniesDataTable] = useState({
-    columns: [
-      {
-        label: 'CIF',
-        field: 'cif',
-      },
-      {
-        label: 'Nombre',
-        field: 'name',
-      },
-    ],
-    rows: [],
-  });
-  const [selectedTradingCompanyCif, setSelectedTradingCompanyCif] = useState('');
-  const [selectedTradingCompany, setSelectedTradingCompany] = useState({});
-
-
-  // OFFERS
-  const [offersLoading, setOffersLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [offers, setOffers] = useState([]);
   const [offersList, setOffersList] = useState([]);
   const [offersPage, setOffersPage] = useState(1);
   const [offersCount, setOffersCount] = useState(0);
   const [offerRateFilter, setOfferRateFilter] = useState('');
   const [offersTypes, setOffersTypes] = useState([]);
-
+  const [deleteOfferDialogState, setDeleteOfferDialogState] = useState(false);
+  const [selectedOfferId, setSelectedOfferId] = useState(false);
 
   const handleChangeOfferRateFilter = (event) => setOfferRateFilter(event.target.value);
 
   const handleOffersPageChange = (event, value) => setOffersPage(value);
 
-  const handleTradingCompanyClick = (tradingCompany) => getSelectedTradingCompanyOffers(tradingCompany);
+  const handleCreateOffer = () => history.push('/create-offer');
 
-  const getSelectedTradingCompanyOffers = async (tradingCompany) => {
-    setOffersLoading(true);
-    setSelectedTradingCompanyCif(tradingCompany.cif);
-    setSelectedTradingCompany(tradingCompany);
+  const handleEditOffer = (offerId) => history.push('/edit-offer/' + offerId);
+
+
+  const openDeleteOfferDialog = (offer_id) => {
+    setDeleteOfferDialogState(true);
+    setSelectedOfferId(offer_id);
+  } 
+  const closeDeleteOfferDialog = () => {
+    setDeleteOfferDialogState(false);
+    setSelectedOfferId(false);
+  } 
+  const handleDeleteOffer = async () => {
     try {
-      let response = await axios.get('/api/public/get-trading-company-offers/' + tradingCompany.cif);
+      await axios.delete(
+        '/api/company/delete-offer/' + selectedOfferId,
+        { headers: { 'X-CSRF-TOKEN': csrfAccessToken } }
+      );
+      createNotification(successRemoveOfferNotification);
+      setDeleteOfferDialogState(false);
+      setSelectedOfferId(false);
+      setOffersPage(1);
+      getOffers();
+    } catch (error) {
+      createNotification(errorRemoveOfferNotification);
+      console.log(error);
+    }
+  }
+
+  const getOffers = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get('/api/company/get-offers');
       const offers = response.data;
       if (offers.length === 0) {
         setOffers([]);
@@ -112,38 +140,11 @@ const AnalyzeOffers = ({ companyType }) => {
         setOffers(offers);
         setOffersCount(Math.ceil(offers.length / 2));
       }
-      setOffersLoading(false);
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const getAllTradingCompanies = async () => {
-    setCompaniesLoading(true);
-    try {
-      let response = []
-      if (companyType === 0)
-        response = await axios.get('/api/company/get-compentency-trading-companies');
-      else
-        response = await axios.get('/api/public/get-all-trading-companies');
-      if (response.data.length !== 0) {
-        const tradingCompanies = response.data.map(tradingCompany => {
-          return {
-            ...tradingCompany,
-            clickEvent: () => handleTradingCompanyClick(tradingCompany)
-          }
-        });
-        setTradingCompanies(tradingCompanies);
-        setTradingCompaniesDataTable({
-          ...tradingCompaniesDataTable,
-          rows: tradingCompanies
-        });
-      }
-      setCompaniesLoading(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  }
 
   const getOffersTypes = async () => {
     const response = await axios.get('/api/company/get-offers-types');
@@ -151,8 +152,8 @@ const AnalyzeOffers = ({ companyType }) => {
   };
 
   useEffect(() => {
-    getOffersTypes();
-    getAllTradingCompanies();
+    getOffers();
+    getOffersTypes()
   }, []);
 
   useEffect(() => {
@@ -160,17 +161,17 @@ const AnalyzeOffers = ({ companyType }) => {
       let filteredOffers = offers;
       if (offerRateFilter !== '')
         filteredOffers = offers.filter(offer =>
-          offer.offerInfo.offer_type === offerRateFilter
+          offer.offer_type === offerRateFilter
         );
       setOffersCount(Math.ceil(filteredOffers.length / 2));
       const endIndex = offersPage * 2;
       const paginatedOffers = filteredOffers.slice(endIndex - 2, endIndex);
       const updatedOffersList = paginatedOffers.map(offer => {
         return (
-          <Grid key={offer.offerInfo.id} item xs={12} md={12 / paginatedOffers.length}>
+          <Grid key={offer.id} item xs={12} md={12 / paginatedOffers.length}>
             <Card className={classes.card}>
               <CardHeader
-                title={offer.offerInfo.name + " (" + offer.offerInfo.rate + ")"}
+                title={offer.name + " (" + offer.rate + ")"}
               />
               <CardContent>
                 <Grid container justify="center" alignItems="center" spacing={3}>
@@ -179,7 +180,7 @@ const AnalyzeOffers = ({ companyType }) => {
                       <Table>
                         <TableHead>
                           <TableRow>
-                            {offer.offerInfo.variable_term !== 0
+                            {offer.variable_term !== 0
                               ?
                               <>
                                 <TableCell className={classes.headerTableCell} align="center">Término potencia</TableCell>
@@ -188,7 +189,7 @@ const AnalyzeOffers = ({ companyType }) => {
                               :
                               <>
                                 <TableCell className={classes.headerTableCell} rowSpan={2} align="center">Término potencia</TableCell>
-                                {offer.offerInfo.super_valley !== 0
+                                {offer.super_valley !== 0
                                   ?
                                   <TableCell className={classes.headerTableCell} colSpan={3} align="center">Término energía</TableCell>
                                   :
@@ -197,12 +198,12 @@ const AnalyzeOffers = ({ companyType }) => {
                               </>
                             }
                           </TableRow>
-                          {offer.offerInfo.variable_term === 0
+                          {offer.variable_term === 0
                             ?
                             <TableRow>
                               <TableCell className={classes.headerTableCell} align="center">Punta</TableCell>
                               <TableCell className={classes.headerTableCell} align="center">Valle</TableCell>
-                              {offer.offerInfo.super_valley !== 0
+                              {offer.super_valley !== 0
                                 ?
                                 <TableCell className={classes.headerTableCell} align="center">Super valle</TableCell>
                                 :
@@ -215,30 +216,30 @@ const AnalyzeOffers = ({ companyType }) => {
                         </TableHead>
                         <TableBody>
                           <TableRow>
-                            <TableCell align="center">{offer.offerInfo.fixed_term + " €/kW día"}</TableCell>
-                            {offer.offerInfo.variable_term === 0
+                            <TableCell align="center">{offer.fixed_term + " €/kW día"}</TableCell>
+                            {offer.variable_term === 0
                               ?
                               <>
-                                <TableCell align="center">{offer.offerInfo.tip + " €/kWh"}</TableCell>
-                                <TableCell align="center">{offer.offerInfo.valley + " €/kWh"}</TableCell>
-                                {offer.offerInfo.super_valley !== 0 &&
-                                  <TableCell align="center">{offer.offerInfo.super_valley + " €/kWh"}</TableCell>
+                                <TableCell align="center">{offer.tip + " €/kWh"}</TableCell>
+                                <TableCell align="center">{offer.valley + " €/kWh"}</TableCell>
+                                {offer.super_valley !== 0 &&
+                                  <TableCell align="center">{offer.super_valley + " €/kWh"}</TableCell>
                                 }
                               </>
                               :
-                              <TableCell align="center">{offer.offerInfo.variable_term + " €/kWh"}</TableCell>
+                              <TableCell align="center">{offer.variable_term + " €/kWh"}</TableCell>
                             }
                           </TableRow>
                         </TableBody>
                       </Table>
                     </TableContainer>
                   </Grid>
-                  {offer.offerInfo.features.length > 0 &&
+                  {offer.features.length > 0 &&
                     <Grid item xs={12}>
                       <Card className={classes.card}>
                         <CardContent>
                           <List>
-                            {offer.offerInfo.features.map((feature, index) => {
+                            {offer.features.map((feature, index) => {
                               return (
                                 <>
                                   <ListItem key={index}>
@@ -247,7 +248,7 @@ const AnalyzeOffers = ({ companyType }) => {
                                     </ListItemIcon>
                                     <ListItemText primary={feature} />
                                   </ListItem>
-                                  {offer.offerInfo.features.length - 1 !== index && <Divider />}
+                                  <Divider />
                                 </>
                               );
                             })}
@@ -258,115 +259,55 @@ const AnalyzeOffers = ({ companyType }) => {
                   }
                 </Grid>
               </CardContent>
+              <CardActions>
+                <Button
+                  variant="contained"
+                  onClick={() => handleEditOffer(offer.id)}
+                  className={classes.editOfferButton}
+                  size="small"
+                >
+                  Editar
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => openDeleteOfferDialog(offer.id)}
+                  color="secondary"
+                  size="small"
+                >
+                  Eliminar
+                </Button>
+              </CardActions>
             </Card>
           </Grid >
         );
       });
       setOffersList(updatedOffersList);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     offers,
     offersPage,
     classes.card,
     classes.checkIcon,
     classes.headerTableCell,
+    classes.editOfferButton,
     offerRateFilter
   ]);
 
   return (
     <Container maxWidth="lg">
       <Box mt={4}>
-        <Typography variant="h4" align="center">Ofertas públicas</Typography>
-        <Typography variant="h5" align="center">Selecciona una comercializadora</Typography>
+        <Typography variant="h4" align="center">Ofertas actuales</Typography>
       </Box>
       <Box my={4}>
-        {companiesLoading ?
+        {loading ?
           <Box display="flex" justifyContent="center">
             <CircularProgress />
           </Box>
           :
           <>
-            {tradingCompanies.length !== 0
-              ?
-              <MDBDataTable
-                hover
-                infoLabel={["Viendo", "-", "de", "comercializadoras"]}
-                searchLabel="Buscar"
-                entriesOptions={[5, 10, 15]}
-                entries={5}
-                data={tradingCompaniesDataTable}
-                responsive
-                paginationLabel={["Anterior", "Siguiente"]}
-                entriesLabel="Comercializadoras por página"
-              />
-              :
-              <Box my={4}>
-                <Typography variant="h6" align="center">Actualmente no existen comercializadoras registradas</Typography>
-              </Box>
-            }
-          </>
-        }
-      </Box>
-      <Box my={4}>
-        {offersLoading ?
-          <Box display="flex" justifyContent="center">
-            <CircularProgress />
-          </Box>
-          :
-          <>
-            {selectedTradingCompanyCif !== ''
-              ?
-              <>
-                <Box my={4}>
-                  <Typography variant="h5" align="center">Comercializadora seleccionada</Typography>
-                </Box>
-                <Card>
-                  <List className={classes.horizontalList}>
-                    <Grid container spacing={2}>
-                      <Grid item>
-                        <ListItem>
-                          <ListItemText primary="CIF" secondary={selectedTradingCompany.cif || "-"} />
-                        </ListItem>
-                      </Grid>
-                      <Grid item>
-                        <ListItem>
-                          <ListItemText primary="Nombre" secondary={selectedTradingCompany.name || "-"} />
-                        </ListItem>
-                      </Grid>
-                      <Grid item>
-                        <ListItem>
-                          <ListItemText primary="Dirección" secondary={selectedTradingCompany.address || "-"} />
-                        </ListItem>
-                      </Grid>
-                      <Grid item>
-                        <ListItem>
-                          <ListItemText primary="Email" secondary={selectedTradingCompany.email || "-"} />
-                        </ListItem>
-                      </Grid>
-                      <Grid item>
-                        <ListItem>
-                          <ListItemText primary="URL" secondary={selectedTradingCompany.url || "-"} />
-                        </ListItem>
-                      </Grid>
-                      <Grid item>
-                        <ListItem>
-                          <ListItemText primary="Teléfono" secondary={selectedTradingCompany.phone || "-"} />
-                        </ListItem>
-                      </Grid>
-                    </Grid>
-                  </List>
-                </Card>
-              </>
-              :
-              <></>
-            }
             {offersList.length !== 0
               ?
               <>
-                <Box my={4}>
-                  <Typography variant="h5" align="center">Ofertas</Typography>
-                </Box>
                 <Grid container spacing={4}>
                   {offersList}
                 </Grid>
@@ -376,14 +317,14 @@ const AnalyzeOffers = ({ companyType }) => {
               </>
               :
               <>
-                {offerRateFilter !== '' && selectedTradingCompanyCif !== ''
+                {offerRateFilter !== ''
                   ?
                   <Box my={4}>
-                    <Typography variant="h6" align="center">Actualmente la comercializadora seleccionada no tiene publicada ninguna oferta de este tipo</Typography>
+                    <Typography variant="h6" align="center">Actualmente no tienes ofertas de este tipo</Typography>
                   </Box>
                   :
                   <Box my={4}>
-                    <Typography variant="h6" align="center">Debes seleccionar una comercializadora para ver sus ofertas</Typography>
+                    <Typography variant="h6" align="center">Actualmente no tienes ofertas</Typography>
                   </Box>
                 }
               </>
@@ -392,6 +333,7 @@ const AnalyzeOffers = ({ companyType }) => {
         }
       </Box >
       <Box display="flex" justifyContent="center" mt={2}>
+        <Button className={classes.createOfferButton} onClick={handleCreateOffer}>Crear oferta</Button>
         <FormControl variant="outlined" className={classes.formControl}>
           <InputLabel id="offer-rate-filter">Tarifa</InputLabel>
           <Select
@@ -409,9 +351,26 @@ const AnalyzeOffers = ({ companyType }) => {
             })}
           </Select>
         </FormControl>
+        <Dialog open={deleteOfferDialogState}>
+          <DialogContent>
+            <DialogContentText>
+              ¿Seguro que quieres eliminar esta oferta?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" onClick={handleDeleteOffer} color="secondary">Confirmar</Button>
+            <Button variant="contained" onClick={closeDeleteOfferDialog}>Cancelar</Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </Container>
   );
 }
 
-export default AnalyzeOffers;
+const mapDispatchToProps = dispatch => ({
+  createNotification: (config) => {
+    dispatch(createNotification(config))
+  },
+});
+
+export default connect(null, mapDispatchToProps)(Offers);
