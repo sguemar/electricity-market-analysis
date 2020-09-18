@@ -385,9 +385,18 @@ const AnalyzeOffers = ({ companyType }) => {
                     <Typography variant="h6" align="center">Actualmente la comercializadora seleccionada no tiene publicada ninguna oferta de este tipo</Typography>
                   </Box>
                   :
-                  <Box my={4}>
-                    <Typography variant="h6" align="center">Debes seleccionar una comercializadora para ver sus ofertas</Typography>
-                  </Box>
+                  <>
+                  {selectedTradingCompanyCif !== '' && offerRateFilter === ''
+                    ?
+                    <Box my={4}>
+                      <Typography variant="h6" align="center">Esta comercializadora no tiene ofertas publicadas</Typography>
+                    </Box>
+                    :
+                    <Box my={4}>
+                      <Typography variant="h6" align="center">Debes seleccionar una comercializadora para ver sus ofertas</Typography>
+                    </Box>
+                  }
+                  </>
                 }
               </>
             }

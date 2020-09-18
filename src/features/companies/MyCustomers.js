@@ -213,7 +213,10 @@ const MyCustomers = ({ createNotification }) => {
   const [offersTypes, setOffersTypes] = useState([]);
   const [selectOfferDialogState, setSelectOfferDialogState] = useState(false);
 
-  const handleChangeOfferRateFilter = (event) => setOfferRateFilter(event.target.value);
+  const handleChangeOfferRateFilter = (event) => {
+    setOfferRateFilter(event.target.value);
+    setOffersPage(1);
+  }
   const handleOffersPageChange = (event, value) => setOffersPage(value);
 
   const handleSendOffer = (offerId) => sendOffer(offerId);
